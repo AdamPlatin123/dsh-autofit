@@ -1,0 +1,20 @@
+{
+  "name": "dsh-autofit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Auto-fit DeepSeek Harness plugins to your DSH version: radar-verified pre-install checks, trial installs, automatic migration, and tested updates.",
+  "type": "module",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/AdamPlatin123/dsh-autofit.git" },
+  "bin": { "dsh-autofit": "./bin/dsh-autofit.js" },
+  "exports": {
+    "./probe": "./lib/probe/index.js",
+    "./radar": "./lib/radar.js"
+  },
+  "files": ["bin/", "lib/"],
+  "scripts": {
+    "build:index": "node scripts/build-index.mjs",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=22" }
+}
