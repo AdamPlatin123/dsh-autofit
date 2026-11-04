@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { capabilitiesFor, compareVersions } from '../lib/probe/host.js'
-import { parseBoot, parseClient, parseInstall } from '../lib/probe/signals.js'
+import { parseBoot, parseClient, parseInstall, waitingServices } from '../lib/probe/signals.js'
 
 const STACK = '    at new apply (file:///lab/fixtures/bad/index.js:1:33)\n    at Fiber.execute (file:///x/cordis/lib/index.js:1068:24)\n'
 
@@ -25,6 +25,8 @@ test('L1: transient network retries on a successful install are dropped', () => 
   assert.equal(r.status, 'installed')
   assert.deepEqual(r.codes, [])
   assert.equal(parseInstall('ERR_PNPM_FETCH ECONNRESET\n', 1).status, 'infra-fail')
+  // git-hosted plugin, connection dropped mid-clone (seen live on github:zhu1090093659/dsh-web-ui)
+  assert.equal(parseInstall(' ERROR  Command failed with exit code 128: git fetch --depth 1 origin 975ba29\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\n', 1).status, 'infra-fail')
 })
 
 test('L1: legacy patch dialect', () => {
@@ -77,6 +79,13 @@ test('L2 client: 0.1.5 loader-entry form and 0.1.7+ boot form attribute the pack
   assert.equal(old.clientFailures[0].entry, '@lab/fx-badclient')
   const cur = parseClient(['Error: web boot: 1 entry did not activate\n@lab/fx-badclient: import failed: fx-badclient: deliberate client failure\n    at eM (http://127.0.0.1:1/assets/index.js:124:62214)'])
   assert.equal(cur.clientFailures[0].entry, '@lab/fx-badclient')
+})
+
+test('L2 client: entry pending on a renamed service (seen live: dsh-vision-router, dsh-codex-connect)', () => {
+  const r = parseClient(['Error: web boot: 1 entry did not activate\ndsh-vision-router: pending (waiting for service: settingsScope)\n    at bZ (http://127.0.0.1:1/assets/index.js:1:1)'])
+  assert.equal(r.clientFailures[0].entry, 'dsh-vision-router')
+  assert.ok(r.clientFailures[0].codes.includes('missing-service'))
+  assert.deepEqual(waitingServices(r.clientFailures[0].error), [{ service: 'settingsScope', to: 'configForms', since: '0.1.7-rc.1', card: 'DSH-0.1.7-J1-27' }])
 })
 
 test('capabilities follow the measured version matrix', () => {
