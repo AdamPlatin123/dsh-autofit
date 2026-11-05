@@ -45,3 +45,27 @@ test('extension: low impact, web target', () => {
   assert.equal(r.profileImpact.level, 'low')
   assert.ok(r.surfaces.includes('web-client'))
 })
+
+test('lite patch reader covers the row-operation subset', async () => {
+  const { parsePatchLite } = await import('../lib/describe.js')
+  const doc = parsePatchLite(`- id: tool-bash\n  disabled: true\n- id: approval\n  config:\n    policy: !!js "x"\n- insert:\n    - id: a\n      name: pkg-a\n    - id: b\n      name: pkg-a/b\n- id: web\n  name: other-impl\n`)
+  assert.deepEqual(doc[0], { id: 'tool-bash', disabled: true })
+  assert.equal(doc[1].config, true)
+  assert.deepEqual(doc[2].insert.map((r) => r.id), ['a', 'b'])
+  assert.equal(doc[3].name, 'other-impl')
+})
+
+test('dshPackageDir reads wrapper scripts and honours the override', async () => {
+  const { dshPackageDir } = await import('../lib/describe.js')
+  const os = await import('node:os')
+  const fs = await import('node:fs')
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'autofit-shim-'))
+  const pkg = path.join(root, 'rt', 'node_modules', '@deepseek-ai', 'dsh')
+  fs.mkdirSync(path.join(pkg, 'lib'), { recursive: true })
+  fs.writeFileSync(path.join(pkg, 'package.json'), '{"name":"@deepseek-ai/dsh","version":"0.1.5-rc.2"}')
+  const shim = path.join(root, 'dsh')
+  fs.writeFileSync(shim, `#!/bin/sh\nexec node ${pkg}/lib/bin.js "$@"\n`)
+  assert.equal(dshPackageDir(shim, {}), pkg)
+  assert.equal(dshPackageDir('/nope', { DSH_AUTOFIT_DSH_DIR: pkg }), pkg)
+  fs.rmSync(root, { recursive: true, force: true })
+})

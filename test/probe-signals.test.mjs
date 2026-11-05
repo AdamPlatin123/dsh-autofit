@@ -85,7 +85,9 @@ test('L2 client: entry pending on a renamed service (seen live: dsh-vision-route
   const r = parseClient(['Error: web boot: 1 entry did not activate\ndsh-vision-router: pending (waiting for service: settingsScope)\n    at bZ (http://127.0.0.1:1/assets/index.js:1:1)'])
   assert.equal(r.clientFailures[0].entry, 'dsh-vision-router')
   assert.ok(r.clientFailures[0].codes.includes('missing-service'))
-  assert.deepEqual(waitingServices(r.clientFailures[0].error), [{ service: 'settingsScope', to: 'configForms', since: '0.1.7-rc.1', card: 'DSH-0.1.7-J1-27' }])
+  assert.deepEqual(waitingServices(r.clientFailures[0].error), [{ service: 'settingsScope', to: 'configForms', since: '0.1.7-rc.1', card: 'DSH-0.1.7-J1-27', direction: 'plugin-older-than-host' }])
+  // reverse (seen live: dsh-opencode-patch 1.1.1 on the Desktop runtime 0.1.5-rc.2)
+  assert.equal(waitingServices('dsh-opencode-patch: pending (waiting for service: configForms)')[0].direction, 'plugin-newer-than-host')
 })
 
 test('capabilities follow the measured version matrix', () => {
