@@ -1,0 +1,1 @@
+{"name":"fx-shell","version":"2.0.0","peerDependencies":{"electron":"43.3.0"},"dependencies":{"koffi":"^2"},"dsh":{"bundle":{"patch":"./cordis.patch.yml"},"client":{"platform":"web"}}}

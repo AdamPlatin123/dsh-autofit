@@ -1,0 +1,1 @@
+{"name":"fx-ext","version":"0.1.0","dsh":{"bundle":{"patch":"./cordis.patch.yml"},"client":{"platform":"web"}}}

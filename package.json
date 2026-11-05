@@ -9,12 +9,13 @@
   "bin": { "dsh-autofit": "./bin/dsh-autofit.js" },
   "exports": {
     "./probe": "./lib/probe/index.js",
+    "./describe": "./lib/describe.js",
     "./radar": "./lib/radar.js"
   },
   "files": ["bin/", "lib/"],
   "scripts": {
     "build:index": "node scripts/build-index.mjs",
-    "test": "node --test"
+    "test": "node --test test/*.test.mjs"
   },
   "engines": { "node": ">=22" }
 }

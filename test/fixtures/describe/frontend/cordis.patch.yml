@@ -1,0 +1,16 @@
+- id: tool-bash
+  disabled: true
+- id: tool-fs
+  disabled: true
+- id: tool-fs-search
+  disabled: true
+- id: plan-mode
+  disabled: true
+- id: skill-filesystem
+  disabled: true
+- id: sandbox-policy
+  config:
+    mode: !!js process.env.X
+- insert:
+    - id: fx-front
+      name: fx-frontend
