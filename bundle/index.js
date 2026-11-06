@@ -16,7 +16,8 @@
  * Only one trial runs at a time (a trial starts real pnpm and a real web boot); background checks yield to
  * user-initiated ones.
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { autofix } from '../lib/autofix/index.js'
@@ -38,17 +39,41 @@ const WATCH_INTERVAL_MS = 60 * 1000
 function dshLauncher() {
   const configured = process.env.DSH_AUTOFIT_DSH_BIN
   if (configured && existsSync(configured)) return configured
-  const entry = process.argv[1]
-  if (entry && existsSync(entry) && /(?:^|[\\/])bin\.js$/i.test(entry)) return entry
-  // DSH Desktop: the Host runs inside the Electron app, whose argv[1] is not DSH. Its own runtime ships in the app
-  // resources (unpacked `app/` in 2.0.12–2.0.18, `app.asar` in 2.0.22; Electron's fs reads asar paths).
+  // 1. argv[1], symlinks resolved: a global `dsh` (npm, nvm) is a link to `@deepseek-ai/dsh/lib/bin.js`.
+  try {
+    const entry = process.argv[1] && realpathSync(process.argv[1])
+    if (entry && /(?:^|[\\/])bin\.js$/i.test(entry)) return entry
+  } catch { /* argv[1] is not a file */ }
+  // 2. ProfileContext.installAnchor: DSH's own package.json for the CLI, or a file DSH resolves from (packaged apps).
+  const fromAnchor = binFromAnchor(where.installAnchor)
+  if (fromAnchor) return fromAnchor
+  // 3. DSH Desktop in Electron: the runtime ships in the app resources (`app/` up to 2.0.18, `app.asar` from 2.0.22;
+  //    Electron's fs reads asar paths).
   if (process.versions.electron && process.resourcesPath) {
     for (const root of ['app', 'app.asar']) {
       const bin = path.join(process.resourcesPath, root, 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js')
       if (existsSync(bin)) return bin
     }
   }
+  // 4. Last resort: `dsh` on PATH (often absent when DSH was started from a GUI launcher).
   return 'dsh'
+}
+
+function binFromAnchor(anchor) {
+  if (!anchor) return null
+  try {
+    const own = JSON.parse(readFileSync(anchor, 'utf8'))
+    if (own?.name === '@deepseek-ai/dsh') {
+      const bin = path.join(path.dirname(anchor), 'lib', 'bin.js')
+      if (existsSync(bin)) return bin
+    }
+  } catch { /* not a package.json */ }
+  try {
+    const pkg = createRequire(anchor).resolve('@deepseek-ai/dsh/package.json')
+    const bin = path.join(path.dirname(pkg), 'lib', 'bin.js')
+    if (existsSync(bin)) return bin
+  } catch { /* not resolvable from the anchor */ }
+  return null
 }
 
 /** The Host carries its own profile pointers; a trial must never inherit them (it would target the live profile). */
@@ -61,7 +86,7 @@ function trialEnv() {
 }
 
 /** Filled from the ProfileContext service at apply(); env/home fallbacks keep the routes usable without it. */
-const where = { profileDir: process.env.DSH_PROFILE_DIR || null, home: null, packageManager: null }
+const where = { profileDir: process.env.DSH_PROFILE_DIR || null, home: null, packageManager: null, installAnchor: null }
 const dshHome = () => where.home || process.env.DSH_HOME || path.join(homedir(), '.dsh')
 const dataDir = () => path.join(dshHome(), 'autofit')
 
@@ -270,6 +295,7 @@ export function apply(ctx) {
     const profile = ctx.get('profileContext')
     if (profile?.dir) where.profileDir = profile.dir
     if (profile?.home) where.home = profile.home
+    if (profile?.installAnchor) where.installAnchor = profile.installAnchor
     if (profile?.packageManager?.command) where.packageManager = profile.packageManager
   } catch { /* no profile (e.g. SDK boot): background checks stay off */ }
   const reg = (route) => ctx.effect(() => ctx.connection.fetch.register(route), `dsh-autofit: ${route.path}`)
