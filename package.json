@@ -23,7 +23,7 @@
   },
   "type": "module",
   "bin": {
-    "dsh-autofit": "./bin/dsh-autofit.js"
+    "dsh-autofit": "bin/dsh-autofit.js"
   },
   "exports": {
     ".": "./bundle/index.js",
