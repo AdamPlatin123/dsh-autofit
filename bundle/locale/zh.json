@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Autofit 安装器",
+    "description": "在临时 profile 中试装插件并展示画像与影响；只有试装通过时才提供安装。"
+  }
+}

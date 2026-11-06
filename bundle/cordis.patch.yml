@@ -1,0 +1,5 @@
+# The dsh-autofit bundle: one Host row that exposes the trial-install check to the
+# Web UI, plus the package's own Client half (`dsh.client` in package.json).
+- insert:
+    - id: dsh-autofit
+      name: dsh-autofit

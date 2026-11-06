@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Autofit Installer",
+    "description": "Trial-installs a plugin in a throwaway profile, shows its profile impact, and offers install only when the trial passes."
+  }
+}

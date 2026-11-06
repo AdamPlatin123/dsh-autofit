@@ -8,11 +8,28 @@
   "repository": { "type": "git", "url": "git+https://github.com/AdamPlatin123/dsh-autofit.git" },
   "bin": { "dsh-autofit": "./bin/dsh-autofit.js" },
   "exports": {
+    ".": "./bundle/index.js",
+    "./client": "./bundle/client.js",
     "./probe": "./lib/probe/index.js",
     "./describe": "./lib/describe.js",
-    "./radar": "./lib/radar.js"
+    "./radar": "./lib/radar.js",
+    "./locale/*.json": "./bundle/locale/*.json",
+    "./icon": "./bundle/icon.svg"
   },
-  "files": ["bin/", "lib/"],
+  "files": ["bin/", "lib/", "bundle/"],
+  "dsh": {
+    "bundle": { "patch": "./bundle/cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ]
+    }
+  },
   "scripts": {
     "build:index": "node scripts/build-index.mjs",
     "test": "node --test test/*.test.mjs"
