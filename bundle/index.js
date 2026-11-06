@@ -40,6 +40,14 @@ function dshLauncher() {
   if (configured && existsSync(configured)) return configured
   const entry = process.argv[1]
   if (entry && existsSync(entry) && /(?:^|[\\/])bin\.js$/i.test(entry)) return entry
+  // DSH Desktop: the Host runs inside the Electron app, whose argv[1] is not DSH. Its own runtime ships in the app
+  // resources (unpacked `app/` in 2.0.12–2.0.18, `app.asar` in 2.0.22; Electron's fs reads asar paths).
+  if (process.versions.electron && process.resourcesPath) {
+    for (const root of ['app', 'app.asar']) {
+      const bin = path.join(process.resourcesPath, root, 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js')
+      if (existsSync(bin)) return bin
+    }
+  }
   return 'dsh'
 }
 
@@ -53,7 +61,7 @@ function trialEnv() {
 }
 
 /** Filled from the ProfileContext service at apply(); env/home fallbacks keep the routes usable without it. */
-const where = { profileDir: process.env.DSH_PROFILE_DIR || null, home: null }
+const where = { profileDir: process.env.DSH_PROFILE_DIR || null, home: null, packageManager: null }
 const dshHome = () => where.home || process.env.DSH_HOME || path.join(homedir(), '.dsh')
 const dataDir = () => path.join(dshHome(), 'autofit')
 
@@ -215,7 +223,7 @@ let lastDeps = null
 async function drainQueue(log) {
   while (queue.length && !running) {
     const { name, spec } = queue.shift()
-    const out = await exclusive(async () => probe(spec, { bin: dshLauncher(), env: trialEnv() }))
+    const out = await exclusive(async () => probe(spec, { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager }))
     if (out.busy) { queue.unshift({ name, spec }); return }
     const checks = readChecks()
     checks[name] = { at: new Date().toISOString(), trigger: 'installed', ...summarize(out.value) }
@@ -262,6 +270,7 @@ export function apply(ctx) {
     const profile = ctx.get('profileContext')
     if (profile?.dir) where.profileDir = profile.dir
     if (profile?.home) where.home = profile.home
+    if (profile?.packageManager?.command) where.packageManager = profile.packageManager
   } catch { /* no profile (e.g. SDK boot): background checks stay off */ }
   const reg = (route) => ctx.effect(() => ctx.connection.fetch.register(route), `dsh-autofit: ${route.path}`)
 
@@ -271,7 +280,7 @@ export function apply(ctx) {
       const input = await readSpec(request)
       if (input.error) return input.error
       try {
-        const out = await exclusive(() => probe(input.spec, { bin: dshLauncher(), env: trialEnv(), allowBuilds: input.allowBuilds }))
+        const out = await exclusive(() => probe(input.spec, { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager, allowBuilds: input.allowBuilds }))
         if (out.busy) return json(failure('autofit/busy', 'Another Autofit check is already running.', { retryable: true }), 409)
         return json({ ok: true, value: { ...summarize(out.value), requestedSpec: input.spec } })
       } catch (error) {
@@ -286,7 +295,7 @@ export function apply(ctx) {
       const input = await readSpec(request)
       if (input.error) return input.error
       try {
-        const out = await exclusive(() => autofix(input.spec, { probe: { bin: dshLauncher(), env: trialEnv(), allowBuilds: input.allowBuilds }, outDir: path.join(dataDir(), 'patched') }))
+        const out = await exclusive(() => autofix(input.spec, { probe: { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager, allowBuilds: input.allowBuilds }, outDir: path.join(dataDir(), 'patched') }))
         if (out.busy) return json(failure('autofit/busy', 'Another Autofit check is already running.', { retryable: true }), 409)
         return json({ ok: true, value: { ...summarizeFix(out.value), requestedSpec: input.spec } })
       } catch (error) {

@@ -1,6 +1,6 @@
 {
   "name": "dsh-autofit",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "private": true,
   "description": "Auto-fit DeepSeek Harness plugins to your DSH version: radar-verified pre-install checks, trial installs, automatic migration, and tested updates.",
   "type": "module",

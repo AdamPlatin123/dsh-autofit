@@ -18,6 +18,8 @@ window.__ModuleLoader__.load({
 
     const CHECK_PATH = '/api/autofit/check'
     const LOCALE_NS = 'dshAutofit'
+    /** The plugin context, kept for slot components whose props do not carry it. */
+    let pluginCtx = null
 
     /* ------------------------------------------------------------------ locale */
 
@@ -819,7 +821,8 @@ window.__ModuleLoader__.load({
         // Never install something different from the spec the trial actually checked.
         const value = typeof result.requestedSpec === 'string' && result.requestedSpec ? result.requestedSpec : typeof result.spec === 'string' && result.spec ? result.spec : spec.trim()
         if (!value || value !== spec.trim()) return
-        const manager = ctx.remote && ctx.remote.pluginManager
+        const host = ctx || pluginCtx
+        const manager = host && host.remote && host.remote.pluginManager
         if (!manager || typeof manager.installBundle !== 'function') {
           setInstallState({ status: 'error', message: t('errorNativeInstall') })
           return
@@ -873,7 +876,8 @@ window.__ModuleLoader__.load({
 
       const installFixed = useCallback(async () => {
         if (!fix || fix.verdict !== 'fixed' || !fix.artifact || !fix.artifact.usable) return
-        const manager = ctx.remote && ctx.remote.pluginManager
+        const host = ctx || pluginCtx
+        const manager = host && host.remote && host.remote.pluginManager
         if (!manager || typeof manager.installBundle !== 'function') {
           setInstallState({ status: 'error', message: t('errorNativeInstall') })
           return
@@ -1018,8 +1022,15 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /** Hosts without `shell.overlay` (DSH 0.1.5) never mount the overlay; the tab then shows the dialog inline. */
+    let overlayHosts = 0
+
     function AutofitOverlayHost({ t, ctx }) {
       const state = useAutofitDialog()
+      useEffect(() => {
+        overlayHosts += 1
+        return () => { overlayHosts -= 1 }
+      }, [])
       return h(
         React.Fragment,
         null,
@@ -1128,7 +1139,8 @@ window.__ModuleLoader__.load({
       return h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, t(key))
     }
 
-    function AutofitTab({ t }) {
+    function AutofitTab({ t, ctx }) {
+      const dialog = useAutofitDialog()
       const [q, setQ] = useState('')
       const [items, setItems] = useState([])
       const [total, setTotal] = useState(0)
@@ -1156,6 +1168,7 @@ window.__ModuleLoader__.load({
       }, [q, load])
 
       return h('div', { className: 'dsh-autofit-tab' }, h(StyleTag),
+        dialog.open && overlayHosts === 0 ? h(AutofitDialog, { t, ctx, initialSpec: dialog.initialSpec, onClose: closeAutofitDialog }) : null,
         h('div', { className: 'dsh-autofit-tab-head' },
           h('input', { className: 'dsh-autofit-input', type: 'search', value: q, placeholder: t('tabSearch'), onChange: (e) => setQ(e.target.value) }),
           h('span', null, fmt(t, 'tabOf', { total })),
@@ -1207,6 +1220,7 @@ window.__ModuleLoader__.load({
     return {
       inject: ['slots', 'locale', 'connection', 'remote'],
       apply(ctx) {
+        pluginCtx = ctx
         ctx.effect(() => ctx.locale.register(LOCALE_NS, DICTIONARY), 'dsh-autofit: locale dictionary')
 
         ctx.slots.inject('plugins.add.actions', () =>
@@ -1234,8 +1248,21 @@ window.__ModuleLoader__.load({
         )
 
         const tt = ctx.locale.bind(LOCALE_NS)
+
+        // The bundle's own page (Plugins → Autofit Installer): the only Plugins-page entry DSH 0.1.7–0.2.0 offer,
+        // since plugins.tab and plugins.add.actions arrive in 0.2.1.
+        ctx.slots.inject('plugins.bundle.config', () =>
+          ctx.slots.register({ name: 'plugins.bundle.config', key: 'dsh-autofit', locale: LOCALE_NS },
+            ({ t, view }) => (view === 'summary' ? null : h(AutofitTab, { t, ctx: pluginCtx }))),
+        )
+
         ctx.slots.inject('plugins.tab', () =>
           ctx.slots.register({ name: 'plugins.tab', id: 'dsh-autofit', label: () => tt('tabLabel'), order: 200, locale: LOCALE_NS }, AutofitTab),
+        )
+
+        // DSH 0.1.5–0.2.0 have no Plugins-page tabs; their plugin UI lives under Settings → Plugins.
+        ctx.slots.inject('settings.plugins.tab', () =>
+          ctx.slots.register({ name: 'settings.plugins.tab', id: 'dsh-autofit', label: () => tt('tabLabel'), order: 200, locale: LOCALE_NS }, AutofitTab),
         )
 
         ctx.slots.inject('plugins.detail.badge', () =>
