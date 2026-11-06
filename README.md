@@ -16,9 +16,29 @@ DSH 插件自动适配：装之前先实测，装不上自动修，有更新先�
 ### 安装组合包
 
 ```sh
-dsh plugin --profile <profile> add <dsh-autofit 的 tgz、目录或 git 地址>
-dsh --profile <profile>        # 插件页 → Add plugin 下拉 / Autofit 标签页
+dsh plugin --profile web add dsh-autofit      # 或在 DSH 插件页「Add plugin」里输入 dsh-autofit
+dsh --profile web                             # 插件页 → Add plugin 下拉 / Autofit 标签页
 ```
+
+DSH Desktop：在 Desktop 的插件页「Add plugin」里输入 `dsh-autofit`（Desktop 只允许通过自己的界面往 desktop profile 装插件）。
+
+命令行单独使用：`npx dsh-autofit probe <插件>` / `npx dsh-autofit fix <插件>`。
+
+### 跨版本实测（2026-11-06）
+
+| DSH | 入口 | 检查接口 |
+|---|---|---|
+| 0.2.1-rc.2 · 0.2.1-rc.5 · 0.2.2-alpha.3 · 0.2.2-rc.1 | 插件页 Autofit 标签 + 添加菜单 + 详情区块 | ✅ |
+| 0.1.7 · 0.2.0 | 插件页 → Autofit Installer（组合包页面）+ 详情区块 | ✅ |
+| 0.1.5 | 设置 → 插件 → Autofit 标签 | ✅ |
+
+| DSH Desktop | 内置运行时 | 运行时实测 |
+|---|---|---|
+| 2.0.22-next / 2.0.22-beta.1 | 0.2.2-rc.1（app.asar） | ✅ 完整 L1/L2 |
+| 2.0.18 | 0.2.1-rc.2 | ✅ 完整 L1/L2 |
+| 2.0.12 | 0.1.5-rc.2 | 有系统 Node 时 ✅；否则仅 L1 |
+
+Desktop 界面层（菜单与标签页）尚未完成自动化验证：首次运行引导和"只能从应用内安装插件"的限制挡住了无头测试。
 
 ## probe：L1/L2 试装
 

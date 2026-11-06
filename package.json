@@ -1,14 +1,27 @@
 {
   "name": "dsh-autofit",
-  "version": "0.2.5",
-  "private": true,
-  "description": "Auto-fit DeepSeek Harness plugins to your DSH version: radar-verified pre-install checks, trial installs, automatic migration, and tested updates.",
-  "type": "module",
+  "version": "0.3.0",
+  "description": "DSH (DeepSeek Harness) plugin autofit: trial-install any plugin in a throwaway profile, auto-repair incompatible ones, install only what passes. Companion of DSH Plugin Radar.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "plugin-compatibility",
+    "autofix",
+    "dsh-radar"
+  ],
+  "author": "AdamPlatin123",
   "license": "MIT",
+  "homepage": "https://github.com/AdamPlatin123/dsh-autofit#readme",
+  "bugs": {
+    "url": "https://github.com/AdamPlatin123/dsh-autofit/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdamPlatin123/dsh-autofit.git"
   },
+  "type": "module",
   "bin": {
     "dsh-autofit": "./bin/dsh-autofit.js"
   },
@@ -25,7 +38,9 @@
   "files": [
     "bin/",
     "lib/",
-    "bundle/"
+    "bundle/",
+    "README.md",
+    "LICENSE"
   ],
   "dsh": {
     "bundle": {
