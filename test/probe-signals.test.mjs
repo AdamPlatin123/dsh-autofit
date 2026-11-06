@@ -90,6 +90,11 @@ test('L2 client: entry pending on a renamed service (seen live: dsh-vision-route
   assert.equal(waitingServices('dsh-opencode-patch: pending (waiting for service: configForms)')[0].direction, 'plugin-newer-than-host')
 })
 
+test('L2 client: "<pkg>: failed" boot form is attributed (seen live: dsh-codex-connect after rename)', () => {
+  const r = parseClient(['Error: web boot: 1 entry did not activate\ndsh-codex-connect: failed\n    at bZ (http://127.0.0.1:1/assets/index.js:1:1)'])
+  assert.equal(r.clientFailures[0].entry, 'dsh-codex-connect')
+})
+
 test('capabilities follow the measured version matrix', () => {
   assert.ok(compareVersions('0.2.1-rc.2', '0.2.1-rc.10') < 0)
   assert.ok(compareVersions('0.2.1', '0.2.1-rc.5') > 0)

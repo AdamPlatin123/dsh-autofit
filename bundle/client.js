@@ -23,6 +23,41 @@ window.__ModuleLoader__.load({
 
     const DICTIONARY = {
       zh: {
+        nextStep: '下一步',
+        tryFix: '尝试自动修复',
+        fixing: '正在自动修复…',
+        fixingHint: '逐轮：套用修复规则 → 重新打包 → 再次试装（每轮约 30–60 秒，最多 3 轮）。',
+        fixTitle: '自动修复',
+        fixRound: '第 {n} 轮',
+        fixRoundInitial: '原版',
+        fixChanges: '修改内容',
+        fixNoChanges: '没有可以自动套用的修复规则。',
+        fixFixed: '已修复：修复版通过了试装。',
+        fixNotFixed: '自动修复后仍未通过。',
+        fixArtifact: '修复版',
+        installFixed: '安装修复版',
+        needsApproval: '需要你批准',
+        allowBuildsRetry: '允许这些构建脚本并重试',
+        unresolvedTitle: '无法自动修复',
+        tierA: '机械',
+        tierB: '规则',
+        tabLabel: 'Autofit',
+        tabSearch: '搜索插件（名称、描述、分类）',
+        tabSource: '来源',
+        tabRadar: '雷达',
+        tabLoading: '正在加载目录…',
+        tabEmpty: '没有匹配的插件。',
+        tabMore: '加载更多',
+        tabInstall: '用 Autofit 安装',
+        tabOf: '共 {total} 个',
+        radarOk: '雷达实测通过',
+        radarIncompatible: '雷达实测不兼容',
+        radarPending: '雷达待测',
+        badgePass: 'Autofit 通过',
+        badgeFail: 'Autofit 未通过',
+        badgeOther: 'Autofit：{v}',
+        backgroundTitle: '装后自动检查',
+        backgroundAt: '检查于 {at}',
         menuTitle: '使用 Autofit 安装…',
         menuDescription: '先在临时 profile 中试装并检查，再决定是否安装',
         dialogTitle: '使用 Autofit 安装',
@@ -50,6 +85,7 @@ window.__ModuleLoader__.load({
         installErrorCode: '错误码',
         verdict: '结论',
         verdictPass: '通过',
+        verdictFixed: '已修复',
         verdictFail: '未通过',
         verdictIncompatible: '不兼容',
         verdictInfraFail: '环境失败',
@@ -89,7 +125,7 @@ window.__ModuleLoader__.load({
         logTail: '日志尾部',
         failures: '失败项',
         reason: '未通过原因',
-        notPassHint: '结论不是「通过」，因此不提供安装入口。',
+        notPassHint: '原版没有通过试装，因此不直接提供安装；可以尝试自动修复。',
         errorEmpty: '请填写插件 spec。',
         errorBusy: '已有一次 Autofit 检查正在运行，请稍后再试。',
         errorRpc: '无法调用宿主检查。',
@@ -106,6 +142,41 @@ window.__ModuleLoader__.load({
         spec: 'Spec',
       },
       en: {
+        nextStep: 'Next step',
+        tryFix: 'Try autofix',
+        fixing: 'Autofixing…',
+        fixingHint: 'Round by round: apply repair rules → repack → trial again (about 30–60 s per round, at most 3 rounds).',
+        fixTitle: 'Autofix',
+        fixRound: 'Round {n}',
+        fixRoundInitial: 'Original',
+        fixChanges: 'Changes',
+        fixNoChanges: 'No repair rule applies automatically.',
+        fixFixed: 'Fixed: the repaired build passed the trial.',
+        fixNotFixed: 'Still not passing after autofix.',
+        fixArtifact: 'Repaired build',
+        installFixed: 'Install repaired build',
+        needsApproval: 'Needs your approval',
+        allowBuildsRetry: 'Allow these build scripts and retry',
+        unresolvedTitle: 'Cannot be fixed automatically',
+        tierA: 'mechanical',
+        tierB: 'rule',
+        tabLabel: 'Autofit',
+        tabSearch: 'Search plugins (name, description, category)',
+        tabSource: 'Source',
+        tabRadar: 'Radar',
+        tabLoading: 'Loading catalog…',
+        tabEmpty: 'No matching plugins.',
+        tabMore: 'Load more',
+        tabInstall: 'Install with autofix',
+        tabOf: '{total} plugins',
+        radarOk: 'Radar: runs',
+        radarIncompatible: 'Radar: incompatible',
+        radarPending: 'Radar: not yet tested',
+        badgePass: 'Autofit: pass',
+        badgeFail: 'Autofit: fail',
+        badgeOther: 'Autofit: {v}',
+        backgroundTitle: 'Post-install check',
+        backgroundAt: 'Checked at {at}',
         menuTitle: 'Install with Autofit…',
         menuDescription: 'Trial-install and inspect in a throwaway profile before deciding',
         dialogTitle: 'Install with Autofit',
@@ -133,6 +204,7 @@ window.__ModuleLoader__.load({
         installErrorCode: 'Error code',
         verdict: 'Verdict',
         verdictPass: 'Pass',
+        verdictFixed: 'Fixed',
         verdictFail: 'Fail',
         verdictIncompatible: 'Incompatible',
         verdictInfraFail: 'Infra failure',
@@ -172,7 +244,7 @@ window.__ModuleLoader__.load({
         logTail: 'Log tail',
         failures: 'Failures',
         reason: 'Why it did not pass',
-        notPassHint: 'The verdict is not Pass, so no install action is offered.',
+        notPassHint: 'The original did not pass the trial, so it is not offered for install; you can try autofix.',
         errorEmpty: 'Enter a plugin spec.',
         errorBusy: 'Another Autofit check is already running. Try again shortly.',
         errorRpc: 'Could not reach the Host check.',
@@ -193,6 +265,16 @@ window.__ModuleLoader__.load({
     /* ------------------------------------------------------------------ styles */
 
     const CSS = `
+.dsh-autofit-list{margin:4px 0 0;padding-left:18px;font-size:12px;line-height:1.7}
+.dsh-autofit-tab{display:flex;flex-direction:column;gap:12px;padding:4px 0 24px}
+.dsh-autofit-tab-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--dsw-alias-label-secondary)}
+.dsh-autofit-tab-head input{flex:1;min-width:240px}
+.dsh-autofit-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.dsh-autofit-card{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
+.dsh-autofit-card-title{font-weight:600;font-size:13.5px;line-height:1.35;word-break:break-word}
+.dsh-autofit-card-desc{font-size:12px;color:var(--dsw-alias-label-secondary);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dsh-autofit-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--dsw-alias-label-tertiary)}
+.dsh-autofit-card-foot{display:flex;justify-content:flex-end;margin-top:auto}
 .dsh-autofit-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.45);pointer-events:auto}
 .dsh-autofit-dialog{width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:0 18px 48px rgba(0,0,0,.35);font:inherit}
 .dsh-autofit-head{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 0}
@@ -222,7 +304,7 @@ window.__ModuleLoader__.load({
 .dsh-autofit-summary{display:flex;flex-direction:column;gap:12px}
 .dsh-autofit-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dsh-autofit-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.6;white-space:nowrap}
-.dsh-autofit-badge-success{background:var(--dsw-alias-state-success-secondary);color:var(--dsw-alias-state-success-primary)}
+.dsh-autofit-badge-success{background:color-mix(in srgb,var(--dsw-alias-state-success-primary) 16%,transparent);color:var(--dsw-alias-state-success-primary)}
 .dsh-autofit-badge-warn{background:var(--dsw-alias-state-warn-tertiary);color:var(--dsw-alias-state-warn-primary)}
 .dsh-autofit-badge-error{background:color-mix(in srgb,var(--dsw-alias-state-error-primary) 16%,transparent);color:var(--dsw-alias-state-error-primary)}
 .dsh-autofit-badge-neutral{background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-secondary)}
@@ -331,6 +413,7 @@ window.__ModuleLoader__.load({
     function verdictLabel(t, verdict) {
       const key = {
         pass: 'verdictPass',
+        fixed: 'verdictFixed',
         fail: 'verdictFail',
         incompatible: 'verdictIncompatible',
         'infra-fail': 'verdictInfraFail',
@@ -341,7 +424,7 @@ window.__ModuleLoader__.load({
     }
 
     function toneFor(verdict) {
-      if (verdict === 'pass') return 'success'
+      if (verdict === 'pass' || verdict === 'fixed') return 'success'
       if (verdict === 'fail') return 'error'
       if (verdict === 'incompatible' || verdict === 'not-published' || verdict === 'infra-fail' || verdict === 'inconclusive') return 'warn'
       return 'neutral'
@@ -375,6 +458,64 @@ window.__ModuleLoader__.load({
         return { ok: false, error: { code: 'autofit/bad-response', message: `HTTP ${response.status}` } }
       }
       return result
+    }
+
+    const FIX_PATH = '/api/autofit/fix'
+    const CATALOG_PATH = '/api/autofit/catalog'
+    const STATUS_PATH = '/api/autofit/status'
+
+    async function callJson(url, init) {
+      let response
+      try {
+        response = await fetch(url, { credentials: 'same-origin', ...init })
+      } catch (error) {
+        return { ok: false, error: { code: 'autofit/network', message: error && error.message ? String(error.message) : 'request failed' } }
+      }
+      try {
+        const body = await response.json()
+        return body && typeof body.ok === 'boolean' ? body : { ok: false, error: { code: 'autofit/bad-response', message: `HTTP ${response.status}` } }
+      } catch {
+        return { ok: false, error: { code: 'autofit/bad-response', message: `HTTP ${response.status}` } }
+      }
+    }
+
+    const callFix = (spec, allowBuilds) => callJson(FIX_PATH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ spec, allowBuilds: allowBuilds || [] }) })
+
+    function fmt(t, key, vars) {
+      let s = t(key)
+      for (const [k, v] of Object.entries(vars || {})) s = String(s).split(`{${k}}`).join(String(v))
+      return s
+    }
+
+    function FixSummary({ t, fix, busy, onAllowBuilds }) {
+      const rows = []
+      for (const r of fix.rounds || []) {
+        rows.push(h('div', { key: `r${r.round}`, className: 'dsh-autofit-row' },
+          h('span', { className: 'dsh-autofit-label' }, r.round === 0 ? t('fixRoundInitial') : fmt(t, 'fixRound', { n: r.round })),
+          h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${toneFor(r.verdict)}` }, verdictLabel(t, r.verdict)),
+          r.codes && r.codes.length ? h('code', { className: 'dsh-autofit-value-mono' }, r.codes.join(', ')) : null))
+      }
+      const changes = (fix.changes || []).map((c, i) => h('li', { key: i },
+        h('span', { className: 'dsh-autofit-chip' }, c.tier === 'A' ? t('tierA') : t('tierB')), ' ',
+        h('code', null, c.rule), ' · ', h('code', null, c.file), ' — ', c.detail))
+      return h('div', { className: `dsh-autofit-box ${fix.verdict === 'fixed' ? '' : 'dsh-autofit-box-warn'}` },
+        h('strong', null, t('fixTitle')),
+        h('div', { style: { marginTop: 6 } }, rows),
+        h('div', { style: { marginTop: 8 } }, h('div', { className: 'dsh-autofit-label' }, t('fixChanges')),
+          changes.length ? h('ul', { className: 'dsh-autofit-list' }, changes) : h('div', null, t('fixNoChanges'))),
+        fix.verdict === 'fixed'
+          ? h('div', { style: { marginTop: 8 } }, t('fixFixed'), fix.artifact ? h('div', null, h('span', { className: 'dsh-autofit-label' }, t('fixArtifact')), ' ', h('code', { className: 'dsh-autofit-value-mono' }, fix.artifact.version)) : null)
+          : h('div', { style: { marginTop: 8 } }, t('fixNotFixed')),
+        (fix.needsApproval || []).length
+          ? h('div', { style: { marginTop: 8 } }, h('strong', null, t('needsApproval')),
+              (fix.needsApproval || []).map((a, i) => h('div', { key: i }, `${a.why} · `, h('code', null, (a.packages || []).join(', ')),
+                a.kind === 'allow-builds' ? h('button', { type: 'button', className: 'dsh-autofit-btn', style: { marginLeft: 8 }, disabled: busy, onClick: () => onAllowBuilds(a.packages || []) }, t('allowBuildsRetry')) : null)))
+          : null,
+        (fix.unresolved || []).length
+          ? h('div', { style: { marginTop: 8 } }, h('strong', null, t('unresolvedTitle')),
+              h('ul', { className: 'dsh-autofit-list' }, (fix.unresolved || []).map((u, i) => h('li', { key: i }, h('code', null, u.code), ' — ', u.hint))))
+          : null,
+        fix.error ? h(ErrorBox, { t, message: fix.error }) : null)
     }
 
     function ErrorBox({ t, message, code }) {
@@ -611,9 +752,10 @@ window.__ModuleLoader__.load({
       const [error, setError] = useState(null)
       const [installState, setInstallState] = useState(null)
       const [ackHigh, setAckHigh] = useState(false)
+      const [fix, setFix] = useState(null)
       const inputRef = useRef(null)
       const alive = useRef(true)
-      const busy = phase === 'checking' || phase === 'installing'
+      const busy = phase === 'checking' || phase === 'installing' || phase === 'fixing'
 
       useEffect(() => {
         alive.current = true
@@ -652,6 +794,7 @@ window.__ModuleLoader__.load({
         setError(null)
         setInstallState(null)
         setAckHigh(false)
+        setFix(null)
         try {
           const response = await callCheck(value)
           if (!alive.current) return
@@ -703,6 +846,56 @@ window.__ModuleLoader__.load({
           setPhase('result')
         }
       }, [ackHigh, ctx, result, spec, t])
+
+
+      const runFix = useCallback(async (allowBuilds) => {
+        const value = spec.trim()
+        if (!value) return
+        setPhase('fixing')
+        setError(null)
+        setInstallState(null)
+        try {
+          const response = await callFix(value, allowBuilds)
+          if (!alive.current) return
+          if (!response.ok) {
+            setError(response.error && response.error.code === 'autofit/busy' ? t('errorBusy') : (response.error && response.error.message) || t('errorRpc'))
+            setPhase('result')
+            return
+          }
+          setFix(response.value)
+          setPhase('result')
+        } catch (caught) {
+          if (!alive.current) return
+          setError(caught && caught.message ? String(caught.message) : t('errorRpc'))
+          setPhase('result')
+        }
+      }, [spec, t])
+
+      const installFixed = useCallback(async () => {
+        if (!fix || fix.verdict !== 'fixed' || !fix.artifact || !fix.artifact.usable) return
+        const manager = ctx.remote && ctx.remote.pluginManager
+        if (!manager || typeof manager.installBundle !== 'function') {
+          setInstallState({ status: 'error', message: t('errorNativeInstall') })
+          return
+        }
+        setPhase('installing')
+        setInstallState({ status: 'running' })
+        try {
+          const response = await manager.installBundle(fix.artifact.file)
+          if (!alive.current) return
+          if (!response.ok) {
+            setInstallState({ status: 'error', message: (response.error && response.error.message) || t('installFailed'), code: response.error && response.error.code })
+            setPhase('result')
+            return
+          }
+          setInstallState({ status: 'done', value: response.value })
+          setPhase('installed')
+        } catch (caught) {
+          if (!alive.current) return
+          setInstallState({ status: 'error', message: caught && caught.message ? String(caught.message) : t('installFailed') })
+          setPhase('result')
+        }
+      }, [ctx, fix, t])
 
       const high = Boolean(result && result.L1 && result.L1.describe && result.L1.describe.profileImpact && result.L1.describe.profileImpact.level === 'high')
       const pass = Boolean(result && result.verdict === 'pass')
@@ -786,7 +979,20 @@ window.__ModuleLoader__.load({
             ),
             error ? h(ErrorBox, { t, message: error }) : null,
             result ? h(CheckSummary, { t, result }) : null,
-            result && !pass ? h('div', { className: 'dsh-autofit-box' }, h('strong', null, t('reason')), h('div', { style: { marginTop: 4 } }, t('notPassHint'))) : null,
+            result && !pass ? h('div', { className: 'dsh-autofit-box' }, h('strong', null, t('nextStep')), h('div', { style: { marginTop: 4 } }, t('notPassHint')),
+              !fix && (result.verdict === 'fail' || result.verdict === 'incompatible')
+                ? h('div', { className: 'dsh-autofit-actions', style: { marginTop: 10 } }, h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || specChanged, onClick: () => void runFix([]) }, t('tryFix')))
+                : null) : null,
+            phase === 'fixing'
+              ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }),
+                  h('div', null, h('div', { className: 'dsh-autofit-progress-title' }, t('fixing')), h('div', { className: 'dsh-autofit-progress-text' }, t('fixingHint'))))
+              : null,
+            fix ? h(FixSummary, { t, fix, busy, onAllowBuilds: (pkgs) => void runFix(pkgs) }) : null,
+            fix && fix.verdict === 'fixed' && fix.artifact && fix.artifact.usable
+              ? h('div', { className: 'dsh-autofit-actions', style: { marginTop: 10 } },
+                  h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || installDone, onClick: () => void installFixed() },
+                    installDone ? t('installed') : phase === 'installing' ? t('installing') : t('installFixed')))
+              : null,
             pass && specChanged ? h('div', { className: 'dsh-autofit-box dsh-autofit-box-warn' }, t('specChanged')) : null,
             pass
               ? h(
@@ -901,7 +1107,99 @@ window.__ModuleLoader__.load({
           : null,
         error ? h(ErrorBox, { t, message: error }) : null,
         result ? h(CheckSummary, { t, result }) : null,
+        !result && pkg ? h(BackgroundResult, { t, name: pkg.name }) : null,
       )
+    }
+
+
+    /* ------------------------------------------------------------------ Autofit tab */
+
+    function pickText(v) {
+      if (!v) return ''
+      if (typeof v === 'string') return v
+      const lang = (document.documentElement.lang || navigator.language || 'en').toLowerCase()
+      return (lang.startsWith('zh') ? v.zh || v.en : v.en || v.zh) || Object.values(v)[0] || ''
+    }
+
+    function radarChip(t, radar) {
+      if (!radar) return null
+      const key = radar === 'ok' ? 'radarOk' : radar === 'incompatible' ? 'radarIncompatible' : 'radarPending'
+      const tone = radar === 'ok' ? 'success' : radar === 'incompatible' ? 'error' : 'neutral'
+      return h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, t(key))
+    }
+
+    function AutofitTab({ t }) {
+      const [q, setQ] = useState('')
+      const [items, setItems] = useState([])
+      const [total, setTotal] = useState(0)
+      const [meta, setMeta] = useState(null)
+      const [loading, setLoading] = useState(false)
+      const [error, setError] = useState(null)
+      const seq = useRef(0)
+
+      const load = useCallback(async (query, offset) => {
+        const token = ++seq.current
+        setLoading(true)
+        setError(null)
+        const r = await callJson(CATALOG_PATH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: query, offset, limit: 30 }) })
+        if (token !== seq.current) return
+        setLoading(false)
+        if (!r.ok) { setError((r.error && r.error.message) || t('errorRpc')); return }
+        setTotal(r.value.total)
+        setMeta({ source: r.value.source, radarAt: r.value.radarAt })
+        setItems((prev) => (offset ? prev.concat(r.value.items) : r.value.items))
+      }, [t])
+
+      useEffect(() => {
+        const timer = setTimeout(() => void load(q, 0), q ? 300 : 0)
+        return () => clearTimeout(timer)
+      }, [q, load])
+
+      return h('div', { className: 'dsh-autofit-tab' }, h(StyleTag),
+        h('div', { className: 'dsh-autofit-tab-head' },
+          h('input', { className: 'dsh-autofit-input', type: 'search', value: q, placeholder: t('tabSearch'), onChange: (e) => setQ(e.target.value) }),
+          h('span', null, fmt(t, 'tabOf', { total })),
+          meta ? h('span', null, `${t('tabSource')}: ${String(meta.source || '').replace(/^https?:\/\//, '').split('/')[0]}${meta.radarAt ? ` · ${t('tabRadar')} ${String(meta.radarAt).slice(0, 10)}` : ''}`) : null),
+        error ? h(ErrorBox, { t, message: error }) : null,
+        h('div', { className: 'dsh-autofit-cards' }, items.map((it) => h('div', { key: it.name, className: 'dsh-autofit-card' },
+          h('div', { className: 'dsh-autofit-card-title' }, pickText(it.title) || it.name),
+          h('div', { className: 'dsh-autofit-card-meta' }, h('code', null, it.spec), it.category ? h('span', { className: 'dsh-autofit-chip' }, it.category) : null,
+            it.stars != null ? h('span', null, `★ ${it.stars}`) : null, radarChip(t, it.radar)),
+          h('div', { className: 'dsh-autofit-card-desc' }, pickText(it.description)),
+          h('div', { className: 'dsh-autofit-card-foot' },
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => openAutofitDialog(it.spec) }, t('tabInstall')))))),
+        loading ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('tabLoading'))) : null,
+        !loading && !error && !items.length ? h('div', { className: 'dsh-autofit-section-desc' }, t('tabEmpty')) : null,
+        !loading && items.length < total ? h('div', { className: 'dsh-autofit-actions' }, h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void load(q, items.length) }, t('tabMore'))) : null)
+    }
+
+    /* ------------------------------------------------------------------ background check (badge + section) */
+
+    function useBackgroundCheck(name) {
+      const [check, setCheck] = useState(null)
+      useEffect(() => {
+        if (!name) return undefined
+        let live = true
+        void callJson(STATUS_PATH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name }) }).then((r) => { if (live && r.ok) setCheck(r.value) })
+        return () => { live = false }
+      }, [name])
+      return check
+    }
+
+    function AutofitBadge({ t, subject }) {
+      const name = subject && subject.kind === 'bundle' && subject.pkg && subject.pkg.installed ? subject.pkg.name : null
+      const check = useBackgroundCheck(name)
+      if (!check || !check.verdict) return null
+      const label = check.verdict === 'pass' ? t('badgePass') : check.verdict === 'fail' ? t('badgeFail') : fmt(t, 'badgeOther', { v: verdictLabel(t, check.verdict) })
+      return h(React.Fragment, null, h(StyleTag), h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${toneFor(check.verdict)}`, title: check.at }, label))
+    }
+
+    function BackgroundResult({ t, name }) {
+      const check = useBackgroundCheck(name)
+      if (!check) return null
+      return h('div', { className: 'dsh-autofit-box', style: { marginTop: 8 } },
+        h('strong', null, t('backgroundTitle')), ' ', h('span', { className: 'dsh-autofit-section-desc' }, fmt(t, 'backgroundAt', { at: String(check.at || '').replace('T', ' ').slice(0, 16) })),
+        h(CheckSummary, { t, result: check }))
     }
 
     /* ------------------------------------------------------------------ plugin */
@@ -933,6 +1231,15 @@ window.__ModuleLoader__.load({
             },
             AutofitDetailSection,
           ),
+        )
+
+        const tt = ctx.locale.bind(LOCALE_NS)
+        ctx.slots.inject('plugins.tab', () =>
+          ctx.slots.register({ name: 'plugins.tab', id: 'dsh-autofit', label: () => tt('tabLabel'), order: 200, locale: LOCALE_NS }, AutofitTab),
+        )
+
+        ctx.slots.inject('plugins.detail.badge', () =>
+          ctx.slots.register({ name: 'plugins.detail.badge', id: 'dsh-autofit-badge', order: 100, locale: LOCALE_NS }, AutofitBadge),
         )
 
         ctx.slots.inject('shell.overlay', () =>

@@ -1,12 +1,17 @@
 {
   "name": "dsh-autofit",
-  "version": "0.1.0",
+  "version": "0.2.2",
   "private": true,
   "description": "Auto-fit DeepSeek Harness plugins to your DSH version: radar-verified pre-install checks, trial installs, automatic migration, and tested updates.",
   "type": "module",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/AdamPlatin123/dsh-autofit.git" },
-  "bin": { "dsh-autofit": "./bin/dsh-autofit.js" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdamPlatin123/dsh-autofit.git"
+  },
+  "bin": {
+    "dsh-autofit": "./bin/dsh-autofit.js"
+  },
   "exports": {
     ".": "./bundle/index.js",
     "./client": "./bundle/client.js",
@@ -14,11 +19,18 @@
     "./describe": "./lib/describe.js",
     "./radar": "./lib/radar.js",
     "./locale/*.json": "./bundle/locale/*.json",
-    "./icon": "./bundle/icon.svg"
+    "./icon": "./bundle/icon.svg",
+    "./autofix": "./lib/autofix/index.js"
   },
-  "files": ["bin/", "lib/", "bundle/"],
+  "files": [
+    "bin/",
+    "lib/",
+    "bundle/"
+  ],
   "dsh": {
-    "bundle": { "patch": "./bundle/cordis.patch.yml" },
+    "bundle": {
+      "patch": "./bundle/cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,
@@ -34,5 +46,7 @@
     "build:index": "node scripts/build-index.mjs",
     "test": "node --test test/*.test.mjs"
   },
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  }
 }

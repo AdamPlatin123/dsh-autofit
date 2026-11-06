@@ -2,10 +2,23 @@
 
 DSH 插件自动适配：装之前先实测，装不上自动修，有更新先试。
 
-本仓当前包含两部分：
+本仓包含：
 
-- **`dsh-autofit/probe`**：轻量的 L1/L2 试装器（L1 真实安装 + L2 host/client 两端加载），零依赖，约 30KB；
+- **DSH 组合包（插件页内）**：
+  - 「添加插件」菜单 →「Install with Autofit…」：任意来源（npm、git、tarball、本地路径）先试装，通过才安装；不通过可一键自动修复，修复版通过后安装修复版；
+  - 「Autofit」标签页：awesome 索引 + 雷达判定的插件目录，每张卡片都有「Install with autofix」；
+  - 插件详情页：「Autofit check」区块 + 标题旁标签；任何入口装进来的插件，约 1 分钟内在后台自动补测一次。
+- **`dsh-autofit/probe`**：零依赖的 L1/L2 试装器（L1 真实安装 + L2 host/client 两端加载）；
+- **`dsh-autofit/autofix`**：试装 → 套用修复规则 → 重新打包 → 再试装（最多 3 轮）；
+- **`dsh-autofit/describe`**：L0 静态画像（类型、目标 profile、对 profile 的影响、运行要求）；
 - **`scripts/build-index.mjs`**：把 DSH 插件雷达的运行级判定叠加到 format-1 市场索引上。
+
+### 安装组合包
+
+```sh
+dsh plugin --profile <profile> add <dsh-autofit 的 tgz、目录或 git 地址>
+dsh --profile <profile>        # 插件页 → Add plugin 下拉 / Autofit 标签页
+```
 
 ## probe：L1/L2 试装
 
@@ -44,6 +57,30 @@ r.codes            // 诊断码，供修复阶梯使用：schema-additional-prop
 | basic | ≤ 0.1.2 | host 端失败会在打印 URL 后让启动崩溃；client 包是懒加载的，标为 `not-executed` |
 
 各版本的失败信号格式不同，都由 `lib/probe/signals.js` 解析，测试用例全部来自真实日志（`test/probe-signals.test.mjs`）。
+
+## autofix：修复阶梯
+
+```sh
+npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
+```
+
+| 层级 | 规则 | 来源（实测） |
+|---|---|---|
+| A 机械 | 只放宽宿主报出的不满足项（peer / `engines.dsh`），追加 `|| ^<宿主版本>` | 版本声明保守的插件 |
+| A 机械 | 旧 patch 写法（顶层映射）→ 顶层列表 | insurance-actuary |
+| B 规则 | 按宿主报错路径给 object schema 补 `additionalProperties: true` | period-report |
+| B 规则 | 工具补 `output { schema, render }` | insurance-actuary |
+| B 规则 | 已知服务改名（`settingsScope → configForms`，卡片 DSH-0.1.7-J1-27） | vision-router（实测不足以修好，见下） |
+| C 需授权 | 被拦下的依赖构建脚本：提示并在用户批准后带 `allowBuilds` 重试 | vscode-workbench |
+| 交给 agent | client 资源路径、无已知特征的失败、插件比宿主新等 | harness-one 等 |
+
+修复版是 `<版本>+autofit.N` 的本地 tarball，`package.json` 的 `autofit` 字段记录来源与每条改动；原包从不修改；仍未通过的修复版不提供安装。
+
+实测（DSH 0.2.1-rc.2，隔离网络容器）：9 个真实插件中自动修好 5 个（period-report、insurance-actuary、voice-webspeech、dsh-web-access、dsh-tui 0.11.1）；vscode-workbench 在批准 `node-pty` 构建后修好；vision-router / codex-connect 改名后仍失败（新服务接口形状也变了），如实标为需 agent；harness-one 标为需 agent。
+
+## DSH Desktop
+
+Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同）。在 Desktop（Electron）里运行时，probe 优先用系统里的 Node ≥22 运行 Desktop 内置的 `bin.js`；没有 Node 时退回 Electron 的 Node 模式，只做 L1（安装与版本检查），L2 标为 `unverified`，因为 Electron-as-Node 下插件加载器解析不到 profile 里的包。PATH 上没有 pnpm 时，自动用宿主自带的 pnpm。
 
 ## 开发
 
