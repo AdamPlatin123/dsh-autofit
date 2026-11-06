@@ -20,11 +20,56 @@ window.__ModuleLoader__.load({
     const LOCALE_NS = 'dshAutofit'
     /** The plugin context, kept for slot components whose props do not carry it. */
     let pluginCtx = null
+    /** `remote.pluginManager`, present only while the host serves it (DSH 0.1.7+); see apply(). */
+    let pluginManagerRemote = null
+
+// The remote's arity differs across DSH versions: newer ones validate (spec, options) and reject a call with one
+// argument ("expected 2 argument(s), got 1"); older ones take only the spec. Try the current shape, fall back.
+async function installBundleCompat(manager, spec) {
+  const arity = (x) => /expected 1 argument/.test(String((x && x.message) || (x && x.error && x.error.message) || ''))
+  try {
+    const r = await manager.installBundle(spec, {})
+    if (r && r.ok === false && arity(r)) return await manager.installBundle(spec)
+    return r
+  } catch (e) {
+    if (arity(e)) return await manager.installBundle(spec)
+    throw e
+  }
+}
 
     /* ------------------------------------------------------------------ locale */
 
     const DICTIONARY = {
       zh: {
+        dockTitle: 'Autofit 安装',
+        dockMinimize: '收起',
+        dockClose: '关闭（后台继续）',
+        dockCancel: '取消',
+        dockExpand: '展开',
+        dockQueued: '排队中…',
+        dockRunning: '进行中…',
+        dockInstalling: '正在安装…',
+        dockInstalled: '已安装',
+        dockFailed: '未能安装',
+        dockCancelled: '已取消',
+        dockStageTrial: '试装原版…',
+        dockStageUnpack: '取得源码…',
+        dockStageRules: '套用修复规则（第 {n} 轮）',
+        dockStageAgent: '修复 agent 接手（{model}）',
+        dockTrialOriginal: '原版试装：{v}',
+        dockTrialRules: '规则修复后试装：{v}',
+        dockAgentTrial: 'agent 试装：{v}',
+        dockAgentTrialStart: 'agent 正在试装修改后的版本…',
+        dockPass: '试装通过，开始安装',
+        dockFixed: '已修复（{by}），开始安装修复版',
+        dockByRules: '规则',
+        dockByAgent: 'agent',
+        dockUnfixed: '修不好：{reason}',
+        dockApproval: '需要你批准：{why}',
+        dockApprove: '允许并重试',
+        dockRetry: '重试',
+        installWithAutofix: '用 Autofit 安装',
+        checkOnly: '只检查',
         nextStep: '下一步',
         tryFix: '尝试自动修复',
         fixing: '正在自动修复…',
@@ -144,6 +189,35 @@ window.__ModuleLoader__.load({
         spec: 'Spec',
       },
       en: {
+        dockTitle: 'Autofit install',
+        dockMinimize: 'Minimize',
+        dockClose: 'Close (keeps running)',
+        dockCancel: 'Cancel',
+        dockExpand: 'Expand',
+        dockQueued: 'Queued…',
+        dockRunning: 'Working…',
+        dockInstalling: 'Installing…',
+        dockInstalled: 'Installed',
+        dockFailed: 'Not installed',
+        dockCancelled: 'Cancelled',
+        dockStageTrial: 'Trialling the original…',
+        dockStageUnpack: 'Fetching the source…',
+        dockStageRules: 'Applying repair rules (round {n})',
+        dockStageAgent: 'Repair agent takes over ({model})',
+        dockTrialOriginal: 'Original trial: {v}',
+        dockTrialRules: 'Trial after rules: {v}',
+        dockAgentTrial: 'Agent trial: {v}',
+        dockAgentTrialStart: 'Agent is trialling its edit…',
+        dockPass: 'Trial passed — installing',
+        dockFixed: 'Fixed by {by} — installing the repaired build',
+        dockByRules: 'rules',
+        dockByAgent: 'the agent',
+        dockUnfixed: 'Could not fix: {reason}',
+        dockApproval: 'Needs your approval: {why}',
+        dockApprove: 'Allow and retry',
+        dockRetry: 'Retry',
+        installWithAutofix: 'Install with autofix',
+        checkOnly: 'Check only',
         nextStep: 'Next step',
         tryFix: 'Try autofix',
         fixing: 'Autofixing…',
@@ -267,6 +341,20 @@ window.__ModuleLoader__.load({
     /* ------------------------------------------------------------------ styles */
 
     const CSS = `
+.dsh-autofit-dock{width:380px;max-width:calc(100vw - 32px);max-height:min(520px,calc(100vh - 32px));display:flex;flex-direction:column;border:1px solid var(--dsw-alias-border-l2);border-radius:12px;background:var(--dsw-alias-bg-layer-1);box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;font-size:12.5px}
+.dsh-autofit-dock-head{display:flex;align-items:center;gap:8px;padding:10px 10px 8px 12px;border-bottom:1px solid var(--dsw-alias-border-l2)}
+.dsh-autofit-dock-title{flex:1;min-width:0;display:flex;flex-direction:column}
+.dsh-autofit-dock-title code{font-size:11px;color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dsh-autofit-icon-btn{width:26px;height:26px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font-size:16px;line-height:1}
+.dsh-autofit-icon-btn:hover{background:var(--dsw-alias-bg-layer-3)}
+.dsh-autofit-dock-log{flex:1;overflow:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+.dsh-autofit-dock-line{display:flex;gap:8px;align-items:flex-start;line-height:1.5;word-break:break-word}
+.dsh-autofit-dock-line.is-dim{color:var(--dsw-alias-label-tertiary);font-size:11.5px}
+.dsh-autofit-dock-line.is-agent{background:var(--dsw-alias-bg-layer-2);border-radius:8px;padding:6px 8px}
+.dsh-autofit-dock-icon{flex:none;width:16px;text-align:center}
+.dsh-autofit-dock-detail{display:block;white-space:pre-wrap;color:var(--dsw-alias-label-tertiary);font-size:11px;margin-top:2px}
+.dsh-autofit-dock-foot{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--dsw-alias-border-l2)}
+.dsh-autofit-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;background:var(--dsw-alias-bg-layer-1);box-shadow:0 6px 24px rgba(0,0,0,.16);cursor:pointer;font-size:12px;color:var(--dsw-alias-label-primary)}
 .dsh-autofit-list{margin:4px 0 0;padding-left:18px;font-size:12px;line-height:1.7}
 .dsh-autofit-tab{display:flex;flex-direction:column;gap:12px;padding:4px 0 24px}
 .dsh-autofit-tab-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--dsw-alias-label-secondary)}
@@ -821,8 +909,7 @@ window.__ModuleLoader__.load({
         // Never install something different from the spec the trial actually checked.
         const value = typeof result.requestedSpec === 'string' && result.requestedSpec ? result.requestedSpec : typeof result.spec === 'string' && result.spec ? result.spec : spec.trim()
         if (!value || value !== spec.trim()) return
-        const host = ctx || pluginCtx
-        const manager = host && host.remote && host.remote.pluginManager
+        const manager = pluginManagerRemote
         if (!manager || typeof manager.installBundle !== 'function') {
           setInstallState({ status: 'error', message: t('errorNativeInstall') })
           return
@@ -830,7 +917,7 @@ window.__ModuleLoader__.load({
         setPhase('installing')
         setInstallState({ status: 'running' })
         try {
-          const response = await manager.installBundle(value)
+          const response = await installBundleCompat(manager, value)
           if (!alive.current) return
           if (!response.ok) {
             setInstallState({
@@ -876,8 +963,7 @@ window.__ModuleLoader__.load({
 
       const installFixed = useCallback(async () => {
         if (!fix || fix.verdict !== 'fixed' || !fix.artifact || !fix.artifact.usable) return
-        const host = ctx || pluginCtx
-        const manager = host && host.remote && host.remote.pluginManager
+        const manager = pluginManagerRemote
         if (!manager || typeof manager.installBundle !== 'function') {
           setInstallState({ status: 'error', message: t('errorNativeInstall') })
           return
@@ -885,7 +971,7 @@ window.__ModuleLoader__.load({
         setPhase('installing')
         setInstallState({ status: 'running' })
         try {
-          const response = await manager.installBundle(fix.artifact.file)
+          const response = await installBundleCompat(manager, fix.artifact.file)
           if (!alive.current) return
           if (!response.ok) {
             setInstallState({ status: 'error', message: (response.error && response.error.message) || t('installFailed'), code: response.error && response.error.code })
@@ -952,9 +1038,10 @@ window.__ModuleLoader__.load({
                 autoComplete: 'off',
                 onChange: (event) => setSpec(event.target.value),
                 onKeyDown: (event) => {
-                  if (event.key === 'Enter' && !event.nativeEvent?.isComposing && !busy) {
+                  if (event.key === 'Enter' && !event.nativeEvent?.isComposing && !busy && spec.trim()) {
                     event.preventDefault()
-                    void runCheck()
+                    void startAutofitJob(spec.trim())
+                    onClose()
                   }
                 },
               }),
@@ -977,8 +1064,13 @@ window.__ModuleLoader__.load({
               { className: 'dsh-autofit-actions' },
               h(
                 'button',
-                { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || !spec.trim(), onClick: () => void runCheck() },
-                busy ? t('checking') : result ? t('recheck') : t('check'),
+                { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || !spec.trim(), onClick: () => { void startAutofitJob(spec.trim()); onClose() } },
+                t('installWithAutofix'),
+              ),
+              h(
+                'button',
+                { type: 'button', className: 'dsh-autofit-btn', disabled: busy || !spec.trim(), onClick: () => void runCheck() },
+                busy ? t('checking') : result ? t('recheck') : t('checkOnly'),
               ),
             ),
             error ? h(ErrorBox, { t, message: error }) : null,
@@ -1036,6 +1128,7 @@ window.__ModuleLoader__.load({
         null,
         h(StyleTag),
         state.open ? h(AutofitDialog, { t, ctx, initialSpec: state.initialSpec, onClose: closeAutofitDialog }) : null,
+        h(AutofitDock, { t }),
       )
     }
 
@@ -1169,6 +1262,7 @@ window.__ModuleLoader__.load({
 
       return h('div', { className: 'dsh-autofit-tab' }, h(StyleTag),
         dialog.open && overlayHosts === 0 ? h(AutofitDialog, { t, ctx, initialSpec: dialog.initialSpec, onClose: closeAutofitDialog }) : null,
+        overlayHosts === 0 ? h(AutofitDock, { t, inline: true }) : null,
         h('div', { className: 'dsh-autofit-tab-head' },
           h('input', { className: 'dsh-autofit-input', type: 'search', value: q, placeholder: t('tabSearch'), onChange: (e) => setQ(e.target.value) }),
           h('span', null, fmt(t, 'tabOf', { total })),
@@ -1180,7 +1274,7 @@ window.__ModuleLoader__.load({
             it.stars != null ? h('span', null, `★ ${it.stars}`) : null, radarChip(t, it.radar)),
           h('div', { className: 'dsh-autofit-card-desc' }, pickText(it.description)),
           h('div', { className: 'dsh-autofit-card-foot' },
-            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => openAutofitDialog(it.spec) }, t('tabInstall')))))),
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(it.spec) }, t('tabInstall')))))),
         loading ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('tabLoading'))) : null,
         !loading && !error && !items.length ? h('div', { className: 'dsh-autofit-section-desc' }, t('tabEmpty')) : null,
         !loading && items.length < total ? h('div', { className: 'dsh-autofit-actions' }, h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void load(q, items.length) }, t('tabMore'))) : null)
@@ -1215,12 +1309,180 @@ window.__ModuleLoader__.load({
         h(CheckSummary, { t, result: check }))
     }
 
+    /* ------------------------------------------------------------------ "Install with autofix" jobs + dock */
+
+    const JOB = { start: '/api/autofit/job/start', poll: '/api/autofit/job/poll', cancel: '/api/autofit/job/cancel', list: '/api/autofit/job/list', installed: '/api/autofit/job/installed' }
+    const postJson = (url, body) => callJson(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })
+
+    /** Module-level store shared by every mounted dock (overlay or inline tab fallback). */
+    let dock = { jobs: [], focus: null, open: false, minimized: false, restored: false }
+    const dockListeners = new Set()
+    const emitDock = () => { for (const l of dockListeners) l() }
+    function setDock(patch) { dock = { ...dock, ...patch }; emitDock() }
+    function upsertJob(view, append) {
+      const jobs = dock.jobs.slice()
+      const i = jobs.findIndex((j) => j.id === view.id)
+      const prev = i >= 0 ? jobs[i] : { events: [] }
+      // A poll answers "events from `since` on" and says where the log now ends (`next`); keep only what is new to us,
+      // so overlapping or repeated polls never duplicate lines.
+      let events = view.events || prev.events
+      if (append) {
+        const have = prev.next || 0
+        const fresh = view.events || []
+        const skip = typeof view.next === 'number' ? Math.max(0, have - (view.next - fresh.length)) : 0
+        events = prev.events.concat(fresh.slice(skip))
+      }
+      const next = { ...prev, ...view, events, next: Math.max(prev.next || 0, view.next || 0) }
+      if (i >= 0) jobs[i] = next; else jobs.push(next)
+      setDock({ jobs })
+      return next
+    }
+    function useDock() {
+      const [, force] = useState(0)
+      useEffect(() => { const l = () => force((v) => v + 1); dockListeners.add(l); return () => { dockListeners.delete(l) } }, [])
+      return dock
+    }
+
+    const installing = new Set()
+    async function installReady(job) {
+      if (installing.has(job.id) || job.status !== 'ready' || !job.result || !job.result.install) return
+      installing.add(job.id)
+      upsertJob({ id: job.id, status: 'installing' })
+      const manager = pluginManagerRemote
+      let application = null
+      let error = null
+      try {
+        if (!manager || typeof manager.installBundle !== 'function') throw new Error('DSH plugin manager is not available on this page')
+        const r = await installBundleCompat(manager, job.result.install)
+        const v = r && r.value ? r.value : r
+        if ((r && r.ok === false) || (v && (v.application === 'failed' || v.application === 'cancelled'))) {
+          error = (r && r.error && r.error.message) || (v && v.error && (v.error.message || v.error.code)) || `install ${v && v.application}`
+        } else application = (v && v.application) || 'applied'
+      } catch (e) { error = e && e.message ? String(e.message) : String(e) }
+      const res = await postJson(JOB.installed, { id: job.id, application, error })
+      if (res.ok) upsertJob({ ...res.value, events: res.value.events }, true)
+      else upsertJob({ id: job.id, status: error ? 'failed' : 'installed', installed: { application, error } })
+    }
+
+    let pollTimer = null
+    function ensurePolling() {
+      if (pollTimer) return
+      let inFlight = false
+      pollTimer = setInterval(async () => {
+        if (inFlight) return  // a trial can keep the host slow; never let two ticks overlap
+        inFlight = true
+        try { await pollOnce() } finally { inFlight = false }
+      }, 1500)
+      async function pollOnce() {
+        const live = dock.jobs.filter((j) => j.status === 'queued' || j.status === 'running')
+        for (const j of live) {
+          const r = await postJson(JOB.poll, { id: j.id, since: j.next || 0 })
+          if (r.ok) { const v = upsertJob(r.value, true); if (v.status === 'ready') void installReady(v) }
+        }
+        for (const j of dock.jobs) if (j.status === 'ready') void installReady(j)
+        if (!dock.jobs.some((j) => j.status === 'queued' || j.status === 'running' || j.status === 'ready' || j.status === 'installing')) { clearInterval(pollTimer); pollTimer = null }
+      }
+    }
+
+    async function startAutofitJob(spec, allowBuilds) {
+      setDock({ open: true, minimized: false })
+      const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [] })
+      if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
+      upsertJob(r.value)
+      setDock({ focus: r.value.id })
+      ensurePolling()
+    }
+
+    async function restoreJobs() {
+      if (dock.restored) return
+      dock.restored = true
+      const r = await postJson(JOB.list, {})
+      if (!r.ok || !Array.isArray(r.value)) return
+      for (const v of r.value) upsertJob(v)
+      const live = r.value.filter((v) => v.status === 'queued' || v.status === 'running' || v.status === 'ready')
+      if (live.length) { setDock({ open: true, minimized: true, focus: live[live.length - 1].id }); ensurePolling() }
+    }
+
+    function eventLine(t, e) {
+      switch (e.type) {
+        case 'stage':
+          if (e.stage === 'trial') return { icon: '◌', text: t('dockStageTrial') }
+          if (e.stage === 'unpack') return { icon: '⇣', text: t('dockStageUnpack') }
+          if (e.stage === 'rules') return { icon: '⚙', text: fmt(t, 'dockStageRules', { n: e.round }), detail: (e.changes || []).map((c) => `${c.rule} · ${c.file} — ${c.detail}`).join('\n') }
+          if (e.stage === 'agent') return { icon: '✦', text: fmt(t, 'dockStageAgent', { model: e.model || '' }) }
+          return null
+        case 'trial':
+          if (e.stage === 'original') return { icon: e.verdict === 'pass' ? '✓' : '✗', text: fmt(t, 'dockTrialOriginal', { v: verdictLabel(t, e.verdict) }), detail: (e.codes || []).join(', ') }
+          if (e.stage && e.stage.startsWith('rules')) return { icon: e.verdict === 'pass' ? '✓' : '✗', text: fmt(t, 'dockTrialRules', { v: verdictLabel(t, e.verdict) }), detail: (e.codes || []).join(', ') }
+          return { icon: e.verdict === 'pass' ? '✓' : '✗', text: fmt(t, 'dockAgentTrial', { v: verdictLabel(t, e.verdict) }), detail: (e.codes || []).join(', ') }
+        case 'trial-start': return { icon: '◌', text: t('dockAgentTrialStart') }
+        case 'say': return { icon: '›', text: e.text, agent: true }
+        case 'think': return null
+        case 'tool': return e.name === 'run_trial' ? null : { icon: '·', text: `${e.name} ${e.args || ''}`, dim: true }
+        case 'tool-result': return e.ok ? null : { icon: '!', text: `${e.name}: ${e.text}`, dim: true }
+        case 'done':
+          if (e.outcome === 'pass') return { icon: '✓', text: t('dockPass') }
+          if (e.outcome === 'fixed') return { icon: '✓', text: fmt(t, 'dockFixed', { by: e.by === 'agent' ? t('dockByAgent') : t('dockByRules') }) }
+          if (e.outcome === 'needs-approval') return { icon: '⚠', text: fmt(t, 'dockApproval', { why: (e.needsApproval || []).map((a) => `${a.why} (${(a.packages || []).join(', ')})`).join('; ') }) }
+          return { icon: '✗', text: fmt(t, 'dockUnfixed', { reason: e.reason || (e.unresolved || []).map((u) => u.hint).join('; ') || e.outcome }) }
+        case 'installed': return e.error ? { icon: '✗', text: `${t('installFailed')}: ${e.error}` } : { icon: '✓', text: `${t('dockInstalled')} (${e.application || 'applied'})` }
+        default: return null
+      }
+    }
+
+    function statusText(t, job) {
+      return { queued: t('dockQueued'), running: t('dockRunning'), ready: t('dockInstalling'), installing: t('dockInstalling'), installed: t('dockInstalled'), failed: t('dockFailed'), cancelled: t('dockCancelled') }[job.status] || job.status
+    }
+
+    function AutofitDock({ t, inline }) {
+      const d = useDock()
+      const logRef = useRef(null)
+      useEffect(() => { void restoreJobs() }, [])
+      const job = d.jobs.find((j) => j.id === d.focus) || d.jobs[d.jobs.length - 1]
+      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [job && job.events && job.events.length])
+      if (!d.open || !job) return null
+      const busy = job.status === 'queued' || job.status === 'running' || job.status === 'ready' || job.status === 'installing'
+      const tone = job.status === 'installed' ? 'success' : job.status === 'failed' ? 'error' : job.status === 'cancelled' ? 'neutral' : 'warn'
+      const base = inline ? { position: 'relative' } : { position: 'fixed', right: 16, bottom: 16, zIndex: 2147483000 }
+      if (d.minimized) {
+        return h('button', { type: 'button', className: 'dsh-autofit-pill', style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
+          h(ShieldCheckIcon, { size: 16 }), busy ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
+          h('span', null, `${statusText(t, job)} · ${String(job.spec).split('/').pop().slice(0, 32)}`))
+      }
+      const lines = (job.events || []).map((e) => eventLine(t, e)).filter(Boolean)
+      const lastDone = [...(job.events || [])].reverse().find((e) => e.type === 'done')
+      const approval = lastDone && lastDone.outcome === 'needs-approval' ? (lastDone.needsApproval || []).find((a) => a.kind === 'allow-builds') : null
+      return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle') },
+        h('div', { className: 'dsh-autofit-dock-head' },
+          h(ShieldCheckIcon, { size: 16 }),
+          h('div', { className: 'dsh-autofit-dock-title' }, h('strong', null, t('dockTitle')), h('code', null, String(job.spec).slice(-60))),
+          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockMinimize'), 'aria-label': t('dockMinimize'), onClick: () => setDock({ minimized: true }) }, '–'),
+          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockClose'), 'aria-label': t('dockClose'), onClick: () => (busy ? setDock({ minimized: true }) : setDock({ open: false })) }, '×')),
+        h('div', { className: 'dsh-autofit-dock-log', ref: logRef },
+          lines.map((l, i) => h('div', { key: i, className: `dsh-autofit-dock-line${l.dim ? ' is-dim' : ''}${l.agent ? ' is-agent' : ''}` },
+            h('span', { className: 'dsh-autofit-dock-icon' }, l.icon), h('span', null, l.text, l.detail ? h('span', { className: 'dsh-autofit-dock-detail' }, l.detail) : null))),
+          busy ? h('div', { className: 'dsh-autofit-dock-line is-dim' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('span', null, statusText(t, job))) : null),
+        h('div', { className: 'dsh-autofit-dock-foot' },
+          h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, statusText(t, job)),
+          h('span', { style: { flex: 1 } }),
+          job.status === 'queued' || job.status === 'running'
+            ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockCancel')) : null,
+          approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages) }, t('dockApprove')) : null,
+          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec) }, t('dockRetry')) : null))
+    }
+
     /* ------------------------------------------------------------------ plugin */
 
     return {
       inject: ['slots', 'locale', 'connection', 'remote'],
       apply(ctx) {
         pluginCtx = ctx
+        // Optional dependency: a hard inject would keep the whole client inactive on hosts without a plugin
+        // manager (DSH 0.1.5); a nested inject activates only when the namespace exists.
+        ctx.inject(['remote.pluginManager'], (sub) => {
+          pluginManagerRemote = sub.remote.pluginManager
+          sub.effect(() => () => { pluginManagerRemote = null }, 'dsh-autofit: plugin manager remote')
+        })
         ctx.effect(() => ctx.locale.register(LOCALE_NS, DICTIONARY), 'dsh-autofit: locale dictionary')
 
         ctx.slots.inject('plugins.add.actions', () =>

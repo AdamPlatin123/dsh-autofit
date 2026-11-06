@@ -20,14 +20,16 @@ import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFil
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
 import path from 'node:path'
-import { autofix } from '../lib/autofix/index.js'
+import { autofix, autofitPipeline } from '../lib/autofix/index.js'
+import { randomUUID } from 'node:crypto'
 import { probe } from '../lib/probe/index.js'
 import { loadJson, radarMap, RADAR_SOURCES, repoKey } from '../lib/radar.js'
 
 /** Connection must exist for a browser-callable route; otherwise this row stays inactive. */
 export const inject = ['connection']
 
-const ROUTES = { check: '/api/autofit/check', fix: '/api/autofit/fix', catalog: '/api/autofit/catalog', status: '/api/autofit/status' }
+const ROUTES = { check: '/api/autofit/check', fix: '/api/autofit/fix', catalog: '/api/autofit/catalog', status: '/api/autofit/status',
+  jobStart: '/api/autofit/job/start', jobPoll: '/api/autofit/job/poll', jobCancel: '/api/autofit/job/cancel', jobList: '/api/autofit/job/list', jobInstalled: '/api/autofit/job/installed' }
 const CATALOG_SOURCES = ['https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json', 'https://awesome-dsh-plugin.com/index.json']
 const CATALOG_TTL_MS = 30 * 60 * 1000
 const WATCH_INTERVAL_MS = 60 * 1000
@@ -276,6 +278,57 @@ function watchInstalls(log) {
   return () => clearInterval(timer)
 }
 
+
+/* ------------------------------------------------------------------ "Install with autofix" jobs */
+
+/** id → job. Jobs run one after another (each starts real installs); the UI polls their event log. */
+const jobs = new Map()
+let jobChain = Promise.resolve()
+
+function jobView(job, since = 0) {
+  return {
+    id: job.id, spec: job.spec, status: job.status, createdAt: job.createdAt,
+    events: job.events.slice(since), next: job.events.length,
+    result: job.result ? { outcome: job.result.outcome, by: job.result.by ?? null, install: job.result.install ?? null,
+      reason: text(job.result.reason, 1200), changes: (job.result.changes ?? []).slice(0, 40),
+      needsApproval: job.result.needsApproval ?? [], unresolved: job.result.unresolved ?? [],
+      artifactVersion: job.result.artifact?.version ?? null, final: job.result.final ? summarize(job.result.final) : null } : null,
+    installed: job.installed ?? null,
+  }
+}
+
+function startJob(ctx, spec, allowBuilds) {
+  const job = { id: randomUUID(), spec, status: 'queued', createdAt: new Date().toISOString(), events: [], result: null, controller: new AbortController() }
+  const push = (e) => { job.events.push({ at: Date.now(), ...e }); if (job.events.length > 600) job.events.splice(0, job.events.length - 600) }
+  jobs.set(job.id, job)
+  for (const [id, j] of jobs) if (jobs.size > 20 && j.status !== 'running' && j.status !== 'queued') jobs.delete(id)
+  jobChain = jobChain.then(async () => {
+    if (job.controller.signal.aborted) { job.status = 'cancelled'; return }
+    job.status = 'running'
+    let llm = null
+    let model = null
+    try { llm = ctx.get('llm') } catch { /* no llm service */ }
+    try { model = ctx.get('agentDefaultModel')?.currentSelection() ?? null } catch { /* no default model */ }
+    try {
+      let out
+      do {
+        while (running) await new Promise((r) => setTimeout(r, 1000)) // a user check or background check holds the slot
+        out = await exclusive(() => autofitPipeline(spec, {
+          probe: { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager, allowBuilds },
+          llm, model, outDir: path.join(dataDir(), 'patched'), onEvent: push, signal: job.controller.signal,
+        }))
+      } while (out.busy && !job.controller.signal.aborted)
+      job.result = out.value ?? { outcome: 'error', reason: 'busy' }
+      job.status = job.controller.signal.aborted ? 'cancelled' : ['pass', 'fixed'].includes(job.result.outcome) ? 'ready' : 'failed'
+    } catch (err) {
+      job.result = { outcome: 'error', reason: String(err?.message ?? err) }
+      job.status = job.controller.signal.aborted ? 'cancelled' : 'failed'
+      push({ type: 'done', outcome: 'error', reason: job.result.reason })
+    }
+  })
+  return job
+}
+
 /* ------------------------------------------------------------------ routes */
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { 'cache-control': 'no-store' } })
@@ -354,6 +407,52 @@ export function apply(ctx) {
       const name = typeof b?.name === 'string' ? b.name : null
       const checks = readChecks()
       return json({ ok: true, value: name ? checks[name] ?? null : Object.fromEntries(Object.entries(checks).map(([k, v]) => [k, { at: v.at, verdict: v.verdict, spec: v.spec }])) })
+    },
+  })
+
+
+  reg({
+    path: ROUTES.jobStart, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const input = await readSpec(request)
+      if (input.error) return input.error
+      const live = [...jobs.values()].find((j) => j.spec === input.spec && (j.status === 'queued' || j.status === 'running'))
+      return json({ ok: true, value: jobView(live ?? startJob(ctx, input.spec, input.allowBuilds)) })
+    },
+  })
+  reg({
+    path: ROUTES.jobPoll, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const b = await body(request)
+      const job = jobs.get(String(b?.id ?? ''))
+      return job ? json({ ok: true, value: jobView(job, Math.max(0, Number(b?.since) || 0)) }) : json(failure('autofit/no-job', 'Unknown job.'), 404)
+    },
+  })
+  reg({
+    path: ROUTES.jobCancel, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const b = await body(request)
+      const job = jobs.get(String(b?.id ?? ''))
+      if (!job) return json(failure('autofit/no-job', 'Unknown job.'), 404)
+      job.controller.abort()
+      if (job.status === 'queued') job.status = 'cancelled'
+      return json({ ok: true, value: jobView(job, job.events.length) })
+    },
+  })
+  reg({
+    path: ROUTES.jobList, methods: ['POST'], requestBody: 'buffered',
+    fetch: async () => json({ ok: true, value: [...jobs.values()].slice(-10).map((j) => jobView(j, j.events.length)) }),
+  })
+  reg({
+    path: ROUTES.jobInstalled, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const b = await body(request)
+      const job = jobs.get(String(b?.id ?? ''))
+      if (!job) return json(failure('autofit/no-job', 'Unknown job.'), 404)
+      job.installed = { at: new Date().toISOString(), application: text(b?.application, 40), error: text(b?.error, 600) }
+      job.status = b?.error ? 'failed' : 'installed'
+      job.events.push({ at: Date.now(), type: 'installed', application: job.installed.application, error: job.installed.error })
+      return json({ ok: true, value: jobView(job, job.events.length - 1) })
     },
   })
 

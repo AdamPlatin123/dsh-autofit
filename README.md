@@ -5,7 +5,7 @@ DSH 插件自动适配：装之前先实测，装不上自动修，有更新先�
 本仓包含：
 
 - **DSH 组合包（插件页内）**：
-  - 「添加插件」菜单 →「Install with Autofit…」：任意来源（npm、git、tarball、本地路径）先试装，通过才安装；不通过可一键自动修复，修复版通过后安装修复版；
+  - 「添加插件」菜单 →「Install with Autofit…」：任意来源（npm、git、tarball、本地路径）输入后点「Install with autofix」即可。右下角弹出小窗，依次进行试装、规则修复、agent 修复、安装，直到装好为止；小窗可以最小化成角落里的胶囊，也可以关掉，任务在后台继续跑；
   - 「Autofit」标签页：awesome 索引 + 雷达判定的插件目录，每张卡片都有「Install with autofix」；
   - 插件详情页：「Autofit check」区块 + 标题旁标签；任何入口装进来的插件，约 1 分钟内在后台自动补测一次。
 - **`dsh-autofit/probe`**：零依赖的 L1/L2 试装器（L1 真实安装 + L2 host/client 两端加载）；
@@ -92,11 +92,22 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 | B 规则 | 工具补 `output { schema, render }` | insurance-actuary |
 | B 规则 | 已知服务改名（`settingsScope → configForms`，卡片 DSH-0.1.7-J1-27） | vision-router（实测不足以修好，见下） |
 | C 需授权 | 被拦下的依赖构建脚本：提示并在用户批准后带 `allowBuilds` 重试 | vscode-workbench |
-| 交给 agent | client 资源路径、无已知特征的失败、插件比宿主新等 | harness-one 等 |
+| D agent | 规则修不好时，用当前 DSH 的默认模型（`llm` 服务，不需要另配 key）开一个修复对话，见下 | lab-fx-agentfix |
 
 修复版是 `<版本>+autofit.N` 的本地 tarball，`package.json` 的 `autofit` 字段记录来源与每条改动；原包从不修改；仍未通过的修复版不提供安装。
 
 实测（DSH 0.2.1-rc.2，隔离网络容器）：9 个真实插件中自动修好 5 个（period-report、insurance-actuary、voice-webspeech、dsh-web-access、dsh-tui 0.11.1）；vscode-workbench 在批准 `node-pty` 构建后修好；vision-router / codex-connect 改名后仍失败（新服务接口形状也变了），如实标为需 agent；harness-one 标为需 agent。
+
+### 修复 agent
+
+规则修不好时，组合包会用用户在 DSH 里设置的默认模型开一个修复对话（`lib/autofix/agent.js`）：
+
+- agent 只拿到 6 个工具：`list_files` / `read_file` / `write_file` / `replace_in_file`（只能访问插件副本目录，拒绝绝对路径和 `..` 越界）、`run_trial`（打包 + 真实试装）、`finish`；没有 shell；
+- 系统提示里附带实验室里发现的已知破坏性变更（peer 范围、patch 写法、schema、工具 output、服务改名……）；
+- 只有最后一次 `run_trial` 通过才算修好，agent 自己说「修好了」不算数；修好后由插件管理器原生安装修复版；
+- 下载源码不依赖 npm（直接请求 registry，依次尝试 npmjs、npmmirror），Desktop 等没有 npm 的环境也能用。
+
+实测（DSH 0.2.1-rc.2 web，默认模型 deepseek-v4.1-flash）：一个 host 端调用了不存在的 API 的插件，在小窗里一键走完「原版失败 → agent 读代码并修改一处 → 试装通过 → 自动安装」，约 70 秒。
 
 ## DSH Desktop
 
