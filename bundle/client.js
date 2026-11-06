@@ -68,6 +68,10 @@ async function installBundleCompat(manager, spec) {
         dockApproval: '需要你批准：{why}',
         dockApprove: '允许并重试',
         dockRetry: '重试',
+        dockDismiss: '移除',
+        dockCountBusy: '{n} 个进行中',
+        dockCountInstalled: '{n} 个已安装',
+        dockCountFailed: '{n} 个未装上',
         installWithAutofix: '用 Autofit 安装',
         checkOnly: '只检查',
         nextStep: '下一步',
@@ -216,6 +220,10 @@ async function installBundleCompat(manager, spec) {
         dockApproval: 'Needs your approval: {why}',
         dockApprove: 'Allow and retry',
         dockRetry: 'Retry',
+        dockDismiss: 'Dismiss',
+        dockCountBusy: '{n} working',
+        dockCountInstalled: '{n} installed',
+        dockCountFailed: '{n} not installed',
         installWithAutofix: 'Install with autofix',
         checkOnly: 'Check only',
         nextStep: 'Next step',
@@ -347,7 +355,15 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-dock-title code{font-size:11px;color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dsh-autofit-icon-btn{width:26px;height:26px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;font-size:16px;line-height:1}
 .dsh-autofit-icon-btn:hover{background:var(--dsw-alias-bg-layer-3)}
-.dsh-autofit-dock-log{flex:1;overflow:auto;padding:8px 12px;display:flex;flex-direction:column;gap:6px}
+.dsh-autofit-dock-jobs{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column}
+.dsh-autofit-job{border-bottom:1px solid var(--dsw-alias-border-l2);display:flex;flex-direction:column;min-height:0}
+.dsh-autofit-job:last-child{border-bottom:0}
+.dsh-autofit-job.is-open{flex:1}
+.dsh-autofit-job-row{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dsh-autofit-job-row:hover{background:var(--dsw-alias-bg-layer-2)}
+.dsh-autofit-job-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dsh-autofit-job-chev{flex:none;color:var(--dsw-alias-label-tertiary)}
+.dsh-autofit-dock-log{flex:1;min-height:80px;max-height:300px;overflow:auto;padding:4px 12px 8px;display:flex;flex-direction:column;gap:6px}
 .dsh-autofit-dock-line{display:flex;gap:8px;align-items:flex-start;line-height:1.5;word-break:break-word}
 .dsh-autofit-dock-line.is-dim{color:var(--dsw-alias-label-tertiary);font-size:11.5px}
 .dsh-autofit-dock-line.is-agent{background:var(--dsw-alias-bg-layer-2);border-radius:8px;padding:6px 8px}
@@ -1262,7 +1278,7 @@ async function installBundleCompat(manager, spec) {
 
       return h('div', { className: 'dsh-autofit-tab' }, h(StyleTag),
         dialog.open && overlayHosts === 0 ? h(AutofitDialog, { t, ctx, initialSpec: dialog.initialSpec, onClose: closeAutofitDialog }) : null,
-        overlayHosts === 0 ? h(AutofitDock, { t, inline: true }) : null,
+        h(AutofitDock, { t, inline: true }),  // shows only when no overlay dock owns the page
         h('div', { className: 'dsh-autofit-tab-head' },
           h('input', { className: 'dsh-autofit-input', type: 'search', value: q, placeholder: t('tabSearch'), onChange: (e) => setQ(e.target.value) }),
           h('span', null, fmt(t, 'tabOf', { total })),
@@ -1335,7 +1351,34 @@ async function installBundleCompat(manager, spec) {
       const next = { ...prev, ...view, events, next: Math.max(prev.next || 0, view.next || 0) }
       if (i >= 0) jobs[i] = next; else jobs.push(next)
       setDock({ jobs })
+      if (prev.status && isBusy(prev) && !isBusy(next)) scheduleSettle(next)
+      // The expanded job follows the work: when a queued job starts and the expanded one isn't running, switch to it.
+      if (prev.status === 'queued' && next.status === 'running') {
+        const cur = dock.jobs.find((j) => j.id === dock.focus)
+        if (!cur || !(cur.status === 'running' || cur.status === 'installing')) setDock({ focus: next.id })
+      }
       return next
+    }
+
+    // Auto-collapse: a job that installed folds away after a moment and the dock moves on to the next one that needs
+    // attention; once nothing is running and nothing failed, the dock shrinks to the corner pill. Failures stay open.
+    function scheduleSettle(job) {
+      setTimeout(() => {
+        const cur = dock.jobs.find((j) => j.id === job.id)
+        if (!cur || isBusy(cur)) return
+        const busy = dock.jobs.filter(isBusy)
+        const failed = dock.jobs.filter((j) => j.status === 'failed')
+        if (cur.status === 'installed' && dock.focus === cur.id) {
+          const next = failed[failed.length - 1] || busy[busy.length - 1]
+          setDock({ focus: next ? next.id : null })
+        }
+        if (!busy.length && !failed.length) setDock({ minimized: true })
+      }, 4000)
+    }
+
+    function dismissJob(id) {
+      const jobs = dock.jobs.filter((j) => j.id !== id)
+      setDock({ jobs, focus: dock.focus === id ? null : dock.focus, open: jobs.length ? dock.open : false })
     }
     function useDock() {
       const [, force] = useState(0)
@@ -1389,7 +1432,9 @@ async function installBundleCompat(manager, spec) {
       const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [] })
       if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
       upsertJob(r.value)
-      setDock({ focus: r.value.id })
+      // Don't take the stage from a job that is running right now; the new one queues behind it, folded.
+      const cur = dock.jobs.find((j) => j.id === dock.focus)
+      if (!cur || !(cur.status === 'running' || cur.status === 'installing')) setDock({ focus: r.value.id })
       ensurePolling()
     }
 
@@ -1434,41 +1479,74 @@ async function installBundleCompat(manager, spec) {
       return { queued: t('dockQueued'), running: t('dockRunning'), ready: t('dockInstalling'), installing: t('dockInstalling'), installed: t('dockInstalled'), failed: t('dockFailed'), cancelled: t('dockCancelled') }[job.status] || job.status
     }
 
+    const isBusy = (j) => j.status === 'queued' || j.status === 'running' || j.status === 'ready' || j.status === 'installing'
+    const shortName = (spec) => String(spec).split('/').pop().slice(0, 40)
+
+    // One dock per page. Several components may want to show it (the shell overlay on every host that has one, the
+    // Autofit tab inline on hosts that don't); the first claimant owns it, and an overlay always wins over inline.
+    let dockOwner = null
+    function claimDock(me, inline) {
+      if (!dockOwner || (dockOwner.inline && !inline)) { dockOwner = { me, inline }; emitDock() }
+    }
+    function releaseDock(me) { if (dockOwner && dockOwner.me === me) { dockOwner = null; emitDock() } }
+
     function AutofitDock({ t, inline }) {
       const d = useDock()
+      const me = useRef({}).current
       const logRef = useRef(null)
-      useEffect(() => { void restoreJobs() }, [])
-      const job = d.jobs.find((j) => j.id === d.focus) || d.jobs[d.jobs.length - 1]
-      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [job && job.events && job.events.length])
-      if (!d.open || !job) return null
-      const busy = job.status === 'queued' || job.status === 'running' || job.status === 'ready' || job.status === 'installing'
-      const tone = job.status === 'installed' ? 'success' : job.status === 'failed' ? 'error' : job.status === 'cancelled' ? 'neutral' : 'warn'
+      useEffect(() => { claimDock(me, !!inline); void restoreJobs(); return () => releaseDock(me) }, [])
+      // Owner may have gone away (tab closed while the overlay never existed): reclaim on the next render.
+      useEffect(() => { if (!dockOwner) claimDock(me, !!inline) })
+      const focus = d.jobs.find((j) => j.id === d.focus) || null
+      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [focus && focus.events && focus.events.length, d.focus])
+      if (!dockOwner || dockOwner.me !== me) return null
+      if (!d.open || !d.jobs.length) return null
       const base = inline ? { position: 'relative' } : { position: 'fixed', right: 16, bottom: 16, zIndex: 2147483000 }
+      const busyN = d.jobs.filter(isBusy).length
+      const okN = d.jobs.filter((j) => j.status === 'installed').length
+      const badN = d.jobs.filter((j) => j.status === 'failed').length
+      const summary = [busyN ? fmt(t, 'dockCountBusy', { n: busyN }) : null, okN ? fmt(t, 'dockCountInstalled', { n: okN }) : null, badN ? fmt(t, 'dockCountFailed', { n: badN }) : null].filter(Boolean).join(' · ')
       if (d.minimized) {
+        const one = d.jobs.length === 1 ? d.jobs[0] : null
         return h('button', { type: 'button', className: 'dsh-autofit-pill', style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
-          h(ShieldCheckIcon, { size: 16 }), busy ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
-          h('span', null, `${statusText(t, job)} · ${String(job.spec).split('/').pop().slice(0, 32)}`))
+          h(ShieldCheckIcon, { size: 16 }), busyN ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
+          h('span', null, one ? `${statusText(t, one)} · ${shortName(one.spec)}` : summary))
       }
-      const lines = (job.events || []).map((e) => eventLine(t, e)).filter(Boolean)
-      const lastDone = [...(job.events || [])].reverse().find((e) => e.type === 'done')
-      const approval = lastDone && lastDone.outcome === 'needs-approval' ? (lastDone.needsApproval || []).find((a) => a.kind === 'allow-builds') : null
       return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle') },
         h('div', { className: 'dsh-autofit-dock-head' },
           h(ShieldCheckIcon, { size: 16 }),
-          h('div', { className: 'dsh-autofit-dock-title' }, h('strong', null, t('dockTitle')), h('code', null, String(job.spec).slice(-60))),
+          h('div', { className: 'dsh-autofit-dock-title' }, h('strong', null, t('dockTitle')), h('code', null, summary)),
           h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockMinimize'), 'aria-label': t('dockMinimize'), onClick: () => setDock({ minimized: true }) }, '–'),
-          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockClose'), 'aria-label': t('dockClose'), onClick: () => (busy ? setDock({ minimized: true }) : setDock({ open: false })) }, '×')),
+          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockClose'), 'aria-label': t('dockClose'), onClick: () => (busyN ? setDock({ minimized: true }) : setDock({ open: false })) }, '×')),
+        h('div', { className: 'dsh-autofit-dock-jobs' },
+          d.jobs.map((job) => h(DockJob, { key: job.id, t, job, open: job.id === d.focus, logRef: job.id === d.focus ? logRef : null }))))
+    }
+
+    function DockJob({ t, job, open, logRef }) {
+      const busy = isBusy(job)
+      const tone = job.status === 'installed' ? 'success' : job.status === 'failed' ? 'error' : job.status === 'cancelled' ? 'neutral' : 'warn'
+      const row = h('button', { type: 'button', className: `dsh-autofit-job-row${open ? ' is-open' : ''}`, 'aria-expanded': open,
+        onClick: () => setDock({ focus: open ? null : job.id }) },
+        busy ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : h('span', { className: 'dsh-autofit-dock-icon' }, job.status === 'installed' ? '✓' : job.status === 'failed' ? '✗' : '–'),
+        h('span', { className: 'dsh-autofit-job-name', title: String(job.spec) }, shortName(job.spec)),
+        h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, statusText(t, job)),
+        h('span', { className: 'dsh-autofit-job-chev', 'aria-hidden': 'true' }, open ? '▾' : '▸'))
+      if (!open) return h('div', { className: 'dsh-autofit-job' }, row)
+      const lines = (job.events || []).map((e) => eventLine(t, e)).filter(Boolean)
+      const lastDone = [...(job.events || [])].reverse().find((e) => e.type === 'done')
+      const approval = lastDone && lastDone.outcome === 'needs-approval' ? (lastDone.needsApproval || []).find((a) => a.kind === 'allow-builds') : null
+      return h('div', { className: 'dsh-autofit-job is-open' }, row,
         h('div', { className: 'dsh-autofit-dock-log', ref: logRef },
           lines.map((l, i) => h('div', { key: i, className: `dsh-autofit-dock-line${l.dim ? ' is-dim' : ''}${l.agent ? ' is-agent' : ''}` },
             h('span', { className: 'dsh-autofit-dock-icon' }, l.icon), h('span', null, l.text, l.detail ? h('span', { className: 'dsh-autofit-dock-detail' }, l.detail) : null))),
           busy ? h('div', { className: 'dsh-autofit-dock-line is-dim' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('span', null, statusText(t, job))) : null),
         h('div', { className: 'dsh-autofit-dock-foot' },
-          h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, statusText(t, job)),
           h('span', { style: { flex: 1 } }),
           job.status === 'queued' || job.status === 'running'
             ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockCancel')) : null,
           approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages) }, t('dockApprove')) : null,
-          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec) }, t('dockRetry')) : null))
+          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec) }, t('dockRetry')) : null,
+          !busy ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => dismissJob(job.id) }, t('dockDismiss')) : null))
     }
 
     /* ------------------------------------------------------------------ plugin */
