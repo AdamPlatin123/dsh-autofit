@@ -136,6 +136,7 @@ async function installBundleCompat(manager, spec) {
         installErrorCode: '错误码',
         verdict: '结论',
         verdictPass: '通过',
+        verdictInstallOnly: '可安装（后台只做了安装检查）',
         verdictFixed: '已修复',
         verdictFail: '未通过',
         verdictIncompatible: '不兼容',
@@ -288,6 +289,7 @@ async function installBundleCompat(manager, spec) {
         installErrorCode: 'Error code',
         verdict: 'Verdict',
         verdictPass: 'Pass',
+        verdictInstallOnly: 'Installs (background check: install only)',
         verdictFixed: 'Fixed',
         verdictFail: 'Fail',
         verdictIncompatible: 'Incompatible',
@@ -519,6 +521,7 @@ async function installBundleCompat(manager, spec) {
     function verdictLabel(t, verdict) {
       const key = {
         pass: 'verdictPass',
+        installed: 'verdictInstallOnly',
         fixed: 'verdictFixed',
         fail: 'verdictFail',
         incompatible: 'verdictIncompatible',

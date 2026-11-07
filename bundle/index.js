@@ -23,6 +23,7 @@ import path from 'node:path'
 import { autofix, autofitPipeline } from '../lib/autofix/index.js'
 import { randomUUID } from 'node:crypto'
 import { probe } from '../lib/probe/index.js'
+import { sweepStale } from '../lib/probe/cleanup.js'
 import { loadJson, radarMap, RADAR_SOURCES, repoKey } from '../lib/radar.js'
 
 /** Connection must exist for a browser-callable route; otherwise this row stays inactive. */
@@ -247,20 +248,34 @@ function specFor(name, declared) {
 const queue = []
 let lastDeps = null
 
+// Background checks run unasked, next to the user's live DSH. They stop at L1 (a real install into a throwaway
+// profile + static profile): booting the plugin there would also start its long-lived side (ports, tunnels, helper
+// windows) beside the live copy — seen live: dsh-pocket "port 3081 busy, proxy on 3082". A user-started check does the
+// full L1+L2 trial. And nothing here may ever reject: 0.3.5 let an EPERM from temp cleanup escape and kill the host.
 async function drainQueue(log) {
   while (queue.length && !running) {
     const { name, spec } = queue.shift()
-    const out = await exclusive(async () => probe(spec, { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager }))
-    if (out.busy) { queue.unshift({ name, spec }); return }
-    const checks = readChecks()
-    checks[name] = { at: new Date().toISOString(), trigger: 'installed', ...summarize(out.value) }
-    writeChecks(checks)
-    log?.info?.(`dsh-autofit: background check of ${spec}: ${out.value.verdict}`)
+    let entry
+    try {
+      const out = await exclusive(async () => probe(spec, { bin: dshLauncher(), env: trialEnv(), pnpm: where.packageManager, phase: 'install', browser: false }))
+      if (out.busy) { queue.unshift({ name, spec }); return }
+      entry = { at: new Date().toISOString(), trigger: 'installed', scope: 'install', ...summarize(out.value) }
+    } catch (err) {
+      entry = { at: new Date().toISOString(), trigger: 'installed', scope: 'install', spec, verdict: 'infra-fail', error: text(String(err?.message ?? err), 600) }
+    }
+    try {
+      const checks = readChecks()
+      checks[name] = entry
+      writeChecks(checks)
+    } catch (err) { log?.warn?.(`dsh-autofit: could not record the check of ${spec}: ${err?.message ?? err}`) }
+    log?.info?.(`dsh-autofit: background check of ${spec}: ${entry.verdict}`)
   }
 }
 
 function watchInstalls(log) {
-  const tick = () => {
+  try { sweepStale() } catch { /* best effort */ }
+  const tick = () => { try { tickOnce() } catch (err) { log?.warn?.(`dsh-autofit: install watcher: ${err?.message ?? err}`) } }
+  const tickOnce = () => {
     const deps = profileDeps()
     if (!deps) return
     if (lastDeps) {
@@ -270,7 +285,7 @@ function watchInstalls(log) {
       }
     }
     lastDeps = deps
-    void drainQueue(log)
+    drainQueue(log).catch((err) => log?.warn?.(`dsh-autofit: background check failed: ${err?.message ?? err}`))
   }
   tick()
   const timer = setInterval(tick, WATCH_INTERVAL_MS)
