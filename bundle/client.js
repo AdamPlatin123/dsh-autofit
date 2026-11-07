@@ -99,6 +99,16 @@ async function installBundleCompat(manager, spec) {
         tabLoading: '正在加载目录…',
         tabEmpty: '没有匹配的插件。',
         tabMore: '加载更多',
+        detailOpen: '详情',
+        detailClose: '关闭',
+        detailVersion: '最新版本',
+        detailEngines: '要求的 DSH 版本',
+        detailSpec: '安装标识',
+        detailRadar: '雷达判定',
+        detailRadarNone: '雷达还没有测过',
+        detailRepo: '源码仓库',
+        detailHomepage: '主页',
+        detailHow: '点「用 Autofit 安装」后会先在临时环境里试装；不通过就自动修复，修好后再装进当前 profile。进度在右下角的胶囊里，点开可看详情。',
         tabInstall: '用 Autofit 安装',
         tabOf: '共 {total} 个',
         radarOk: '雷达实测通过',
@@ -252,6 +262,16 @@ async function installBundleCompat(manager, spec) {
         tabLoading: 'Loading catalog…',
         tabEmpty: 'No matching plugins.',
         tabMore: 'Load more',
+        detailOpen: 'Details',
+        detailClose: 'Close',
+        detailVersion: 'Latest version',
+        detailEngines: 'Requires DSH',
+        detailSpec: 'Install spec',
+        detailRadar: 'Radar verdict',
+        detailRadarNone: 'Not measured by the radar yet',
+        detailRepo: 'Source',
+        detailHomepage: 'Homepage',
+        detailHow: '"Install with autofix" first trial-installs it in a throwaway profile; if that fails it is repaired automatically, and the passing build is installed into this profile. Progress lives in the pill in the bottom-right corner — click it for details.',
         tabInstall: 'Install with autofix',
         tabOf: '{total} plugins',
         radarOk: 'Radar: runs',
@@ -382,7 +402,7 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-card-title{font-weight:600;font-size:13.5px;line-height:1.35;word-break:break-word}
 .dsh-autofit-card-desc{font-size:12px;color:var(--dsw-alias-label-secondary);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .dsh-autofit-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--dsw-alias-label-tertiary)}
-.dsh-autofit-card-foot{display:flex;justify-content:flex-end;margin-top:auto}
+.dsh-autofit-card-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:auto}
 .dsh-autofit-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.45);pointer-events:auto}
 .dsh-autofit-dialog{width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:0 18px 48px rgba(0,0,0,.35);font:inherit}
 .dsh-autofit-head{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 0}
@@ -406,6 +426,25 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-btn-primary:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}
 .dsh-autofit-spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--dsw-alias-border-l3);border-top-color:var(--dsw-alias-brand-primary);border-radius:50%;animation:dsh-autofit-spin .9s linear infinite}
 @keyframes dsh-autofit-spin{to{transform:rotate(360deg)}}
+@keyframes dsh-autofit-pop{0%{transform:translateY(-40vh) scale(1.6);opacity:0}60%{transform:translateY(0) scale(.92);opacity:1}80%{transform:scale(1.06)}100%{transform:scale(1)}}
+.dsh-autofit-pill.is-pop{animation:dsh-autofit-pop .6s cubic-bezier(.2,.8,.3,1)}
+.dsh-autofit-pill.is-alert{border-color:var(--dsw-alias-state-error,#d33)}
+@media (prefers-reduced-motion:reduce){.dsh-autofit-pill.is-pop{animation:none}}
+.dsh-autofit-card-open{all:unset;cursor:pointer;display:block;border-radius:4px}
+.dsh-autofit-card-open:hover .dsh-autofit-card-title{text-decoration:underline}
+.dsh-autofit-card-open:focus-visible{outline:2px solid var(--dsw-alias-border-focus,#4c8bf5);outline-offset:2px}
+.dsh-autofit-detail-backdrop{position:fixed;inset:0;z-index:2147482990;background:rgba(0,0,0,.28);display:flex;justify-content:flex-end}
+.dsh-autofit-detail{width:min(440px,100vw);height:100%;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1);box-shadow:-12px 0 40px rgba(0,0,0,.18);font-size:13px}
+.dsh-autofit-detail-head{display:flex;gap:8px;align-items:flex-start;padding:16px 16px 12px;border-bottom:1px solid var(--dsw-alias-border-l2)}
+.dsh-autofit-detail-head code{font-size:11.5px;color:var(--dsw-alias-label-tertiary);word-break:break-all}
+.dsh-autofit-detail-title{font-size:16px;font-weight:600;line-height:1.35;word-break:break-word}
+.dsh-autofit-detail-body{flex:1;overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.dsh-autofit-detail-desc{margin:0;line-height:1.6;white-space:pre-wrap;color:var(--dsw-alias-label-secondary)}
+.dsh-autofit-detail-rows{display:flex;flex-direction:column;gap:6px}
+.dsh-autofit-detail-row{display:grid;grid-template-columns:120px 1fr;gap:8px;font-size:12.5px}
+.dsh-autofit-detail-row>span:first-child{color:var(--dsw-alias-label-tertiary)}
+.dsh-autofit-detail-row a{color:var(--dsw-alias-label-link,#2f6fe4);word-break:break-all}
+.dsh-autofit-detail-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--dsw-alias-border-l2)}
 .dsh-autofit-progress{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-2)}
 .dsh-autofit-progress-title{font-size:13px;font-weight:600}
 .dsh-autofit-progress-text{color:var(--dsw-alias-label-secondary);font-size:12px;line-height:1.6}
@@ -1259,6 +1298,7 @@ async function installBundleCompat(manager, spec) {
       const [meta, setMeta] = useState(null)
       const [loading, setLoading] = useState(false)
       const [error, setError] = useState(null)
+      const [detail, setDetail] = useState(null)
       const seq = useRef(0)
 
       const load = useCallback(async (query, offset) => {
@@ -1287,16 +1327,53 @@ async function installBundleCompat(manager, spec) {
           h('span', null, fmt(t, 'tabOf', { total })),
           meta ? h('span', null, `${t('tabSource')}: ${String(meta.source || '').replace(/^https?:\/\//, '').split('/')[0]}${meta.radarAt ? ` · ${t('tabRadar')} ${String(meta.radarAt).slice(0, 10)}` : ''}`) : null),
         error ? h(ErrorBox, { t, message: error }) : null,
+        detail ? h(CatalogDetail, { t, item: detail, onClose: () => setDetail(null) }) : null,
         h('div', { className: 'dsh-autofit-cards' }, items.map((it) => h('div', { key: it.name, className: 'dsh-autofit-card' },
-          h('div', { className: 'dsh-autofit-card-title' }, pickText(it.title) || it.name),
+          h('button', { type: 'button', className: 'dsh-autofit-card-open', title: t('detailOpen'), onClick: () => setDetail(it) },
+            h('span', { className: 'dsh-autofit-card-title' }, pickText(it.title) || it.name)),
           h('div', { className: 'dsh-autofit-card-meta' }, h('code', null, it.spec), it.category ? h('span', { className: 'dsh-autofit-chip' }, it.category) : null,
             it.stars != null ? h('span', null, `★ ${it.stars}`) : null, radarChip(t, it.radar)),
           h('div', { className: 'dsh-autofit-card-desc' }, pickText(it.description)),
           h('div', { className: 'dsh-autofit-card-foot' },
+            h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => setDetail(it) }, t('detailOpen')),
             h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(it.spec) }, t('tabInstall')))))),
         loading ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('tabLoading'))) : null,
         !loading && !error && !items.length ? h('div', { className: 'dsh-autofit-section-desc' }, t('tabEmpty')) : null,
         !loading && items.length < total ? h('div', { className: 'dsh-autofit-actions' }, h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void load(q, items.length) }, t('tabMore'))) : null)
+    }
+
+    /** Catalog item detail: everything the index and the radar know, plus our own check if it is installed here. */
+    function CatalogDetail({ t, item, onClose }) {
+      useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape') onClose() }
+        window.addEventListener('keydown', onKey)
+        return () => window.removeEventListener('keydown', onKey)
+      }, [onClose])
+      const link = (href, label) => (href ? h('a', { href: String(href).replace(/^git\+/, '').replace(/\.git$/, ''), target: '_blank', rel: 'noreferrer noopener' }, label) : null)
+      const row = (k, v) => (v == null || v === '' ? null : h('div', { className: 'dsh-autofit-detail-row' }, h('span', null, k), h('span', null, v)))
+      const install = () => { onClose(); void startAutofitJob(item.spec) }
+      return h('div', { className: 'dsh-autofit-detail-backdrop', onMouseDown: (e) => { if (e.target === e.currentTarget) onClose() } },
+        h('aside', { className: 'dsh-autofit-detail', role: 'dialog', 'aria-modal': 'true', 'aria-label': pickText(item.title) || item.name },
+          h('div', { className: 'dsh-autofit-detail-head' },
+            h('div', { style: { flex: 1, minWidth: 0 } },
+              h('div', { className: 'dsh-autofit-detail-title' }, pickText(item.title) || item.name),
+              h('code', null, item.name)),
+            h('button', { type: 'button', className: 'dsh-autofit-icon-btn', 'aria-label': t('detailClose'), title: t('detailClose'), onClick: onClose }, '×')),
+          h('div', { className: 'dsh-autofit-detail-body' },
+            h('div', { className: 'dsh-autofit-card-meta' }, radarChip(t, item.radar), item.category ? h('span', { className: 'dsh-autofit-chip' }, item.category) : null, item.stars != null ? h('span', null, `★ ${item.stars}`) : null),
+            pickText(item.description) ? h('p', { className: 'dsh-autofit-detail-desc' }, pickText(item.description)) : null,
+            h('div', { className: 'dsh-autofit-detail-rows' },
+              row(t('detailVersion'), item.version),
+              row(t('detailEngines'), item.engines),
+              row(t('detailSpec'), h('code', null, item.spec)),
+              row(t('detailRadar'), item.radar ? radarChip(t, item.radar) : t('detailRadarNone')),
+              row(t('detailRepo'), link(item.repository, String(item.repository || '').replace(/^git\+/, '').replace(/^https?:\/\//, '').replace(/\.git$/, ''))),
+              row(t('detailHomepage'), link(item.homepage, String(item.homepage || '').replace(/^https?:\/\//, '')))),
+            h(BackgroundResult, { t, name: item.name }),
+            h('p', { className: 'dsh-autofit-section-desc' }, t('detailHow'))),
+          h('div', { className: 'dsh-autofit-detail-foot' },
+            h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: onClose }, t('detailClose')),
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', autoFocus: true, onClick: install }, t('tabInstall')))))
     }
 
     /* ------------------------------------------------------------------ background check (badge + section) */
@@ -1420,7 +1497,7 @@ async function installBundleCompat(manager, spec) {
         try { await pollOnce() } finally { inFlight = false }
       }, 1500)
       async function pollOnce() {
-        const live = dock.jobs.filter((j) => j.status === 'queued' || j.status === 'running')
+        const live = dock.jobs.filter((j) => (j.status === 'queued' || j.status === 'running') && !String(j.id).startsWith('pending-'))
         for (const j of live) {
           const r = await postJson(JOB.poll, { id: j.id, since: j.next || 0 })
           if (r.ok) { const v = upsertJob(r.value, true); if (v.status === 'ready') void installReady(v) }
@@ -1430,9 +1507,16 @@ async function installBundleCompat(manager, spec) {
       }
     }
 
-    async function startAutofitJob(spec, allowBuilds) {
-      setDock({ open: true, minimized: false })
+    /** Start a job. From the catalog, detail or dialog the job lands in the corner pill (`pop` animates it);
+     *  the dock's own retry/approve buttons pass { expand: true } and keep the dock open. */
+    async function startAutofitJob(spec, allowBuilds, opts) {
+      const expand = !!(opts && opts.expand)
+      // The pill appears at the click, before the host answers: a placeholder row stands in until the job id arrives.
+      const tempId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+      upsertJob({ id: tempId, spec, status: 'queued', events: [] })
+      setDock({ open: true, minimized: !expand, pop: expand ? dock.pop : Date.now() })
       const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [] })
+      setDock({ jobs: dock.jobs.filter((j) => j.id !== tempId), focus: dock.focus === tempId ? null : dock.focus })
       if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
       upsertJob(r.value)
       // Don't take the stage from a job that is running right now; the new one queues behind it, folded.
@@ -1493,10 +1577,26 @@ async function installBundleCompat(manager, spec) {
     }
     function releaseDock(me) { if (dockOwner && dockOwner.me === me) { dockOwner = null; emitDock() } }
 
+    const DOCK_IDLE_MS = 5000
+
     function AutofitDock({ t, inline }) {
       const d = useDock()
       const me = useRef({}).current
       const logRef = useRef(null)
+      // Idle collapse: once expanded, the dock folds back into the pill after 5 s without the pointer over it or any
+      // input inside it. Hovering, scrolling the log, clicking or typing in it keeps it open.
+      const lastTouch = useRef(Date.now())
+      const hovering = useRef(false)
+      const touch = () => { lastTouch.current = Date.now() }
+      const expanded = d.open && !d.minimized && !inline
+      useEffect(() => {
+        if (!expanded) return undefined
+        lastTouch.current = Date.now()
+        const timer = setInterval(() => {
+          if (!hovering.current && Date.now() - lastTouch.current >= DOCK_IDLE_MS) setDock({ minimized: true })
+        }, 500)
+        return () => clearInterval(timer)
+      }, [expanded])
       useEffect(() => { claimDock(me, !!inline); void restoreJobs(); return () => releaseDock(me) }, [])
       // Owner may have gone away (tab closed while the overlay never existed): reclaim on the next render.
       useEffect(() => { if (!dockOwner) claimDock(me, !!inline) })
@@ -1511,11 +1611,14 @@ async function installBundleCompat(manager, spec) {
       const summary = [busyN ? fmt(t, 'dockCountBusy', { n: busyN }) : null, okN ? fmt(t, 'dockCountInstalled', { n: okN }) : null, badN ? fmt(t, 'dockCountFailed', { n: badN }) : null].filter(Boolean).join(' · ')
       if (d.minimized) {
         const one = d.jobs.length === 1 ? d.jobs[0] : null
-        return h('button', { type: 'button', className: 'dsh-autofit-pill', style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
+        const popping = d.pop && Date.now() - d.pop < 1500
+        return h('button', { key: `pill-${d.pop || 0}`, type: 'button', className: `dsh-autofit-pill${popping ? ' is-pop' : ''}${badN && !busyN ? ' is-alert' : ''}`, style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
           h(ShieldCheckIcon, { size: 16 }), busyN ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
           h('span', null, one ? `${statusText(t, one)} · ${shortName(one.spec)}` : summary))
       }
-      return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle') },
+      return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle'),
+        onMouseEnter: () => { hovering.current = true; touch() }, onMouseLeave: () => { hovering.current = false; touch() },
+        onPointerDown: touch, onKeyDown: touch, onWheel: touch, onFocus: touch },
         h('div', { className: 'dsh-autofit-dock-head' },
           h(ShieldCheckIcon, { size: 16 }),
           h('div', { className: 'dsh-autofit-dock-title' }, h('strong', null, t('dockTitle')), h('code', null, summary)),
@@ -1547,8 +1650,8 @@ async function installBundleCompat(manager, spec) {
           h('span', { style: { flex: 1 } }),
           job.status === 'queued' || job.status === 'running'
             ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockCancel')) : null,
-          approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages) }, t('dockApprove')) : null,
-          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec) }, t('dockRetry')) : null,
+          approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages, { expand: true }) }, t('dockApprove')) : null,
+          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec, null, { expand: true }) }, t('dockRetry')) : null,
           !busy ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => dismissJob(job.id) }, t('dockDismiss')) : null))
     }
 
