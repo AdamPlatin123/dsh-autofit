@@ -71,3 +71,13 @@ test('path aliases are accepted', async () => {
   assert.equal(normalizeArgs({ path: 'a.js', file: 'b.js' }).path, 'a.js')
   assert.deepEqual(normalizeArgs(null), {})
 })
+
+test('local specs are recognised as paths, registry names are not', async () => {
+  const { localPath } = await import('../lib/autofix/index.js')
+  assert.equal(localPath('/x/a-1.0.0.tgz'), '/x/a-1.0.0.tgz')
+  assert.equal(localPath('file:/x/a.tgz'), '/x/a.tgz')
+  assert.equal(localPath('./pkg'), './pkg')
+  assert.equal(localPath('C:\\Users\\a\\p.tgz'), 'C:\\Users\\a\\p.tgz')
+  assert.equal(localPath('dsh-pocket@2.12.0'), null)
+  assert.equal(localPath('@scope/name'), null)
+})

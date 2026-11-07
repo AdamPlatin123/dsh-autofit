@@ -371,7 +371,7 @@ async function installBundleCompat(manager, spec) {
     /* ------------------------------------------------------------------ styles */
 
     const CSS = `
-.dsh-autofit-dock{width:380px;max-width:calc(100vw - 32px);max-height:min(520px,calc(100vh - 32px));display:flex;flex-direction:column;border:1px solid var(--dsw-alias-border-l2);border-radius:12px;background:var(--dsw-alias-bg-layer-1);box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;font-size:12.5px}
+.dsh-autofit-dock{transform-origin:100% 100%;width:380px;max-width:calc(100vw - 32px);max-height:min(520px,calc(100vh - 32px - var(--dsh-frame-chrome-top,0px)));display:flex;flex-direction:column;border:1px solid var(--dsw-alias-border-l2);border-radius:12px;background:var(--dsw-alias-bg-layer-1);box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;font-size:12.5px}
 .dsh-autofit-dock-head{display:flex;align-items:center;gap:8px;padding:10px 10px 8px 12px;border-bottom:1px solid var(--dsw-alias-border-l2)}
 .dsh-autofit-dock-title{flex:1;min-width:0;display:flex;flex-direction:column}
 .dsh-autofit-dock-title code{font-size:11px;color:var(--dsw-alias-label-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -403,7 +403,7 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-card-desc{font-size:12px;color:var(--dsw-alias-label-secondary);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .dsh-autofit-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--dsw-alias-label-tertiary)}
 .dsh-autofit-card-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:auto}
-.dsh-autofit-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.45);pointer-events:auto}
+.dsh-autofit-overlay{position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0 0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.45);pointer-events:auto}
 .dsh-autofit-dialog{width:min(760px,100%);max-height:86vh;overflow:auto;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border:1px solid var(--dsw-alias-border-l2);border-radius:12px;box-shadow:0 18px 48px rgba(0,0,0,.35);font:inherit}
 .dsh-autofit-head{display:flex;align-items:flex-start;gap:12px;padding:18px 20px 0}
 .dsh-autofit-head-copy{flex:1;min-width:0}
@@ -426,14 +426,11 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-btn-primary:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}
 .dsh-autofit-spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--dsw-alias-border-l3);border-top-color:var(--dsw-alias-brand-primary);border-radius:50%;animation:dsh-autofit-spin .9s linear infinite}
 @keyframes dsh-autofit-spin{to{transform:rotate(360deg)}}
-@keyframes dsh-autofit-pop{0%{transform:translateY(-40vh) scale(1.6);opacity:0}60%{transform:translateY(0) scale(.92);opacity:1}80%{transform:scale(1.06)}100%{transform:scale(1)}}
-.dsh-autofit-pill.is-pop{animation:dsh-autofit-pop .6s cubic-bezier(.2,.8,.3,1)}
 .dsh-autofit-pill.is-alert{border-color:var(--dsw-alias-state-error,#d33)}
-@media (prefers-reduced-motion:reduce){.dsh-autofit-pill.is-pop{animation:none}}
 .dsh-autofit-card-open{all:unset;cursor:pointer;display:block;border-radius:4px}
 .dsh-autofit-card-open:hover .dsh-autofit-card-title{text-decoration:underline}
 .dsh-autofit-card-open:focus-visible{outline:2px solid var(--dsw-alias-border-focus,#4c8bf5);outline-offset:2px}
-.dsh-autofit-detail-backdrop{position:fixed;inset:0;z-index:2147482990;background:rgba(0,0,0,.28);display:flex;justify-content:flex-end}
+.dsh-autofit-detail-backdrop{position:fixed;inset:var(--dsh-frame-chrome-top,0px) 0 0 0;z-index:2147482990;background:rgba(0,0,0,.28);display:flex;justify-content:flex-end}
 .dsh-autofit-detail{width:min(440px,100vw);height:100%;display:flex;flex-direction:column;background:var(--dsw-alias-bg-layer-1);box-shadow:-12px 0 40px rgba(0,0,0,.18);font-size:13px}
 .dsh-autofit-detail-head{display:flex;gap:8px;align-items:flex-start;padding:16px 16px 12px;border-bottom:1px solid var(--dsw-alias-border-l2)}
 .dsh-autofit-detail-head code{font-size:11.5px;color:var(--dsw-alias-label-tertiary);word-break:break-all}
@@ -1098,7 +1095,7 @@ async function installBundleCompat(manager, spec) {
                 onKeyDown: (event) => {
                   if (event.key === 'Enter' && !event.nativeEvent?.isComposing && !busy && spec.trim()) {
                     event.preventDefault()
-                    void startAutofitJob(spec.trim())
+                    void startAutofitJob(spec.trim(), null, { from: rectOf(event.currentTarget) })
                     onClose()
                   }
                 },
@@ -1122,7 +1119,7 @@ async function installBundleCompat(manager, spec) {
               { className: 'dsh-autofit-actions' },
               h(
                 'button',
-                { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || !spec.trim(), onClick: () => { void startAutofitJob(spec.trim()); onClose() } },
+                { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy || !spec.trim(), onClick: (event) => { void startAutofitJob(spec.trim(), null, { from: rectOf(event.currentTarget) }); onClose() } },
                 t('installWithAutofix'),
               ),
               h(
@@ -1336,7 +1333,7 @@ async function installBundleCompat(manager, spec) {
           h('div', { className: 'dsh-autofit-card-desc' }, pickText(it.description)),
           h('div', { className: 'dsh-autofit-card-foot' },
             h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => setDetail(it) }, t('detailOpen')),
-            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(it.spec) }, t('tabInstall')))))),
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: (event) => void startAutofitJob(it.spec, null, { from: rectOf(event.currentTarget) }) }, t('tabInstall')))))),
         loading ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('tabLoading'))) : null,
         !loading && !error && !items.length ? h('div', { className: 'dsh-autofit-section-desc' }, t('tabEmpty')) : null,
         !loading && items.length < total ? h('div', { className: 'dsh-autofit-actions' }, h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void load(q, items.length) }, t('tabMore'))) : null)
@@ -1351,7 +1348,7 @@ async function installBundleCompat(manager, spec) {
       }, [onClose])
       const link = (href, label) => (href ? h('a', { href: String(href).replace(/^git\+/, '').replace(/\.git$/, ''), target: '_blank', rel: 'noreferrer noopener' }, label) : null)
       const row = (k, v) => (v == null || v === '' ? null : h('div', { className: 'dsh-autofit-detail-row' }, h('span', null, k), h('span', null, v)))
-      const install = () => { onClose(); void startAutofitJob(item.spec) }
+      const install = (event) => { const from = rectOf(event.currentTarget); onClose(); void startAutofitJob(item.spec, null, { from }) }
       return h('div', { className: 'dsh-autofit-detail-backdrop', onMouseDown: (e) => { if (e.target === e.currentTarget) onClose() } },
         h('aside', { className: 'dsh-autofit-detail', role: 'dialog', 'aria-modal': 'true', 'aria-label': pickText(item.title) || item.name },
           h('div', { className: 'dsh-autofit-detail-head' },
@@ -1452,7 +1449,7 @@ async function installBundleCompat(manager, spec) {
           const next = failed[failed.length - 1] || busy[busy.length - 1]
           setDock({ focus: next ? next.id : null })
         }
-        if (!busy.length && !failed.length) setDock({ minimized: true })
+        if (!busy.length && !failed.length && !dock.minimized) collapseDock()
       }, 4000)
     }
 
@@ -1507,6 +1504,72 @@ async function installBundleCompat(manager, spec) {
       }
     }
 
+    // Motion is driven with the Web Animations API, not CSS keyframes: it runs wherever the element exists and does
+    // not depend on the injected stylesheet. With "reduce motion" (Windows: Settings > Accessibility > Animation
+    // effects off) nothing travels: the pill fades in and glows instead, so the hand-off is still visible.
+    const reduceMotion = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false } }
+    const canAnimate = (el) => !!(el && typeof el.animate === 'function')
+    const rectOf = (el) => { try { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height } } catch { return null } }
+    const centre = (r) => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 })
+
+    function whenPresent(selector, cb, tries = 40) {
+      const el = document.querySelector(selector)
+      if (el) { cb(el); return }
+      if (tries > 0) requestAnimationFrame(() => whenPresent(selector, cb, tries - 1))
+    }
+
+    function pulsePill(pill) {
+      if (!canAnimate(pill)) return
+      if (reduceMotion()) {
+        pill.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' })
+        pill.animate([{ boxShadow: '0 0 0 0 rgba(47,111,228,0)' }, { boxShadow: '0 0 0 6px rgba(47,111,228,.35)' }, { boxShadow: '0 0 0 0 rgba(47,111,228,0)' }], { duration: 700, iterations: 2 })
+        return
+      }
+      pill.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(.96)' }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' })
+    }
+
+    /** A dot leaves the button that was clicked and lands on the corner pill, which then bounces. */
+    function flyToPill(from) {
+      whenPresent('.dsh-autofit-pill', (pill) => {
+        const to = rectOf(pill)
+        if (!from || !to || reduceMotion() || typeof document.body.animate !== 'function') { pulsePill(pill); return }
+        const a = centre(from)
+        const b = centre(to)
+        const dot = document.createElement('div')
+        dot.className = 'dsh-autofit-flight'
+        dot.setAttribute('aria-hidden', 'true')
+        Object.assign(dot.style, { position: 'fixed', left: `${a.x - 9}px`, top: `${a.y - 9}px`, width: '18px', height: '18px', borderRadius: '50%',
+          background: 'var(--dsw-alias-label-link, #2f6fe4)', boxShadow: '0 4px 14px rgba(47,111,228,.45)', zIndex: '2147483001', pointerEvents: 'none' })
+        document.body.appendChild(dot)
+        const dx = b.x - a.x
+        const dy = b.y - a.y
+        const lift = Math.min(160, Math.abs(dx) * 0.25 + 60)
+        const anim = dot.animate([
+          { transform: 'translate(0,0) scale(1)', opacity: 1 },
+          { transform: `translate(${dx * 0.45}px, ${dy * 0.45 - lift}px) scale(1.15)`, opacity: 1, offset: 0.45 },
+          { transform: `translate(${dx}px, ${dy}px) scale(.55)`, opacity: 0.9 },
+        ], { duration: 620, easing: 'cubic-bezier(.3,.7,.4,1)' })
+        let fired = false
+        const done = () => { if (fired) return; fired = true; dot.remove(); const p2 = document.querySelector('.dsh-autofit-pill'); if (p2) pulsePill(p2) }
+        anim.onfinish = done
+        anim.oncancel = done
+        setTimeout(done, 1200)
+      })
+    }
+
+    /** Fold the open dock into the pill: shrink toward the corner, then switch state. */
+    function collapseDock() {
+      const el = document.querySelector('.dsh-autofit-dock')
+      if (!canAnimate(el) || el.style.position !== 'fixed') { setDock({ minimized: true }); return }
+      const anim = reduceMotion()
+        ? el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in', fill: 'forwards' })
+        : el.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(.35)', opacity: 0 }], { duration: 220, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' })
+      let fired = false
+      const done = () => { if (fired) return; fired = true; setDock({ minimized: true }); whenPresent('.dsh-autofit-pill', pulsePill) }
+      anim.onfinish = done
+      setTimeout(done, 400)
+    }
+
     /** Start a job. From the catalog, detail or dialog the job lands in the corner pill (`pop` animates it);
      *  the dock's own retry/approve buttons pass { expand: true } and keep the dock open. */
     async function startAutofitJob(spec, allowBuilds, opts) {
@@ -1515,6 +1578,7 @@ async function installBundleCompat(manager, spec) {
       const tempId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
       upsertJob({ id: tempId, spec, status: 'queued', events: [] })
       setDock({ open: true, minimized: !expand, pop: expand ? dock.pop : Date.now() })
+      if (!expand) flyToPill(opts && opts.from)
       const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [] })
       setDock({ jobs: dock.jobs.filter((j) => j.id !== tempId), focus: dock.focus === tempId ? null : dock.focus })
       if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
@@ -1589,11 +1653,19 @@ async function installBundleCompat(manager, spec) {
       const hovering = useRef(false)
       const touch = () => { lastTouch.current = Date.now() }
       const expanded = d.open && !d.minimized && !inline
+      const dockRef = useRef(null)
+      // Grow out of the corner when the dock opens.
+      useEffect(() => {
+        const el = dockRef.current
+        if (!expanded || !canAnimate(el)) return
+        if (reduceMotion()) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' })
+        else el.animate([{ transform: 'scale(.4)', opacity: 0 }, { transform: 'scale(1.02)', opacity: 1, offset: 0.7 }, { transform: 'scale(1)', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.3,1)' })
+      }, [expanded])
       useEffect(() => {
         if (!expanded) return undefined
         lastTouch.current = Date.now()
         const timer = setInterval(() => {
-          if (!hovering.current && Date.now() - lastTouch.current >= DOCK_IDLE_MS) setDock({ minimized: true })
+          if (!hovering.current && Date.now() - lastTouch.current >= DOCK_IDLE_MS) collapseDock()
         }, 500)
         return () => clearInterval(timer)
       }, [expanded])
@@ -1611,19 +1683,18 @@ async function installBundleCompat(manager, spec) {
       const summary = [busyN ? fmt(t, 'dockCountBusy', { n: busyN }) : null, okN ? fmt(t, 'dockCountInstalled', { n: okN }) : null, badN ? fmt(t, 'dockCountFailed', { n: badN }) : null].filter(Boolean).join(' · ')
       if (d.minimized) {
         const one = d.jobs.length === 1 ? d.jobs[0] : null
-        const popping = d.pop && Date.now() - d.pop < 1500
-        return h('button', { key: `pill-${d.pop || 0}`, type: 'button', className: `dsh-autofit-pill${popping ? ' is-pop' : ''}${badN && !busyN ? ' is-alert' : ''}`, style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
+        return h('button', { type: 'button', className: `dsh-autofit-pill${badN && !busyN ? ' is-alert' : ''}`, style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
           h(ShieldCheckIcon, { size: 16 }), busyN ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
           h('span', null, one ? `${statusText(t, one)} · ${shortName(one.spec)}` : summary))
       }
-      return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle'),
+      return h('div', { className: 'dsh-autofit-dock', style: base, role: 'dialog', 'aria-label': t('dockTitle'), ref: dockRef,
         onMouseEnter: () => { hovering.current = true; touch() }, onMouseLeave: () => { hovering.current = false; touch() },
         onPointerDown: touch, onKeyDown: touch, onWheel: touch, onFocus: touch },
         h('div', { className: 'dsh-autofit-dock-head' },
           h(ShieldCheckIcon, { size: 16 }),
           h('div', { className: 'dsh-autofit-dock-title' }, h('strong', null, t('dockTitle')), h('code', null, summary)),
-          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockMinimize'), 'aria-label': t('dockMinimize'), onClick: () => setDock({ minimized: true }) }, '–'),
-          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockClose'), 'aria-label': t('dockClose'), onClick: () => (busyN ? setDock({ minimized: true }) : setDock({ open: false })) }, '×')),
+          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockMinimize'), 'aria-label': t('dockMinimize'), onClick: () => collapseDock() }, '–'),
+          h('button', { type: 'button', className: 'dsh-autofit-icon-btn', title: t('dockClose'), 'aria-label': t('dockClose'), onClick: () => (busyN ? collapseDock() : setDock({ open: false })) }, '×')),
         h('div', { className: 'dsh-autofit-dock-jobs' },
           d.jobs.map((job) => h(DockJob, { key: job.id, t, job, open: job.id === d.focus, logRef: job.id === d.focus ? logRef : null }))))
     }
