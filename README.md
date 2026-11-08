@@ -111,7 +111,7 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 
 ## DSH Desktop
 
-Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同）。在 Desktop（Electron）里运行时，probe 优先用系统里的 Node ≥22 运行 Desktop 内置的 `bin.js`；没有 Node 时退回 Electron 的 Node 模式，只做 L1（安装与版本检查），L2 标为 `unverified`，因为 Electron-as-Node 下插件加载器解析不到 profile 里的包。PATH 上没有 pnpm 时，自动用宿主自带的 pnpm。
+Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同）。在 Desktop（Electron）里运行时，probe 优先用系统里能运行该版本 DSH 的 Node（≥22；DSH 0.2.1+ 的 `bin.js` 依赖 `import.meta.main`，需 ≥22.18 或 ≥24.2）运行 Desktop 内置的 `bin.js`；没有 Node 时退回 Electron 的 Node 模式，只做 L1（安装与版本检查），L2 标为 `unverified`，因为 Electron-as-Node 下插件加载器解析不到 profile 里的包。PATH 上没有 pnpm 时，自动用宿主自带的 pnpm。
 
 ## 开发
 
@@ -119,3 +119,9 @@ Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同
 npm test                        # 单元测试（含官方 format-1 校验器，需要本机装有 dsh）
 node scripts/build-index.mjs    # 生成雷达叠加索引
 ```
+
+### Windows 说明
+
+- 命令行直接用 `dsh` 即可：会按 npm 的 `dsh.cmd` 找到它实际运行的 `bin.js`，并和 shim 一样优先用它旁边的 `node.exe`。当前 Node 太旧（缺 `import.meta.main`）时，自动换用 PATH 上能运行的 Node，找不到就明确报出所需版本，不再是一句「dsh not found」。
+- 试装时设置 `npm_config_ignore_workspace_root_check=true`：pnpm 9 在 profile 工作区里不带 `-w` 会拒绝 `add`（`ERR_PNPM_ADDING_TO_ROOT`）。仍然出现时归为 `infra-fail`（诊断码 `package-manager`），不会进入修复和 agent。
+- 打包和解包时，tar 只会收到相对路径，因此 Git Bash 里排在前面的 GNU tar 也能正常工作。
