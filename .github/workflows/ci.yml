@@ -38,12 +38,15 @@ jobs:
       - run: npm test
 
   package:
-    name: package (${{ matrix.os }})
+    name: package (${{ matrix.os }}, pnpm ${{ matrix.pnpm }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          # pnpm 9 is the one that refuses `add` in the profile workspace without -w.
+          - { os: ubuntu-latest, pnpm: latest }
+          - { os: windows-latest, pnpm: 9 }
     defaults:
       run:
         # On Windows this is Git Bash, so GNU tar and npm's sh shims come first on PATH, as for CLI users there.
@@ -53,7 +56,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: npm install -g @deepseek-ai/dsh
+      # DSH installs plugins with pnpm and expects it on PATH; runners have none.
+      - run: npm install -g @deepseek-ai/dsh pnpm@${{ matrix.pnpm }}
       - run: node scripts/check-release.mjs
       - name: Install the packed tarball
         run: |
