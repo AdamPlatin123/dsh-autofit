@@ -1,0 +1,3 @@
+# npm packs the working tree as it is: a CRLF checkout (core.autocrlf=true on Windows) would ship
+# `#!/usr/bin/env node\r` and break the dsh-autofit command on macOS and Linux.
+* text=auto eol=lf

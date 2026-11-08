@@ -1,17 +1,15 @@
 import assert from 'node:assert/strict'
-import { execFileSync } from 'node:child_process'
-import { realpathSync } from 'node:fs'
 import path from 'node:path'
 import { test } from 'node:test'
 import { pathToFileURL } from 'node:url'
+import { dshPackageDir } from '../lib/describe.js'
 import { overlay } from '../scripts/build-index.mjs'
 import { repoKey } from '../lib/radar.js'
 
 /** The official format-1 validator, loaded from the local DSH install (no devDependency). */
 async function officialParser() {
   try {
-    const bin = realpathSync(execFileSync('which', ['dsh'], { encoding: 'utf8' }).trim())
-    const pkg = path.join(path.dirname(bin), '..', 'node_modules', '@deepseek-ai', 'dsh-plugin-market-index', 'lib', 'index.js')
+    const pkg = path.join(dshPackageDir(), 'node_modules', '@deepseek-ai', 'dsh-plugin-market-index', 'lib', 'index.js')
     return (await import(pathToFileURL(pkg).href)).parseMarketIndex
   } catch {
     return undefined
