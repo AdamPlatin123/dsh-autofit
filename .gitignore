@@ -1,4 +1,5 @@
 node_modules/
+!test/fixtures/describe/*/node_modules/
 index.json
 *.tmp
 .lab/
