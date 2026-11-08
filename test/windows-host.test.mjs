@@ -39,7 +39,8 @@ test('dshPackageDir reads npm\'s sh shim ($basedir) and cmd shim (%dp0%)', () =>
     const cmd = path.join(prefix, 'dsh.cmd')
     writeFileSync(cmd, '@ECHO off\r\nSET dp0=%~dp0\r\n"%_prog%"  "%dp0%\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js" %*\r\n')
     assert.equal(dshPackageDir(sh, {}), pkg)
-    assert.equal(dshPackageDir(cmd, {}), pkg)
+    // `%dp0%\node_modules\…` is a Windows path; elsewhere the backslashes are file-name characters.
+    if (process.platform === 'win32') assert.equal(dshPackageDir(cmd, {}), pkg)
   } finally {
     rmSync(prefix, { recursive: true, force: true })
   }
