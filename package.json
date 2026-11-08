@@ -59,6 +59,8 @@
   },
   "scripts": {
     "build:index": "node scripts/build-index.mjs",
+    "check:release": "node scripts/check-release.mjs",
+    "prepublishOnly": "node scripts/check-release.mjs --publish && npm test",
     "test": "node --test test/*.test.mjs"
   },
   "engines": {

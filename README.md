@@ -118,7 +118,27 @@ Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同
 ```sh
 npm test                        # 单元测试（含官方 format-1 校验器，需要本机装有 dsh）
 node scripts/build-index.mjs    # 生成雷达叠加索引
+npm run check:release           # 检查 npm pack 会发出去的内容
 ```
+
+### 发布
+
+只由 CI 发布：`npm version` 改版本、提交并打 tag，推送 tag 后 `release.yml` 先在该 commit 上跑完整 CI，再经 npm trusted publishing（OIDC，无 token，自动附 provenance）发包，并创建 GitHub Release。
+
+```sh
+npm version patch               # 或 minor / prerelease --preid rc；生成 commit 和 vX.Y.Z tag
+git push --follow-tags
+```
+
+- 带 `-` 的版本（`0.4.0-rc.1`）发到 `next`，其余发到 `latest`。
+- tag 必须在 main 上；`prepublishOnly` 运行 `scripts/check-release.mjs --publish`：CI 里要求本次运行来自 `v<version>` tag，本地要求工作区干净且 HEAD 有这个 tag。它还检查 `bin`/`exports` 的目标都在包里、没有 `files` 以外的文件、没有 CRLF。
+- 仓库的 `.gitattributes` 固定 LF：Windows 上 `core.autocrlf=true` 的检出会把 bin 的 shebang 写成 `node\r`，打出来的包在 macOS / Linux 上无法运行。
+
+一次性设置（维护者在网页上完成）：
+
+1. npmjs.com → dsh-autofit → Settings → Trusted publishing：GitHub Actions，仓库 `AdamPlatin123/dsh-autofit`，workflow `release.yml`，environment `npm`。
+2. GitHub 仓库 → Settings → Environments → `npm`：添加 required reviewer，每次发布需批准。
+3. 第一次经 CI 发布成功后，npmjs.com 包设置 → Publishing access 选 “Require two-factor authentication and disallow tokens”，此后只有 CI 能发。
 
 ### Windows 说明
 
