@@ -51,6 +51,7 @@ if (cmd === 'fix' && spec) {
     console.log(`DSH ${r.host.version} (${r.host.tier})  ${spec}`)
     console.log(`  L1 install : ${L1.status}${L1.exempted ? ' (exempted)' : ''}${L1.blockedBuilds?.length ? `  blocked builds: ${L1.blockedBuilds.join(', ')}` : ''}`)
     if (L1.status === 'incompatible' && L1.requirements) console.log(`               requires ${JSON.stringify(L1.requirements)}`)
+    else if (L1.error) console.log(`               ${L1.error.slice(0, 200)}`)
     if (r.verdict === 'installed') console.log('  (install phase only — run again with --phase boot)')
     if (L2.host) {
       console.log(`  L2 host    : ${ICON[L2.host.status] ?? ''} ${L2.host.status}`)

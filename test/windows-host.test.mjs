@@ -17,6 +17,14 @@ test('L1: pnpm refusing to add to the workspace root is an environment failure, 
   assert.deepEqual(r.codes, ['package-manager'])
 })
 
+test('L1: no pnpm on the trial machine is an environment failure that names the fix (seen on a CI runner)', () => {
+  const log = 'dsh: initialized profile web at /tmp/dsh-autofit-probe-eHH7sc/profiles/web\nCommand failed with ENOENT: pnpm add /home/runner/work/dsh-autofit/dsh-autofit/dsh-autofit-0.3.11.tgz\nspawn pnpm ENOENTdsh: pnpm was not found; install pnpm and make it available on PATH.\ndsh: plugin command failed; diagnostics: /tmp/dsh-autofit-probe-eHH7sc/profiles/web/.plugin-manager/logs/operation-se5Acr/pnpm.log\n'
+  const r = parseInstall(log, 1)
+  assert.equal(r.status, 'infra-fail')
+  assert.deepEqual(r.codes, ['package-manager'])
+  assert.match(r.error, /install pnpm/)
+})
+
 test('import.meta.main support follows the Node release lines that have it', () => {
   for (const v of ['22.18.0', '22.20.1', '24.2.0', '24.11.0', '25.0.0', 'v24.3.0']) assert.equal(supportsImportMetaMain(v), true, v)
   for (const v of ['22.14.0', '22.17.9', '23.11.0', '24.1.0', '20.19.0']) assert.equal(supportsImportMetaMain(v), false, v)
