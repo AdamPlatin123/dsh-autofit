@@ -1,6 +1,6 @@
 {
   "name": "dsh-autofit",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "DSH (DeepSeek Harness) plugin autofit: trial-install any plugin in a throwaway profile, auto-repair incompatible ones, install only what passes. Companion of DSH Plugin Radar.",
   "keywords": [
     "dsh",
