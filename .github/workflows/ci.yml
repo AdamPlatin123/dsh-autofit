@@ -62,4 +62,8 @@ jobs:
           npm install -g "$tgz"
       - run: dsh-autofit host
       # The package trial-installs itself into a throwaway DSH home; runners ship Chrome, so L2 client runs too.
-      - run: dsh-autofit probe "$TGZ"
+      - name: Probe the packed tarball
+        run: |
+          code=0; dsh-autofit probe "$TGZ" --json > probe.json || code=$?
+          node -e 'const r=require("./probe.json"); console.log(r.verdict, r.codes); for (const [k, v] of Object.entries(r.layers ?? {})) console.log(k, v.status, v.error ?? "", "\n" + (v.logTail ?? ""))'
+          exit $code
