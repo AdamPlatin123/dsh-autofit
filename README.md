@@ -86,15 +86,15 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 
 | 层级 | 规则 | 来源（实测） |
 |---|---|---|
-| A 机械 | 只放宽宿主报出的不满足项（peer / `engines.dsh`），追加 `|| ^<宿主版本>` | 版本声明保守的插件 |
+| A 机械 | 只放宽宿主报出的不满足项（peer / `engines.dsh`），追加 `|| ^<宿主版本>`；`dependencies` 不动（放宽会换掉装进来的依赖版本） | 版本声明保守的插件 |
 | A 机械 | 旧 patch 写法（顶层映射）→ 顶层列表 | insurance-actuary |
-| B 规则 | 按宿主报错路径给 object schema 补 `additionalProperties: true` | period-report |
+| B 规则 | 按宿主报错路径给 object schema 补 `additionalProperties: true`：只改 `properties: {…}` 里的那个键，或 `.register(…)` 里的根 schema | period-report |
 | B 规则 | 工具补 `output { schema, render }` | insurance-actuary |
-| B 规则 | 已知服务改名（`settingsScope → configForms`，卡片 DSH-0.1.7-J1-27） | vision-router（实测不足以修好，见下） |
+| B 规则 | 已知服务改名（`settingsScope → configForms`，卡片 DSH-0.1.7-J1-27）：只改 `inject` 声明和从插件上下文取服务的地方（`ctx.x`、`ctx.get('x')`），同名的存储键、日志文字、配置字段不动 | vision-router（实测不足以修好，见下） |
 | C 需授权 | 被拦下的依赖构建脚本：提示并在用户批准后带 `allowBuilds` 重试 | vscode-workbench |
 | D agent | 规则修不好时，用当前 DSH 的默认模型（`llm` 服务，不需要另配 key）开一个修复对话，见下 | lab-fx-agentfix |
 
-修复版是 `<版本>+autofit.N` 的本地 tarball，`package.json` 的 `autofit` 字段记录来源与每条改动；原包从不修改；仍未通过的修复版不提供安装。
+修复版是 `<版本>+autofit.N` 的本地 tarball，`package.json` 的 `autofit` 字段记录来源（本地文件只记文件名）与每条改动；原包从不修改；仍未通过的修复版不提供安装。
 
 实测（DSH 0.2.1-rc.2，隔离网络容器）：9 个真实插件中自动修好 5 个（period-report、insurance-actuary、voice-webspeech、dsh-web-access、dsh-tui 0.11.1）；vscode-workbench 在批准 `node-pty` 构建后修好；vision-router / codex-connect 改名后仍失败（新服务接口形状也变了），如实标为需 agent；harness-one 标为需 agent。
 
@@ -104,10 +104,13 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 
 - agent 只拿到 6 个工具：`list_files` / `read_file` / `write_file` / `replace_in_file`（只能访问插件副本目录，拒绝绝对路径和 `..` 越界）、`run_trial`（打包 + 真实试装）、`finish`；没有 shell；
 - 系统提示里附带实验室里发现的已知破坏性变更（peer 范围、patch 写法、schema、工具 output、服务改名……）；
-- 只有最后一次 `run_trial` 通过才算修好，agent 自己说「修好了」不算数；修好后由插件管理器原生安装修复版；
+- 只有最后一次 `run_trial` 通过才算修好，agent 自己说「修好了」不算数；
+- 护栏（`lib/autofix/guard.js`）：每次 `run_trial` 前把副本和规则修复后的版本比对，下列改动会被拒绝试装，agent 得先改回去：改 `package.json` 的 `name` / `scripts` / `bin` / `dependencies` / `optionalDependencies` / `dsh.bundle`；改 bundle patch 文件；删掉 `.register(…)` 调用；清空文件；收窄或删除 peer / `engines` 范围；改动超过 8 个文件或 200 行；
+- agent 的改动写进修复版：`autofit.changes` 按文件记录增删行数，完整 diff 在包内的 `autofit.diff`；
+- agent 修好的版本不会自动安装：小窗显示 diff，你点「安装修复版」才装，点「放弃」则不装（刷新页面后也不会装）；规则修好的版本照旧直接安装；
 - 下载源码不依赖 npm（直接请求 registry，依次尝试 npmjs、npmmirror），Desktop 等没有 npm 的环境也能用。
 
-实测（DSH 0.2.1-rc.2 web，默认模型 deepseek-v4.1-flash）：一个 host 端调用了不存在的 API 的插件，在小窗里一键走完「原版失败 → agent 读代码并修改一处 → 试装通过 → 自动安装」，约 70 秒。
+实测（DSH 0.2.1-rc.2 web，默认模型 deepseek-v4.1-flash）：一个 host 端调用了不存在的 API 的插件，在小窗里一键走完「原版失败 → agent 读代码并修改一处 → 试装通过 → 自动安装」，约 70 秒。加上护栏后重跑（2026-11-09）：agent 改了 `index.js` 6 行，任务停在「待你确认」，修复版带着 `autofit.diff`，profile 里没有装上；点放弃后任务变为已取消。
 
 ## DSH Desktop
 
