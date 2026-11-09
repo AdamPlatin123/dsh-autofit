@@ -307,7 +307,8 @@ function jobView(job, since = 0) {
     result: job.result ? { outcome: job.result.outcome, by: job.result.by ?? null, install: job.result.install ?? null,
       reason: text(job.result.reason, 1200), changes: (job.result.changes ?? []).slice(0, 40),
       needsApproval: job.result.needsApproval ?? [], unresolved: job.result.unresolved ?? [],
-      artifactVersion: job.result.artifact?.version ?? null, final: job.result.final ? summarize(job.result.final) : null } : null,
+      artifactVersion: job.result.artifact?.version ?? null, final: job.result.final ? summarize(job.result.final) : null,
+      review: job.result.review ?? false, diff: text(job.result.diff, 40000), lines: job.result.lines ?? null } : null,
     installed: job.installed ?? null,
   }
 }
@@ -334,7 +335,10 @@ function startJob(ctx, spec, allowBuilds) {
         }))
       } while (out.busy && !job.controller.signal.aborted)
       job.result = out.value ?? { outcome: 'error', reason: 'busy' }
-      job.status = job.controller.signal.aborted ? 'cancelled' : ['pass', 'fixed'].includes(job.result.outcome) ? 'ready' : 'failed'
+      // `ready` installs right away (the user asked for it; rules record every change). An agent repair waits in
+      // `review` until the user has seen its diff and said yes.
+      job.status = job.controller.signal.aborted ? 'cancelled'
+        : ['pass', 'fixed'].includes(job.result.outcome) ? (job.result.review ? 'review' : 'ready') : 'failed'
     } catch (err) {
       job.result = { outcome: 'error', reason: String(err?.message ?? err) }
       job.status = job.controller.signal.aborted ? 'cancelled' : 'failed'
@@ -450,7 +454,8 @@ export function apply(ctx) {
       const job = jobs.get(String(b?.id ?? ''))
       if (!job) return json(failure('autofit/no-job', 'Unknown job.'), 404)
       job.controller.abort()
-      if (job.status === 'queued') job.status = 'cancelled'
+      // Cancelling a repair under review is declining it: it is never installed, not even after a reload.
+      if (job.status === 'queued' || job.status === 'review') job.status = 'cancelled'
       return json({ ok: true, value: jobView(job, job.events.length) })
     },
   })

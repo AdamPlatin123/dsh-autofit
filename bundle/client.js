@@ -67,6 +67,13 @@ async function installBundleCompat(manager, spec) {
         dockUnfixed: '修不好：{reason}',
         dockApproval: '需要你批准：{why}',
         dockApprove: '允许并重试',
+        dockReview: '待你确认',
+        dockFixedReview: 'agent 修好了，改了 {n} 行。确认改动后才会安装',
+        dockReviewHint: '这是 agent 对插件代码的改动（相对规则修复后的版本）。确认没问题再安装；放弃则不会安装。',
+        dockInstallReviewed: '安装修复版',
+        dockDecline: '放弃',
+        dockTrialRefused: '试装被拒：{why}',
+        dockCountReview: '{n} 个待确认',
         dockRetry: '重试',
         dockDismiss: '移除',
         dockCountBusy: '{n} 个进行中',
@@ -230,6 +237,13 @@ async function installBundleCompat(manager, spec) {
         dockUnfixed: 'Could not fix: {reason}',
         dockApproval: 'Needs your approval: {why}',
         dockApprove: 'Allow and retry',
+        dockReview: 'Needs your review',
+        dockFixedReview: 'The agent fixed it ({n} lines changed). Nothing is installed until you approve the changes',
+        dockReviewHint: 'These are the agent\'s edits to the plugin code (relative to the rule-repaired copy). Install only if they look right; Discard installs nothing.',
+        dockInstallReviewed: 'Install repaired build',
+        dockDecline: 'Discard',
+        dockTrialRefused: 'Trial refused: {why}',
+        dockCountReview: '{n} awaiting review',
         dockRetry: 'Retry',
         dockDismiss: 'Dismiss',
         dockCountBusy: '{n} working',
@@ -391,6 +405,11 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-dock-line.is-agent{background:var(--dsw-alias-bg-layer-2);border-radius:8px;padding:6px 8px}
 .dsh-autofit-dock-icon{flex:none;width:16px;text-align:center}
 .dsh-autofit-dock-detail{display:block;white-space:pre-wrap;color:var(--dsw-alias-label-tertiary);font-size:11px;margin-top:2px}
+.dsh-autofit-dock-review{display:flex;flex-direction:column;gap:4px}
+.dsh-autofit-diff{margin:0;max-height:220px;overflow:auto;padding:6px 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre;color:var(--dsw-alias-label-secondary)}
+.dsh-autofit-diff .is-add{color:var(--dsw-alias-state-success-primary)}
+.dsh-autofit-diff .is-del{color:var(--dsw-alias-state-error-primary)}
+.dsh-autofit-diff .is-hunk{color:var(--dsw-alias-label-tertiary)}
 .dsh-autofit-dock-foot{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--dsw-alias-border-l2)}
 .dsh-autofit-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;background:var(--dsw-alias-bg-layer-1);box-shadow:0 6px 24px rgba(0,0,0,.16);cursor:pointer;font-size:12px;color:var(--dsw-alias-label-primary)}
 .dsh-autofit-list{margin:4px 0 0;padding-left:18px;font-size:12px;line-height:1.7}
@@ -1463,9 +1482,19 @@ async function installBundleCompat(manager, spec) {
       return dock
     }
 
+    /** A plugin-manager failure as one line: its code plus the line of the diagnostic (pnpm's output) that says why. */
+    function installError(e) {
+      if (!e) return null
+      const lines = String(e.diagnostic || '').split('\n').map((l) => l.trim()).filter(Boolean)
+      const why = lines.find((l) => /ERR_|error/i.test(l)) || lines[lines.length - 1]
+      return [e.message || e.code, why].filter(Boolean).join(': ') || null
+    }
+
     const installing = new Set()
-    async function installReady(job) {
-      if (installing.has(job.id) || job.status !== 'ready' || !job.result || !job.result.install) return
+    async function installReady(job, approved) {
+      // An agent repair (status `review`) installs only from the user's click on its diff, never from polling.
+      const allowed = job.status === 'ready' || (approved === true && job.status === 'review')
+      if (installing.has(job.id) || !allowed || !job.result || !job.result.install) return
       installing.add(job.id)
       upsertJob({ id: job.id, status: 'installing' })
       const manager = pluginManagerRemote
@@ -1476,7 +1505,7 @@ async function installBundleCompat(manager, spec) {
         const r = await installBundleCompat(manager, job.result.install)
         const v = r && r.value ? r.value : r
         if ((r && r.ok === false) || (v && (v.application === 'failed' || v.application === 'cancelled'))) {
-          error = (r && r.error && r.error.message) || (v && v.error && (v.error.message || v.error.code)) || `install ${v && v.application}`
+          error = installError(r && r.error) || installError(v && v.error) || `install ${v && v.application}`
         } else application = (v && v.application) || 'applied'
       } catch (e) { error = e && e.message ? String(e.message) : String(e) }
       const res = await postJson(JOB.installed, { id: job.id, application, error })
@@ -1595,7 +1624,7 @@ async function installBundleCompat(manager, spec) {
       const r = await postJson(JOB.list, {})
       if (!r.ok || !Array.isArray(r.value)) return
       for (const v of r.value) upsertJob(v)
-      const live = r.value.filter((v) => v.status === 'queued' || v.status === 'running' || v.status === 'ready')
+      const live = r.value.filter((v) => v.status === 'queued' || v.status === 'running' || v.status === 'ready' || v.status === 'review')
       if (live.length) { setDock({ open: true, minimized: true, focus: live[live.length - 1].id }); ensurePolling() }
     }
 
@@ -1612,12 +1641,14 @@ async function installBundleCompat(manager, spec) {
           if (e.stage && e.stage.startsWith('rules')) return { icon: e.verdict === 'pass' ? '✓' : '✗', text: fmt(t, 'dockTrialRules', { v: verdictLabel(t, e.verdict) }), detail: (e.codes || []).join(', ') }
           return { icon: e.verdict === 'pass' ? '✓' : '✗', text: fmt(t, 'dockAgentTrial', { v: verdictLabel(t, e.verdict) }), detail: (e.codes || []).join(', ') }
         case 'trial-start': return { icon: '◌', text: t('dockAgentTrialStart') }
+        case 'trial-refused': return { icon: '!', text: fmt(t, 'dockTrialRefused', { why: (e.reasons || []).join('; ') }) }
         case 'say': return { icon: '›', text: e.text, agent: true }
         case 'think': return null
         case 'tool': return e.name === 'run_trial' ? null : { icon: '·', text: `${e.name} ${e.args || ''}`, dim: true }
         case 'tool-result': return e.ok ? null : { icon: '!', text: `${e.name}: ${e.text}`, dim: true }
         case 'done':
           if (e.outcome === 'pass') return { icon: '✓', text: t('dockPass') }
+          if (e.outcome === 'fixed' && e.review) return { icon: '⚠', text: fmt(t, 'dockFixedReview', { n: e.lines == null ? '?' : e.lines }) }
           if (e.outcome === 'fixed') return { icon: '✓', text: fmt(t, 'dockFixed', { by: e.by === 'agent' ? t('dockByAgent') : t('dockByRules') }) }
           if (e.outcome === 'needs-approval') return { icon: '⚠', text: fmt(t, 'dockApproval', { why: (e.needsApproval || []).map((a) => `${a.why} (${(a.packages || []).join(', ')})`).join('; ') }) }
           return { icon: '✗', text: fmt(t, 'dockUnfixed', { reason: e.reason || (e.unresolved || []).map((u) => u.hint).join('; ') || e.outcome }) }
@@ -1627,7 +1658,7 @@ async function installBundleCompat(manager, spec) {
     }
 
     function statusText(t, job) {
-      return { queued: t('dockQueued'), running: t('dockRunning'), ready: t('dockInstalling'), installing: t('dockInstalling'), installed: t('dockInstalled'), failed: t('dockFailed'), cancelled: t('dockCancelled') }[job.status] || job.status
+      return { queued: t('dockQueued'), running: t('dockRunning'), ready: t('dockInstalling'), review: t('dockReview'), installing: t('dockInstalling'), installed: t('dockInstalled'), failed: t('dockFailed'), cancelled: t('dockCancelled') }[job.status] || job.status
     }
 
     const isBusy = (j) => j.status === 'queued' || j.status === 'running' || j.status === 'ready' || j.status === 'installing'
@@ -1673,14 +1704,16 @@ async function installBundleCompat(manager, spec) {
       // Owner may have gone away (tab closed while the overlay never existed): reclaim on the next render.
       useEffect(() => { if (!dockOwner) claimDock(me, !!inline) })
       const focus = d.jobs.find((j) => j.id === d.focus) || null
-      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [focus && focus.events && focus.events.length, d.focus])
+      // Follow the newest line, and land there again whenever the dock reopens: a review's diff is the log's last block.
+      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [focus && focus.events && focus.events.length, d.focus, expanded, focus && focus.status])
       if (!dockOwner || dockOwner.me !== me) return null
       if (!d.open || !d.jobs.length) return null
       const base = inline ? { position: 'relative' } : { position: 'fixed', right: 16, bottom: 16, zIndex: 2147483000 }
       const busyN = d.jobs.filter(isBusy).length
       const okN = d.jobs.filter((j) => j.status === 'installed').length
       const badN = d.jobs.filter((j) => j.status === 'failed').length
-      const summary = [busyN ? fmt(t, 'dockCountBusy', { n: busyN }) : null, okN ? fmt(t, 'dockCountInstalled', { n: okN }) : null, badN ? fmt(t, 'dockCountFailed', { n: badN }) : null].filter(Boolean).join(' · ')
+      const reviewN = d.jobs.filter((j) => j.status === 'review').length
+      const summary = [busyN ? fmt(t, 'dockCountBusy', { n: busyN }) : null, reviewN ? fmt(t, 'dockCountReview', { n: reviewN }) : null, okN ? fmt(t, 'dockCountInstalled', { n: okN }) : null, badN ? fmt(t, 'dockCountFailed', { n: badN }) : null].filter(Boolean).join(' · ')
       if (d.minimized) {
         const one = d.jobs.length === 1 ? d.jobs[0] : null
         return h('button', { type: 'button', className: `dsh-autofit-pill${badN && !busyN ? ' is-alert' : ''}`, style: base, title: t('dockExpand'), onClick: () => setDock({ minimized: false }) },
@@ -1699,6 +1732,14 @@ async function installBundleCompat(manager, spec) {
           d.jobs.map((job) => h(DockJob, { key: job.id, t, job, open: job.id === d.focus, logRef: job.id === d.focus ? logRef : null }))))
     }
 
+    /** The agent's edits, as a unified diff with added and removed lines coloured. */
+    function DiffView({ t, diff }) {
+      return h('div', { className: 'dsh-autofit-dock-review' },
+        h('div', { className: 'dsh-autofit-dock-detail' }, t('dockReviewHint')),
+        h('pre', { className: 'dsh-autofit-diff' }, String(diff || '').split('\n').map((l, i) =>
+          h('span', { key: i, className: l.startsWith('@@') ? 'is-hunk' : l.startsWith('+') && !l.startsWith('+++') ? 'is-add' : l.startsWith('-') && !l.startsWith('---') ? 'is-del' : null }, l + '\n'))))
+    }
+
     function DockJob({ t, job, open, logRef }) {
       const busy = isBusy(job)
       const tone = job.status === 'installed' ? 'success' : job.status === 'failed' ? 'error' : job.status === 'cancelled' ? 'neutral' : 'warn'
@@ -1712,17 +1753,21 @@ async function installBundleCompat(manager, spec) {
       const lines = (job.events || []).map((e) => eventLine(t, e)).filter(Boolean)
       const lastDone = [...(job.events || [])].reverse().find((e) => e.type === 'done')
       const approval = lastDone && lastDone.outcome === 'needs-approval' ? (lastDone.needsApproval || []).find((a) => a.kind === 'allow-builds') : null
+      const review = job.status === 'review' && job.result
       return h('div', { className: 'dsh-autofit-job is-open' }, row,
         h('div', { className: 'dsh-autofit-dock-log', ref: logRef },
           lines.map((l, i) => h('div', { key: i, className: `dsh-autofit-dock-line${l.dim ? ' is-dim' : ''}${l.agent ? ' is-agent' : ''}` },
             h('span', { className: 'dsh-autofit-dock-icon' }, l.icon), h('span', null, l.text, l.detail ? h('span', { className: 'dsh-autofit-dock-detail' }, l.detail) : null))),
-          busy ? h('div', { className: 'dsh-autofit-dock-line is-dim' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('span', null, statusText(t, job))) : null),
+          busy ? h('div', { className: 'dsh-autofit-dock-line is-dim' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('span', null, statusText(t, job))) : null,
+          review ? h(DiffView, { t, diff: job.result.diff }) : null),
         h('div', { className: 'dsh-autofit-dock-foot' },
           h('span', { style: { flex: 1 } }),
           job.status === 'queued' || job.status === 'running'
             ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockCancel')) : null,
           approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages, { expand: true }) }, t('dockApprove')) : null,
-          !busy && !approval && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec, null, { expand: true }) }, t('dockRetry')) : null,
+          review ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockDecline')) : null,
+          review ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void installReady(job, true) }, t('dockInstallReviewed')) : null,
+          !busy && !approval && !review && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec, null, { expand: true }) }, t('dockRetry')) : null,
           !busy ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => dismissJob(job.id) }, t('dockDismiss')) : null))
     }
 
