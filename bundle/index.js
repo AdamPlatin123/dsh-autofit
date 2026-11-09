@@ -50,10 +50,10 @@ function dshLauncher() {
   // 2. ProfileContext.installAnchor: DSH's own package.json for the CLI, or a file DSH resolves from (packaged apps).
   const fromAnchor = binFromAnchor(where.installAnchor)
   if (fromAnchor) return fromAnchor
-  // 3. DSH Desktop in Electron: the runtime ships in the app resources (`app/` up to 2.0.18, `app.asar` from 2.0.22;
-  //    Electron's fs reads asar paths).
+  // 3. Desktop in Electron: the runtime ships in the app resources. Official DeepSeek Harness: `app.asar/dsh/`;
+  //    community DSH Desktop: `app/` up to 2.0.18, `app.asar` from 2.0.22. Electron's fs reads asar paths.
   if (process.versions.electron && process.resourcesPath) {
-    for (const root of ['app', 'app.asar']) {
+    for (const root of [path.join('app.asar', 'dsh'), 'app', 'app.asar']) {
       const bin = path.join(process.resourcesPath, root, 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js')
       if (existsSync(bin)) return bin
     }
