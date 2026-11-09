@@ -20,7 +20,7 @@ dsh plugin --profile web add dsh-autofit      # 或在 DSH 插件页「Add plugi
 dsh --profile web                             # 插件页 → Add plugin 下拉 / Autofit 标签页
 ```
 
-DSH Desktop：在 Desktop 的插件页「Add plugin」里输入 `dsh-autofit`（Desktop 只允许通过自己的界面往 desktop profile 装插件）。
+桌面版（官方 DeepSeek Harness，或社区的 DSH Desktop）：在应用的插件页「Add plugin」里输入 `dsh-autofit`（桌面版只允许通过自己的界面往 desktop profile 装插件）。
 
 命令行单独使用：`npx dsh-autofit probe <插件>` / `npx dsh-autofit fix <插件>`。
 
@@ -32,13 +32,17 @@ DSH Desktop：在 Desktop 的插件页「Add plugin」里输入 `dsh-autofit`（
 | 0.1.7 · 0.2.0 | 插件页 → Autofit Installer（组合包页面）+ 详情区块 | ✅ |
 | 0.1.5 | 设置 → 插件 → Autofit 标签 | ✅ |
 
-| DSH Desktop | 内置运行时 | 运行时实测 |
+| 官方 DeepSeek Harness（深度求索） | 内置运行时 | 运行时实测（2026-11-09） |
+|---|---|---|
+| 0.2.2-rc.1（Windows x64，更新源当前最新） | 0.2.2-rc.1（`app.asar/dsh`），自带 Node 24.21、pnpm 11.28.5 | ✅ 完整 L1/L2；PATH 上没有 pnpm 时用自带的 |
+
+| 社区 DSH Desktop（anywhere-labs，非官方） | 内置运行时 | 运行时实测 |
 |---|---|---|
 | 2.0.22-next / 2.0.22-beta.1 | 0.2.2-rc.1（app.asar） | ✅ 完整 L1/L2 |
 | 2.0.18 | 0.2.1-rc.2 | ✅ 完整 L1/L2 |
 | 2.0.12 | 0.1.5-rc.2 | 有系统 Node 时 ✅；否则仅 L1 |
 
-Desktop 界面层（菜单与标签页）尚未完成自动化验证：首次运行引导和"只能从应用内安装插件"的限制挡住了无头测试。
+桌面版界面层（菜单与标签页）尚未完成自动化验证：首次运行引导和"只能从应用内安装插件"的限制挡住了无头测试。
 
 ## probe：L1/L2 试装
 
@@ -109,9 +113,12 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 
 实测（DSH 0.2.1-rc.2 web，默认模型 deepseek-v4.1-flash）：一个 host 端调用了不存在的 API 的插件，在小窗里一键走完「原版失败 → agent 读代码并修改一处 → 试装通过 → 自动安装」，约 70 秒。
 
-## DSH Desktop
+## 桌面版
 
-Desktop 内置自己的 DSH 运行时（实测 0.1.5-rc.2，与全局 CLI 不同）。在 Desktop（Electron）里运行时，probe 优先用系统里能运行该版本 DSH 的 Node（≥22；DSH 0.2.1+ 的 `bin.js` 依赖 `import.meta.main`，需 ≥22.18 或 ≥24.2）运行 Desktop 内置的 `bin.js`；没有 Node 时退回 Electron 的 Node 模式，只做 L1（安装与版本检查），L2 标为 `unverified`，因为 Electron-as-Node 下插件加载器解析不到 profile 里的包。PATH 上没有 pnpm 时，自动用宿主自带的 pnpm。
+桌面版内置自己的 DSH 运行时，版本可能和全局 CLI 不同。有两种桌面版：
+
+- **官方 DeepSeek Harness**（深度求索发布，签名为 Hangzhou DeepSeek Artificial Intelligence Co., Ltd.，从 deepseek.com 下载）：运行时在 `resources/app.asar/dsh/node_modules/@deepseek-ai/dsh`，0.2.2-rc.1 与应用版本号一致。运行时打在 asar 里，只有 Electron 读得到，所以 probe 用应用本身的 Electron-as-Node 运行它；0.2.1+ 在这种模式下能加载 profile 插件，L1/L2 完整。pnpm 在 asar 外的 `resources/runtime/primary-runtime/dependencies/pnpm`，PATH 上没有 pnpm 时自动用它。
+- **社区 DSH Desktop**（anywhere-labs/deepseek-harness-desktop，版本号 2.0.x，非官方）：运行时在 `resources/app`（≤2.0.18）或 `resources/app.asar`（≥2.0.22）。未打包进 asar 的运行时优先用系统里能运行该版本 DSH 的 Node（≥22；DSH 0.2.1+ 的 `bin.js` 依赖 `import.meta.main`，需 ≥22.18 或 ≥24.2）；没有 Node 且运行时低于 0.2.1（2.0.12 内置 0.1.5-rc.2）时，只做 L1（安装与版本检查），L2 标为 `unverified`，因为这些版本在 Electron-as-Node 下解析不到 profile 里的包。
 
 ## 开发
 

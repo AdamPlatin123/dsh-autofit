@@ -7,7 +7,7 @@ import path from 'node:path'
 import { test } from 'node:test'
 import { packDir, untar } from '../lib/autofix/index.js'
 import { dshPackageDir } from '../lib/describe.js'
-import { supportsImportMetaMain } from '../lib/probe/host.js'
+import { bundledPnpm, supportsImportMetaMain } from '../lib/probe/host.js'
 import { parseInstall } from '../lib/probe/signals.js'
 
 test('L1: pnpm refusing to add to the workspace root is an environment failure, not the plugin\'s', () => {
@@ -51,6 +51,22 @@ test('dshPackageDir reads npm\'s sh shim ($basedir) and cmd shim (%dp0%)', () =>
     if (process.platform === 'win32') assert.equal(dshPackageDir(cmd, {}), pkg)
   } finally {
     rmSync(prefix, { recursive: true, force: true })
+  }
+})
+
+test('official DeepSeek Harness: pnpm outside the asar is found from the runtime inside it (0.2.2-rc.1 layout)', () => {
+  const res = mkdtempSync(path.join(tmpdir(), 'autofit-harness-'))
+  try {
+    const dsh = path.join(res, 'app.asar', 'dsh', 'node_modules', '@deepseek-ai', 'dsh')
+    mkdirSync(dsh, { recursive: true })
+    assert.equal(bundledPnpm(dsh), null)
+    const pnpm = path.join(res, 'runtime', 'primary-runtime', 'dependencies', 'pnpm')
+    mkdirSync(path.join(pnpm, 'bin'), { recursive: true })
+    writeFileSync(path.join(pnpm, 'package.json'), '{"name":"pnpm","version":"11.28.5","bin":{"pnpm":"bin/pnpm.mjs"}}')
+    writeFileSync(path.join(pnpm, 'bin', 'pnpm.mjs'), '')
+    assert.deepEqual(bundledPnpm(dsh), { version: '11.28.5', entry: path.join(pnpm, 'bin', 'pnpm.mjs') })
+  } finally {
+    rmSync(res, { recursive: true, force: true })
   }
 })
 
