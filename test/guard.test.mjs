@@ -1,12 +1,12 @@
 // Guardrails on repairs: what the agent may change, how its edits are recorded, and rules that stay on target.
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
 import { repairWithAgent } from '../lib/autofix/agent.js'
 import { agentChanges, review, snapshot, unifiedDiff } from '../lib/autofix/guard.js'
-import { provenance } from '../lib/autofix/index.js'
+import { pack, provenance } from '../lib/autofix/index.js'
 import { fixSchemaAdditionalProperties, fixServiceRenames, widenRequirements } from '../lib/autofix/rules.js'
 
 const PKG = { name: 'autofit-agent-target', version: '1.0.0', type: 'module', peerDependencies: { '@deepseek-ai/dsh-tools': '^0.1.0' }, dependencies: { 'some-lib': '^1.0.0' }, dsh: { bundle: { patch: './cordis.patch.yml' } } }
@@ -139,6 +139,25 @@ test('a repaired package names a local source by file name only', () => {
   assert.equal(provenance('C:\\Users\\someone\\lab\\autofit-agent-target-1.0.0.tgz'), 'file:autofit-agent-target-1.0.0.tgz')
   assert.equal(provenance('file:/home/someone/p.tgz'), 'file:p.tgz')
   assert.equal(provenance('dsh-period-report@0.2.1'), 'dsh-period-report@0.2.1')
+})
+
+test('a second repair of the same plugin never replaces the tarball an earlier one installed from', () => {
+  const dir = plugin()
+  const out = mkdtempSync(path.join(tmpdir(), 'autofit-out-'))
+  try {
+    edit(dir, 'index.js', (s) => s.replace("ctx.logger.child('autofit-agent-target')", 'ctx.logger'))
+    const first = pack(dir, out, 'a1', 'x.tgz', [])
+    const bytes = readFileSync(first.file)
+    edit(dir, 'index.js', (s) => s.replace('const log = ctx.logger', 'const log = ctx.logger ?? console'))
+    const second = pack(dir, out, 'a1', 'x.tgz', [])
+    assert.notEqual(second.file, first.file)
+    assert.match(path.basename(first.file), /^autofit-agent-target-1\.0\.0\+autofit\.a1-[0-9a-f]{10}\.tgz$/)
+    assert.deepEqual(readFileSync(first.file), bytes)
+    assert.deepEqual(readdirSync(out).sort(), [path.basename(first.file), path.basename(second.file)].sort())
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+    rmSync(out, { recursive: true, force: true })
+  }
 })
 
 // The collateral edits the rules used to make (synthetic case from the 2026-11-09 review).

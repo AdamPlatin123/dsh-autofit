@@ -94,7 +94,7 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 | C 需授权 | 被拦下的依赖构建脚本：提示并在用户批准后带 `allowBuilds` 重试 | vscode-workbench |
 | D agent | 规则修不好时，用当前 DSH 的默认模型（`llm` 服务，不需要另配 key）开一个修复对话，见下 | lab-fx-agentfix |
 
-修复版是 `<版本>+autofit.N` 的本地 tarball，`package.json` 的 `autofit` 字段记录来源（本地文件只记文件名）与每条改动；原包从不修改；仍未通过的修复版不提供安装。
+修复版是 `<版本>+autofit.N` 的本地 tarball（文件名带内容哈希，后来的修复不会覆盖已安装的那个），`package.json` 的 `autofit` 字段记录来源（本地文件只记文件名）与每条改动；原包从不修改；仍未通过的修复版不提供安装。
 
 实测（DSH 0.2.1-rc.2，隔离网络容器）：9 个真实插件中自动修好 5 个（period-report、insurance-actuary、voice-webspeech、dsh-web-access、dsh-tui 0.11.1）；vscode-workbench 在批准 `node-pty` 构建后修好；vision-router / codex-connect 改名后仍失败（新服务接口形状也变了），如实标为需 agent；harness-one 标为需 agent。
 

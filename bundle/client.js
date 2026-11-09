@@ -1482,6 +1482,14 @@ async function installBundleCompat(manager, spec) {
       return dock
     }
 
+    /** A plugin-manager failure as one line: its code plus the line of the diagnostic (pnpm's output) that says why. */
+    function installError(e) {
+      if (!e) return null
+      const lines = String(e.diagnostic || '').split('\n').map((l) => l.trim()).filter(Boolean)
+      const why = lines.find((l) => /ERR_|error/i.test(l)) || lines[lines.length - 1]
+      return [e.message || e.code, why].filter(Boolean).join(': ') || null
+    }
+
     const installing = new Set()
     async function installReady(job, approved) {
       // An agent repair (status `review`) installs only from the user's click on its diff, never from polling.
@@ -1497,7 +1505,7 @@ async function installBundleCompat(manager, spec) {
         const r = await installBundleCompat(manager, job.result.install)
         const v = r && r.value ? r.value : r
         if ((r && r.ok === false) || (v && (v.application === 'failed' || v.application === 'cancelled'))) {
-          error = (r && r.error && r.error.message) || (v && v.error && (v.error.message || v.error.code)) || `install ${v && v.application}`
+          error = installError(r && r.error) || installError(v && v.error) || `install ${v && v.application}`
         } else application = (v && v.application) || 'applied'
       } catch (e) { error = e && e.message ? String(e.message) : String(e) }
       const res = await postJson(JOB.installed, { id: job.id, application, error })
@@ -1696,7 +1704,8 @@ async function installBundleCompat(manager, spec) {
       // Owner may have gone away (tab closed while the overlay never existed): reclaim on the next render.
       useEffect(() => { if (!dockOwner) claimDock(me, !!inline) })
       const focus = d.jobs.find((j) => j.id === d.focus) || null
-      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [focus && focus.events && focus.events.length, d.focus])
+      // Follow the newest line, and land there again whenever the dock reopens: a review's diff is the log's last block.
+      useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight }, [focus && focus.events && focus.events.length, d.focus, expanded, focus && focus.status])
       if (!dockOwner || dockOwner.me !== me) return null
       if (!d.open || !d.jobs.length) return null
       const base = inline ? { position: 'relative' } : { position: 'fixed', right: 16, bottom: 16, zIndex: 2147483000 }
