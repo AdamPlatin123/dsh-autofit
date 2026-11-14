@@ -33,7 +33,8 @@
     "./radar": "./lib/radar.js",
     "./locale/*.json": "./bundle/locale/*.json",
     "./icon": "./bundle/icon.svg",
-    "./autofix": "./lib/autofix/index.js"
+    "./autofix": "./lib/autofix/index.js",
+    "./sources": "./lib/sources/index.js"
   },
   "files": [
     "bin/",

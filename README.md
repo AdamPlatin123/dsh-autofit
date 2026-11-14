@@ -5,8 +5,8 @@ DSH 插件自动适配：装之前先实测，装不上自动修，有更新先�
 本仓包含：
 
 - **DSH 组合包（插件页内）**：
-  - 「添加插件」菜单 →「Install with Autofit…」：任意来源（npm、git、tarball、本地路径）输入后点「Install with autofix」即可。右下角弹出小窗，依次进行试装、规则修复、agent 修复、安装，直到装好为止；小窗可以最小化成角落里的胶囊，也可以关掉，任务在后台继续跑；
-  - 「Autofit」标签页：awesome 索引 + 雷达判定的插件目录，每张卡片都有「Install with autofix」；
+  - 「添加插件」菜单 →「Install with Autofit…」：任意来源（npm、git、tarball、本地路径）输入后点「Install with autofix」即可。右下角弹出小窗，依次进行试装、规则修复、agent 修复、安装，直到装好为止（只有 npm 包和本地文件能修复；git、GitHub、远程 tarball 只做试装，见下文「信任模型」）；小窗可以最小化成角落里的胶囊，也可以关掉，任务在后台继续跑；
+  - 「Autofit」标签页：awesome 索引、DSH 插件市场里配置的索引、你添加的索引等多个来源合并成的插件目录，叠加雷达判定，每张卡片都有「Install with autofix」（见下文「插件来源」）；
   - 插件详情页：「Autofit check」区块 + 标题旁标签；任何入口装进来的插件，约 1 分钟内在后台自动补测一次。
 - **`dsh-autofit/probe`**：零依赖的 L1/L2 试装器（L1 真实安装 + L2 host/client 两端加载）；
 - **`dsh-autofit/autofix`**：试装 → 套用修复规则 → 重新打包 → 再试装（最多 3 轮）；
@@ -115,6 +115,51 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 - 下载源码不依赖 npm（直接请求 registry，依次尝试 npmjs、npmmirror），Desktop 等没有 npm 的环境也能用。
 
 实测（DSH 0.2.1-rc.2 web，默认模型 deepseek-v4.1-flash）：一个 host 端调用了不存在的 API 的插件，在小窗里一键走完「原版失败 → agent 读代码并修改一处 → 试装通过 → 自动安装」，约 70 秒。加上护栏后重跑（2026-11-09）：agent 改了 `index.js` 6 行，任务停在「待你确认」，修复版带着 `autofit.diff`，profile 里没有装上；点放弃后任务变为已取消。
+
+## 插件来源
+
+「Autofit」标签页的目录由多个来源合并而成（`lib/sources/`，也可以 `import { mergeCatalog, loadSource, … } from 'dsh-autofit/sources'`）：
+
+| 来源 | id | 读取的格式 | 默认 | 信任 |
+|---|---|---|---|---|
+| awesome 索引（jsDelivr，备用 awesome-dsh-plugin.com） | `awesome` | format 1 | 开 | builtin |
+| 插件雷达 | `radar` | dsh-radar/v1，只叠加判定和星数，不单独出卡片 | 开 | builtin |
+| DSH 插件市场里配置的索引 | `host-<哈希>` | format 1 / dsh-plugin-shop | 装了实验性插件市场（`pluginMarket` 服务）才有 | host |
+| 你添加的索引 | `user-<哈希>` | format 1、dsh-plugin-shop（指针或数据文件）、npm 搜索结果 | — | browse 或 trusted |
+| 雷达收录的仓库 | `radar-repos` | dsh-radar/v1 | 关 | browse |
+| npm 搜索（实验） | `npm` | npm search v1（`keywords:dsh-plugin`，最多 5,250 条） | 关 | browse |
+
+**读成什么样：**
+- format 1 的每个版本按 DSH 自己的规则（`marketInstallTarget`）得出安装标识：npm 来源是 `名字@版本`，git 来源是 `git+https://…/仓库.git#<40 位 commit>`，有子目录时再加 `&path:/<目录>`。不会把 git 来源的插件写成 `名字@版本`（那可能装到 npm 上同名的另一个包）。
+- 条目属于哪个 GitHub 仓库，看的是实际安装的东西：git 来源取 git 地址（和 `path`），不取条目自己声明的 `repository`；dsh-plugin-shop 的 tarball 只有放在该仓库下（`github.com/<owner>/<repo>/…`）时才算这个仓库。这样一个条目不能借用别的仓库的雷达判定、星数和卡片。
+- 指定了非默认 npm registry（`source.registry`）的版本不收录：试装、修复和安装都只会从你当前的 npm 源取同名包，可能是另一个包。
+- 版本选择：在当前 DSH 版本满足 `engines.dsh` 的版本里取最新的正式版（DSH 是预发布版时按 npm 的 `includePrerelease` 判断）；都不满足时取最新正式版，再不行取最新版本。
+- dsh-plugin-shop（schemaVersion 5）先读指针文件，再下载数据文件并核对 sha256，对不上就不用。
+- 雷达收录的仓库装的是默认分支的最新代码（`github:<owner>/<repo>`），版本不固定。
+
+**合并：** 同名且同一 GitHub 仓库的条目合成一张卡片，卡片上列出每个来源的报价；同名但仓库不同的分成几张卡片并标为冲突（不在 GitHub 上的 git / tarball 条目按安装地址单独成卡）；已经有别的来源收录的仓库，不再从「雷达收录的仓库」重复出现。来源按优先级排序（awesome 10、宿主市场 20 起、你添加的 30 起、雷达仓库 90、npm 95，可以改），卡片上安装的是优先级最高的来源给出的版本，标题、描述、分类也优先取它的。
+
+**加载：** 每个来源单独加载、单独缓存在 `<DSH_HOME>/autofit/sources-cache/<id>.json`。成功后 30 分钟内不再请求；失败的来源（包括雷达）2 分钟后重试，期间继续用上次的缓存（状态 `stale`）。到期重新加载时目录请求不等它，先用手上的数据回答；只有从未加载成功过的来源会让请求等待。关掉的来源，数据立即从内存释放。只要有一个来源有数据，目录就能打开。单次下载限时 20 秒（含正文）、最大 128 MiB；你添加的索引不跟随重定向。来源设置保存在 `<DSH_HOME>/autofit/sources.json`。
+
+### 信任模型
+
+- **builtin / host**（内置来源、DSH 插件市场里你自己配置的索引）：卡片上可以直接「用 Autofit 安装」。
+- **browse**（雷达收录的仓库、npm 搜索、新添加的索引默认如此）：只用来浏览。从这类来源的卡片发起安装会被拒绝（`409 autofit/untrusted-source`），要先把来源标为 trusted（`/api/autofit/sources/set { id, trust: 'trusted' }`，记录 `trustedAt`）。设置界面在后续版本提供，所以内置的 browse 来源（雷达收录的仓库、npm 搜索）默认关闭，要用时通过 `/api/autofit/sources/set { id, enabled: true }` 打开。
+- 旧客户端（0.4.0）按名字区分卡片、发起安装时只发 `{ spec }`，Host 无法替它做上面的信任检查。所以目录请求不带 `itemKeys: true` 时，按旧客户端处理：每个名字只返回一个条目（优先 `n:` 条目，再按来源优先级），并且不返回选中报价来自 browse 来源的条目。本版本的客户端会带 `itemKeys: true`。
+- 信任只管「从目录卡片安装」这一步：在「Install with Autofit…」对话框里自己输入 spec 不受限制。信任也不是安全沙箱：任何插件装上后都会在本机执行代码，试装同样如此（见上文 probe 的隔离说明）。
+- **能修复的只有 npm 包和本地文件。** git、GitHub、远程 tarball 来源只做试装：试装通过就照原 spec 安装；不通过时任务以 `not-repairable` 结束，不进入规则修复和 agent。卡片上标「Git 来源只能试装」；装默认分支最新代码的条目标「版本不固定」，试装结果不代表以后再装的版本。
+- 目前不支持来源指定的非默认 npm registry：这类版本不进目录（见上文「读成什么样」）。
+
+接口（都是 POST + JSON，仅本机所有者可调用）：
+
+| 路径 | 请求 | 作用 |
+|---|---|---|
+| `/api/autofit/catalog` | `{ q?, offset?, limit?, sources?, category?, radar?, sort?, installed?, itemKeys? }` | 合并后的目录；0.4.0 的字段全部保留，另有 `facets`、`sourceStatus`，每个条目另有 `key`、`sources`、`chosenSource`、`install`、`conflict`、`trust` 等；不带 `itemKeys: true` 时按 0.4.0 客户端处理（见上文） |
+| `/api/autofit/sources/list` | `{}` | 来源列表与加载状态 |
+| `/api/autofit/sources/probe` | `{ url }` | 添加前预览一个索引（格式、条目数、npm/git 数量、与现有目录重复/冲突的数量） |
+| `/api/autofit/sources/set` | `{ id, enabled?, trust?, priority? }` / `{ add: { url, trust?, title? } }` / `{ remove: id }` | 修改来源 |
+| `/api/autofit/sources/refresh` | `{ id? }` | 立即重新加载一个或全部来源 |
+| `/api/autofit/job/start` | `{ spec, allowBuilds?, key?, sourceId? }` | 「用 Autofit 安装」；带 `sourceId` 时按上面的信任规则检查 |
 
 ## 桌面版
 

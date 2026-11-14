@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 5,
+  "builtAt": "2026-11-13T05:22:26.024Z",
+  "count": 27432,
+  "rejected": 25377,
+  "plugins": {
+    "url": "plugins.cb1a032d398e9bd6d9ca8241505b5d5815c1a6580f193235227918fee97a2387.json",
+    "sha256": "cb1a032d398e9bd6d9ca8241505b5d5815c1a6580f193235227918fee97a2387"
+  },
+  "stars": {
+    "url": "stars.f5818da609f0619ba743628f144f790eea0f2df3ae65f684d69fe26d6519dbfd.json",
+    "sha256": "f5818da609f0619ba743628f144f790eea0f2df3ae65f684d69fe26d6519dbfd"
+  },
+  "icons": {
+    "url": "icons.90c01b807f64c20e3d4bec5b5e59cccc26947be19f6b9bd3c7d44b47e09d5476.json",
+    "sha256": "90c01b807f64c20e3d4bec5b5e59cccc26947be19f6b9bd3c7d44b47e09d5476"
+  }
+}

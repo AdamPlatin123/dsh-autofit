@@ -4,8 +4,15 @@
  * Authenticated, Client-callable routes (exact Connection Fetch routes; owner Peer only):
  *   POST /api/autofit/check    { spec }                 L1/L2 trial of one spec
  *   POST /api/autofit/fix      { spec, allowBuilds? }   trial → repair → re-trial (lib/autofix)
- *   POST /api/autofit/catalog  { q?, offset?, limit? }   market catalog (awesome index + radar verdicts)
+ *   POST /api/autofit/catalog  { q?, offset?, limit?, sources?, category?, radar?, sort?, installed?, itemKeys? }
+ *                                                       merged catalog of every enabled source + radar verdicts
  *   POST /api/autofit/status   { name? }                last background check of an installed bundle
+ *   POST /api/autofit/sources/list     {}               configured catalog sources and their load state
+ *   POST /api/autofit/sources/probe    { url }          preview an index URL before adding it
+ *   POST /api/autofit/sources/set      { …change }      enable/disable, trust, priority, add or remove a source
+ *   POST /api/autofit/sources/refresh  { id? }          reload one source (or all) now
+ *   POST /api/autofit/job/start        { spec, allowBuilds?, key?, sourceId? }   "Install with autofix" job;
+ *        a job naming a browse-only source is refused (409 autofit/untrusted-source)
  *
  * Every route is POST with a JSON body: the /api browser-trust fence rejects plain GETs (lab: 400, empty body).
  *
@@ -24,15 +31,16 @@ import { autofix, autofitPipeline } from '../lib/autofix/index.js'
 import { randomUUID } from 'node:crypto'
 import { probe } from '../lib/probe/index.js'
 import { sweepStale } from '../lib/probe/cleanup.js'
-import { loadJson, radarMap, RADAR_SOURCES, repoKey } from '../lib/radar.js'
+import { catalogRequest, catalogUnavailable, chipPredicate, hostMarketList, isFresh, jobGate, legacyView, offersPlugins, sourceStatus, wireItem } from '../lib/sources/catalog.js'
+import { buildIndex, mergeCatalog, queryCatalog } from '../lib/sources/merge.js'
+import { applySourceChange, loadSource, loadSourceConfig, probeSource, saveSourceConfig } from '../lib/sources/store.js'
 
 /** Connection must exist for a browser-callable route; otherwise this row stays inactive. */
 export const inject = ['connection']
 
 const ROUTES = { check: '/api/autofit/check', fix: '/api/autofit/fix', catalog: '/api/autofit/catalog', status: '/api/autofit/status',
-  jobStart: '/api/autofit/job/start', jobPoll: '/api/autofit/job/poll', jobCancel: '/api/autofit/job/cancel', jobList: '/api/autofit/job/list', jobInstalled: '/api/autofit/job/installed' }
-const CATALOG_SOURCES = ['https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json', 'https://awesome-dsh-plugin.com/index.json']
-const CATALOG_TTL_MS = 30 * 60 * 1000
+  jobStart: '/api/autofit/job/start', jobPoll: '/api/autofit/job/poll', jobCancel: '/api/autofit/job/cancel', jobList: '/api/autofit/job/list', jobInstalled: '/api/autofit/job/installed',
+  sourcesList: '/api/autofit/sources/list', sourcesProbe: '/api/autofit/sources/probe', sourcesSet: '/api/autofit/sources/set', sourcesRefresh: '/api/autofit/sources/refresh' }
 const WATCH_INTERVAL_MS = 60 * 1000
 
 /**
@@ -159,6 +167,7 @@ function summarizeFix(report) {
     needsApproval: (report.needsApproval ?? []).map((a) => ({ kind: text(a.kind, 40), packages: stringList(a.packages, 20), why: text(a.why, 400) })),
     unresolved: (report.unresolved ?? []).map((u) => ({ code: text(u.code, 60), hint: text(u.hint, 400) })),
     error: text(report.error, 1200),
+    notRepairable: report.notRepairable === true, reason: text(report.reason, 600),
     final: report.final ? summarize(report.final) : null,
   }
 }
@@ -172,46 +181,124 @@ async function exclusive(task) {
   try { return { value: await running } } finally { running = null }
 }
 
-/* ------------------------------------------------------------------ catalog */
+/* ------------------------------------------------------------------ catalog (many sources) */
 
-let catalog = { at: 0, items: null, source: null, radarAt: null, loading: null }
+// Every enabled source loads on its own through lib/sources/store.js (on-disk cache, stale serving): it is reused
+// for 30 min after a good load and retried after 2 min when it failed (catalog.js isFresh), with at most one load per
+// source in flight. A request waits only for sources that have never finished a load; a due reload of a source that
+// has data runs in the background and the request is answered from the data at hand (stale-while-revalidate).
+// The merged index is rebuilt only when some source's data (or trust) changed.
+const catalog = { config: null, configLoading: null, configGen: 0, states: new Map(), merged: null, gen: 0 }
+/** Index URLs the host's optional plugin-market service is configured with: [{ url, title, description, error }]. */
+let hostMarkets = []
+let hostVersionCache
 
-async function loadCatalog() {
-  if (catalog.items && Date.now() - catalog.at < CATALOG_TTL_MS) return catalog
-  if (catalog.loading) return catalog.loading
-  catalog.loading = (async () => {
-    const base = await loadJson(CATALOG_SOURCES, { timeoutMs: 20000 })
-    let radar = new Map()
-    let radarAt = null
-    try {
-      const r = await loadJson(RADAR_SOURCES, { timeoutMs: 20000 })
-      radar = radarMap(r.value)
-      radarAt = r.value.generated_at ?? null
-    } catch { /* catalog still works without radar labels */ }
-    const items = (base.value?.plugins ?? []).map((p) => {
-      const v = Array.isArray(p.versions) ? p.versions[0] : null
-      const hit = radar.get(repoKey(p.repository?.url))
-      const title = typeof p.title === 'string' ? p.title : p.title?.zh ?? p.title?.en ?? p.name
-      const desc = typeof p.description === 'string' ? p.description : p.description ?? null
-      return {
-        name: p.name, title, description: desc, category: p.metadata?.category ?? null,
-        version: v?.version ?? null, engines: v?.engines?.dsh ?? null, repository: p.repository?.url ?? null, homepage: p.homepage ?? null,
-        spec: v?.version ? `${p.name}@${v.version}` : p.name,
-        radar: hit ? hit.verdict : null, stars: hit?.stars ?? null,
-      }
-    })
-    catalog = { at: Date.now(), items, source: base.url, radarAt, loading: null }
-    return catalog
-  })().catch((err) => { catalog.loading = null; throw err })
-  return catalog.loading
+/** The running DSH version (package.json next to the launcher), or null; sources choose versions for it. */
+function hostVersion() {
+  if (hostVersionCache !== undefined) return hostVersionCache
+  hostVersionCache = null
+  try {
+    const bin = dshLauncher()
+    if (bin !== 'dsh') {
+      const pkg = JSON.parse(readFileSync(path.join(path.dirname(bin), '..', 'package.json'), 'utf8'))
+      if (pkg?.name === '@deepseek-ai/dsh' && typeof pkg.version === 'string') hostVersionCache = pkg.version
+    }
+  } catch { /* unknown: sources fall back to the newest stable version */ }
+  return hostVersionCache
 }
 
-function searchCatalog(items, q, offset, limit) {
-  const words = String(q ?? '').toLowerCase().split(/\s+/).filter(Boolean)
-  const hay = (it) => `${it.name} ${it.title ?? ''} ${typeof it.description === 'string' ? it.description : Object.values(it.description ?? {}).join(' ')} ${it.category ?? ''}`.toLowerCase()
-  const matched = words.length ? items.filter((it) => words.every((w) => hay(it).includes(w))) : items
-  const ranked = [...matched].sort((a, b) => (b.stars ?? -1) - (a.stars ?? -1))
-  return { total: ranked.length, items: ranked.slice(offset, offset + limit) }
+function invalidateConfig() {
+  catalog.config = null
+  catalog.configLoading = null // a load started before the change must not be handed out after it
+  catalog.configGen++
+}
+
+/** The effective source config, read from disk (the latest saved state) with the current host markets. */
+function readSourceConfig() {
+  return loadSourceConfig(dataDir(), { hostMarkets: hostMarkets.map((m) => m.url) })
+}
+
+async function sourceConfig() {
+  if (catalog.config) return catalog.config
+  if (catalog.configLoading) return catalog.configLoading
+  const gen = catalog.configGen
+  const loading = readSourceConfig()
+    .then((list) => { if (gen === catalog.configGen) catalog.config = list; return list })
+    .finally(() => { if (catalog.configLoading === loading) catalog.configLoading = null })
+  catalog.configLoading = loading
+  return loading
+}
+
+// `/sources/set` changes run one at a time, each on the config as last saved: concurrent changes would otherwise
+// start from the same list (one answered ok but lost) and race their renames onto sources.json (EPERM on Windows).
+let sourceChanges = Promise.resolve()
+function serializedSourceChange(task) {
+  const run = sourceChanges.then(task)
+  sourceChanges = run.catch(() => {})
+  return run
+}
+
+/** Load one source unless its last load is still fresh. Never rejects: loadSource answers failures as data. */
+function loadOne(source, { force = false, log } = {}) {
+  const prev = catalog.states.get(source.id)
+  if (prev?.loading) return prev.loading
+  if (!force && isFresh(prev, Date.now())) return Promise.resolve(prev)
+  const loading = loadSource(source, { dataDir: dataDir(), hostVersion: hostVersion() ?? undefined })
+    .then((r) => ({ at: Date.now(), meta: r.meta, offerings: r.offerings ?? null, radar: r.radar ?? null, gen: ++catalog.gen }))
+    .catch((err) => {
+      log?.warn?.(`dsh-autofit: source ${source.id} failed to load: ${err?.message ?? err}`)
+      return { at: Date.now(), meta: { ...(prev?.meta ?? {}), state: prev?.offerings?.length || prev?.radar?.size ? 'stale' : 'failed', error: { code: 'internal', message: text(err?.message ?? err, 600) } },
+        offerings: prev?.offerings ?? [], radar: prev?.radar ?? new Map(), gen: ++catalog.gen }
+    })
+    .then((next) => { catalog.states.set(source.id, next); return next })
+  catalog.states.set(source.id, { ...(prev ?? {}), loading })
+  return loading
+}
+
+/**
+ * Load every enabled source (`force` reloads them, or only source `id`), merge and index.
+ * @returns `{ index, rows, source, radarAt }`: rows = per-source status, source = URL of the top source with data.
+ */
+async function loadCatalog({ force = false, id = null, log } = {}) {
+  const config = await sourceConfig()
+  const enabled = config.filter((s) => s.enabled !== false && (offersPlugins(s) || s.kind === 'radar-overlay'))
+  const waits = []
+  for (const s of enabled) {
+    const forced = force && (!id || s.id === id)
+    const load = loadOne(s, { force: forced, log })
+    // Wait for a forced reload and for a source that has never finished loading; a source with data is served as
+    // is while its due reload runs on (loadOne never rejects; the catch is a guard for this background path).
+    if (forced || !Number.isFinite(catalog.states.get(s.id)?.at)) waits.push(load)
+    else load.catch(() => {})
+  }
+  await Promise.all(waits)
+  // Drop the data of sources that are gone or disabled (a disabled 20k-entry index would otherwise stay in memory).
+  for (const key of catalog.states.keys()) if (!enabled.some((s) => s.id === key)) catalog.states.delete(key)
+  const plugin = enabled.filter(offersPlugins)
+  const radarSource = enabled.find((s) => s.kind === 'radar-overlay')
+  const radar = radarSource ? catalog.states.get(radarSource.id) : null
+  const sig = [...plugin.map((s) => `${s.id}:${s.trust}:${catalog.states.get(s.id)?.gen ?? 0}`), `radar:${radar?.gen ?? 0}`].join('|')
+  if (!catalog.merged || catalog.merged.sig !== sig) {
+    const merged = mergeCatalog(plugin.map((s) => ({ id: s.id, trust: s.trust, offerings: catalog.states.get(s.id)?.offerings ?? [] })), { radar: radar?.radar ?? null })
+    catalog.merged = { sig, index: buildIndex(merged.items) }
+  }
+  const top = plugin.map((s) => catalog.states.get(s.id)?.meta).find((m) => m?.url && m.count > 0)
+  return { index: catalog.merged.index, merged: catalog.merged, config, rows: sourceStatus(config, catalog.states), source: top?.url ?? null, radarAt: radar?.meta?.generatedAt ?? null }
+}
+
+/** The 0.4.0 view of the current merge (legacyView), computed once per merge. */
+function legacyItems(c) {
+  if (!c.merged.legacy) {
+    const rank = new Map(c.config.map((s, i) => [s.id, i]))
+    c.merged.legacy = legacyView(c.index.items, (id) => rank.get(id) ?? Infinity)
+  }
+  return c.merged.legacy
+}
+
+/** Names of every dependency of the current profile (for the `installed` chip), or null without a profile. */
+function installedNames() {
+  if (!where.profileDir) return null
+  try { return Object.keys(JSON.parse(readFileSync(path.join(where.profileDir, 'package.json'), 'utf8')).dependencies ?? {}) } catch { return null }
 }
 
 /* ------------------------------------------------------------------ background checks */
@@ -302,7 +389,7 @@ let jobChain = Promise.resolve()
 
 function jobView(job, since = 0) {
   return {
-    id: job.id, spec: job.spec, status: job.status, createdAt: job.createdAt,
+    id: job.id, spec: job.spec, key: job.key ?? null, sourceId: job.sourceId ?? null, status: job.status, createdAt: job.createdAt,
     events: job.events.slice(since), next: job.events.length,
     result: job.result ? { outcome: job.result.outcome, by: job.result.by ?? null, install: job.result.install ?? null,
       reason: text(job.result.reason, 1200), changes: (job.result.changes ?? []).slice(0, 40),
@@ -313,8 +400,8 @@ function jobView(job, since = 0) {
   }
 }
 
-function startJob(ctx, spec, allowBuilds) {
-  const job = { id: randomUUID(), spec, status: 'queued', createdAt: new Date().toISOString(), events: [], result: null, controller: new AbortController() }
+function startJob(ctx, spec, allowBuilds, origin = {}) {
+  const job = { id: randomUUID(), spec, key: origin.key ?? null, sourceId: origin.sourceId ?? null, status: 'queued', createdAt: new Date().toISOString(), events: [], result: null, controller: new AbortController() }
   const push = (e) => { job.events.push({ at: Date.now(), ...e }); if (job.events.length > 600) job.events.splice(0, job.events.length - 600) }
   jobs.set(job.id, job)
   for (const [id, j] of jobs) if (jobs.size > 20 && j.status !== 'running' && j.status !== 'queued') jobs.delete(id)
@@ -358,7 +445,10 @@ async function readSpec(request) {
   const spec = typeof payload?.spec === 'string' ? payload.spec.trim() : ''
   if (!spec || spec.length > 2000 || spec.startsWith('-')) return { error: json(failure('autofit/invalid-spec', 'A plugin spec (not an option) of at most 2000 characters is required.', { field: 'spec' }), 400) }
   const allowBuilds = Array.isArray(payload?.allowBuilds) ? payload.allowBuilds.filter((b) => typeof b === 'string' && /^(@[\w.-]+\/)?[\w.-]+$/.test(b)).slice(0, 20) : []
-  return { spec, allowBuilds }
+  // A job started from a catalog card names the item key and the offer's source (for the trust gate, jobGate).
+  const key = payload?.key ?? null
+  const sourceId = payload?.sourceId ?? null
+  return { spec, allowBuilds, key, sourceId }
 }
 
 export function apply(ctx) {
@@ -370,7 +460,28 @@ export function apply(ctx) {
     if (profile?.installAnchor) where.installAnchor = profile.installAnchor
     if (profile?.packageManager?.command) where.packageManager = profile.packageManager
   } catch { /* no profile (e.g. SDK boot): background checks stay off */ }
+  const log = ctx.logger
   const reg = (route) => ctx.effect(() => ctx.connection.fetch.register(route), `dsh-autofit: ${route.path}`)
+
+  // Host markets: the pluginMarket service exists only with @deepseek-ai/dsh-experimental-plugin-market-bundle.
+  // A nested inject runs the callback when (and while) the service is there; without it nothing happens.
+  try {
+    if (typeof ctx.inject === 'function') {
+      ctx.inject(['pluginMarket'], (scope) => {
+        const sync = () => {
+          let next = []
+          // listIndexes() is synchronous on Host and never fetches; wrapped anyway (background path).
+          try { next = hostMarketList(scope.pluginMarket?.listIndexes?.()) } catch (err) { log?.warn?.(`dsh-autofit: host markets: ${err?.message ?? err}`) }
+          const changed = next.map((m) => m.url).join('\n') !== hostMarkets.map((m) => m.url).join('\n')
+          hostMarkets = next
+          if (changed) invalidateConfig()
+        }
+        sync()
+        scope.on?.('plugin-market/changed', () => { try { sync() } catch { /* never throw from an event */ } })
+        scope.effect?.(() => () => { if (hostMarkets.length) { hostMarkets = []; invalidateConfig() } }, 'dsh-autofit: host markets')
+      })
+    }
+  } catch (err) { log?.warn?.(`dsh-autofit: plugin-market service not usable: ${err?.message ?? err}`) }
 
   reg({
     path: ROUTES.check, methods: ['POST'], requestBody: 'buffered',
@@ -407,14 +518,97 @@ export function apply(ctx) {
   reg({
     path: ROUTES.catalog, methods: ['POST'], requestBody: 'buffered',
     fetch: async (request) => {
-      const b = await body(request)
-      const offset = Math.max(0, Number.parseInt(b?.offset ?? 0, 10) || 0)
-      const limit = Math.min(60, Math.max(1, Number.parseInt(b?.limit ?? 30, 10) || 30))
+      // Without the new fields this is the 0.4.0 request: every enabled source, sorted by stars. Without `itemKeys`
+      // the client may be 0.4.0 (cards keyed by name, jobs started without a source id): it gets one item per name
+      // and no browse-only offers (catalog.js legacyView).
+      const req = catalogRequest(await body(request))
       try {
-        const c = await loadCatalog()
-        return json({ ok: true, value: { ...searchCatalog(c.items, typeof b?.q === 'string' ? b.q.slice(0, 200) : '', offset, limit), offset, limit, source: c.source, radarAt: c.radarAt } })
+        const c = await loadCatalog({ log })
+        const down = catalogUnavailable(c.rows)
+        if (down) return json(failure('autofit/catalog-unavailable', down, { sourceStatus: c.rows }), 502)
+        const chip = chipPredicate(req, installedNames())
+        const legacy = req.itemKeys ? null : legacyItems(c)
+        const predicate = legacy ? (chip ? (it) => legacy.has(it) && chip(it) : (it) => legacy.has(it)) : chip
+        const r = queryCatalog(c.index, {
+          q: req.q, sources: req.sources, category: req.category, radar: req.radar, sort: req.sort,
+          offset: req.offset, limit: req.limit, predicate,
+        })
+        return json({ ok: true, value: {
+          total: r.total, items: r.items.map(wireItem), offset: req.offset, limit: req.limit, source: c.source, radarAt: c.radarAt,
+          facets: r.facets, sourceStatus: c.rows,
+        } })
       } catch (error) {
+        log?.warn?.(`dsh-autofit: catalog: ${error?.message ?? error}`)
         return json(failure('autofit/catalog-unavailable', text(error?.message ?? error, 800)), 502)
+      }
+    },
+  })
+
+  const sourcesValue = async () => ({ sources: sourceStatus(await sourceConfig(), catalog.states), hostMarkets })
+
+  reg({
+    path: ROUTES.sourcesList, methods: ['POST'], requestBody: 'buffered',
+    fetch: async () => {
+      try {
+        return json({ ok: true, value: await sourcesValue() })
+      } catch (error) {
+        return json(failure('autofit/sources-unavailable', text(error?.message ?? error, 800)), 500)
+      }
+    },
+  })
+
+  reg({
+    path: ROUTES.sourcesProbe, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const b = await body(request)
+      if (typeof b?.url !== 'string' || !b.url.trim()) return json(failure('autofit/invalid-source-url', 'An index URL is required.', { field: 'url' }), 400)
+      try {
+        return json({ ok: true, value: await probeSource(b.url, { hostVersion: hostVersion() ?? undefined, existing: catalog.merged?.index.items ?? [] }) })
+      } catch (error) {
+        const code = error?.code ?? 'internal'
+        if (code === 'scheme' || code === 'invalid') return json(failure('autofit/invalid-source-url', text(error?.message ?? error, 800), { code }), 400)
+        return json(failure('autofit/source-probe-failed', text(error?.message ?? error, 800), { code, status: error?.status ?? null }), 502)
+      }
+    },
+  })
+
+  reg({
+    path: ROUTES.sourcesSet, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const change = await body(request)
+      return serializedSourceChange(async () => {
+        let next
+        try {
+          next = applySourceChange(await readSourceConfig(), change).sources
+        } catch (error) {
+          const code = error?.code ?? 'invalid'
+          const status = code === 'duplicate' ? 409 : code === 'not-found' ? 404 : 400
+          return json(failure(`autofit/source-${code}`, text(error?.message ?? error, 800)), status)
+        }
+        try {
+          await saveSourceConfig(dataDir(), next)
+          invalidateConfig()
+          for (const s of next) if (s.enabled === false) catalog.states.delete(s.id) // free a disabled source now
+          return json({ ok: true, value: await sourcesValue() })
+        } catch (error) {
+          return json(failure('autofit/sources-save-failed', text(error?.message ?? error, 800)), 500)
+        }
+      })
+    },
+  })
+
+  reg({
+    path: ROUTES.sourcesRefresh, methods: ['POST'], requestBody: 'buffered',
+    fetch: async (request) => {
+      const b = await body(request)
+      const id = typeof b?.id === 'string' ? b.id : null
+      try {
+        if (id && !(await sourceConfig()).some((s) => s.id === id)) return json(failure('autofit/source-not-found', `No source ${text(id, 100)}.`), 404)
+        const c = await loadCatalog({ force: true, id, log })
+        return json({ ok: true, value: { sources: c.rows, hostMarkets } })
+      } catch (error) {
+        log?.warn?.(`dsh-autofit: source refresh: ${error?.message ?? error}`)
+        return json(failure('autofit/sources-unavailable', text(error?.message ?? error, 800)), 502)
       }
     },
   })
@@ -435,8 +629,14 @@ export function apply(ctx) {
     fetch: async (request) => {
       const input = await readSpec(request)
       if (input.error) return input.error
+      if (input.sourceId !== null || input.key !== null) {
+        let config = []
+        try { config = await sourceConfig() } catch (err) { log?.warn?.(`dsh-autofit: source config: ${err?.message ?? err}`) }
+        const gate = jobGate({ sourceId: input.sourceId, key: input.key }, config)
+        if (!gate.ok) return json(failure(gate.code, gate.message, { sourceId: text(input.sourceId, 100) }), gate.status)
+      }
       const live = [...jobs.values()].find((j) => j.spec === input.spec && (j.status === 'queued' || j.status === 'running'))
-      return json({ ok: true, value: jobView(live ?? startJob(ctx, input.spec, input.allowBuilds)) })
+      return json({ ok: true, value: jobView(live ?? startJob(ctx, input.spec, input.allowBuilds, { key: text(input.key, 600), sourceId: input.sourceId })) })
     },
   })
   reg({

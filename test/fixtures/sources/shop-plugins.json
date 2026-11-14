@@ -1,0 +1,252 @@
+{
+ "schemaVersion": 5,
+ "denied": [],
+ "notAShop": [
+  "@hhxg/dsh-hhxg-market",
+  "@jasper/dsh-plugin-petdex-market"
+ ],
+ "plugins": [
+  {
+   "name": "@0x0lab/dsh-llm-proxy",
+   "version": "2.1.0",
+   "integrity": "sha512-NtUQ7ws8Y9yf7ovH50g98uRokkkI62R74H0wKBBSug314TB6tZhjAAvxJsaTTcYr298KVkyMCPU6k+crR6RNhA==",
+   "publishedAt": "2026-11-08T16:32:29.481Z",
+   "repository": "https://github.com/reyesyang/dsh-llm-http-proxy",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "provider",
+    "summary": {
+     "en": "Provider-scoped outbound proxy for model requests"
+    },
+    "capabilities": []
+   },
+   "source": "npm",
+   "added": "2026-11-09",
+   "publisher": "reyesyang",
+   "peers": [
+    "@deepseek-ai/cordis"
+   ],
+   "unpackedSize": 136069,
+   "installSize": 136069,
+   "dependencies": 2,
+   "tier": "community",
+   "icon": "a44e4bf8aa439d82e2485fca36351664e9c925dca0234fe4db58a1786c1b5fbf"
+  },
+  {
+   "name": "@7gzgn/dsh-emotion",
+   "version": "0.5.1",
+   "integrity": "sha512-eQ+Hef9zPlNbjFoh51FD8dEhosk3BtEvPTDBcVgi/j7h9XCuceSARjQntXIhHrLSMB6b2yT13ThPxDAtq3rq0w==",
+   "publishedAt": "2026-11-03T20:16:23.068Z",
+   "repository": "https://github.com/7gzgn/dsh-emotion",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "other",
+    "summary": {
+     "en": "把 AI 的情绪搬到模型外面：若干条情绪轴各 0-100，按你说的话加减、随时间自己漂移，每轮把「现在处在哪一档 + 可用标签」注入系统提示。数值只由插件维护，模型自己算不出来也改不了——它只能带着这个状态说话。"
+    },
+    "capabilities": []
+   },
+   "source": "npm",
+   "added": "2026-11-04",
+   "publisher": "7gzgn",
+   "peers": [
+    "@deepseek-ai/cordis",
+    "@deepseek-ai/dsh-system-prompt"
+   ],
+   "unpackedSize": 51245,
+   "installSize": 51245,
+   "compatibility": {
+    "dsh": "0.2.1-rc.2",
+    "profiles": [
+     "web",
+     "desktop"
+    ]
+   },
+   "dshPeers": {
+    "@deepseek-ai/dsh-system-prompt": ">=0.2.0-rc.2 <0.3.0-0"
+   },
+   "tier": "community"
+  },
+  {
+   "name": "3chat-customer-growth",
+   "version": "d741956969f0adcd523c13d682e9ca8d7b313cb0",
+   "integrity": "d741956969f0adcd523c13d682e9ca8d7b313cb0",
+   "publishedAt": "2026-10-19T07:35:44Z",
+   "repository": "https://github.com/3ChatAI-NCT/3chatai-deepseek-harness-plugin",
+   "license": "Apache-2.0",
+   "metadata": "derived",
+   "catalog": {
+    "category": "integration",
+    "summary": {
+     "en": "3chat.ai skills"
+    },
+    "capabilities": []
+   },
+   "source": "github",
+   "repo": "3ChatAI-NCT/3chatai-deepseek-harness-plugin",
+   "added": "2026-10-10",
+   "installSize": 2588604,
+   "dshPeers": {
+    "@deepseek-ai/dsh-typert-protocol": "*"
+   },
+   "manifestVersion": "2.1.4",
+   "tier": "community",
+   "icon": "694edd2008b240545cfd26a46f2eacba88036a6faf58e478ecec0fe19dc7c597"
+  },
+  {
+   "name": "@4fu/dsh-standard-plus",
+   "version": "589276d79cff0f5f9c9e80f1854af6207c8043b7",
+   "integrity": "589276d79cff0f5f9c9e80f1854af6207c8043b7",
+   "publishedAt": "2026-11-10T04:30:33Z",
+   "repository": "https://github.com/4fuu/dsh-standard-plus",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "tool",
+    "summary": {
+     "en": "DeepSeek Harness plugin: one Standard mode with the Creative mode tools, replacing the shipped modes"
+    },
+    "capabilities": []
+   },
+   "source": "github",
+   "repo": "4fuu/dsh-standard-plus",
+   "subdir": "packages/dsh-standard-plus",
+   "added": "2026-11-10",
+   "installSize": 11954,
+   "manifestVersion": "2026.1110.0",
+   "engines": "0.2.2-rc.1",
+   "tier": "community"
+  },
+  {
+   "name": "@ablemind/dsh-plugin-tui",
+   "version": "v0.2.1",
+   "integrity": "006342dfe2a090d6c197cd2e8427ed2538e9cd754e2728fa3af7cb54dc12578f",
+   "publishedAt": "2026-08-20T02:33:00Z",
+   "repository": "https://github.com/hanlinlibham/dsh-native-tui",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "ui",
+    "summary": {
+     "en": "Classic, dependable DeepSeek Harness TUI with session, provider, and model management."
+    },
+    "capabilities": []
+   },
+   "source": "github",
+   "repo": "hanlinlibham/dsh-native-tui",
+   "tarball": {
+    "url": "https://github.com/hanlinlibham/dsh-native-tui/releases/download/v0.2.1/dsh-native-tui-v0.2.1.tgz",
+    "sha256": "006342dfe2a090d6c197cd2e8427ed2538e9cd754e2728fa3af7cb54dc12578f"
+   },
+   "added": "2026-09-01",
+   "installSize": 1673394,
+   "dependencies": 22,
+   "tier": "community"
+  },
+  {
+   "name": "@7dgroup/dsh-7d-tray-win",
+   "version": "835c2ecc1228cd6ce7488fd11d9b0f39d3223e46",
+   "integrity": "835c2ecc1228cd6ce7488fd11d9b0f39d3223e46",
+   "publishedAt": "2026-08-21T13:48:47Z",
+   "repository": "https://github.com/7dgroup-ai/dsh-7d-tray-win",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "ui",
+    "summary": {
+     "en": "DeepSeek Harness（dsh）的 `Windows 专属` 系统托盘插件。在 `dsh web` 运行期间，系统托盘会自动出现 DeepSeek 鲸鱼图标；服务停止后，托盘图标 3 秒内自动消失——托盘与服务同生命周期。同时自动维护一个静默桌面启动器 `DSH.lnk`，双击即可无窗口启动服务并打开浏览器。"
+    },
+    "capabilities": []
+   },
+   "source": "github",
+   "repo": "7dgroup-ai/dsh-7d-tray-win",
+   "added": "2026-08-31",
+   "installSize": 2116530,
+   "archived": true,
+   "tier": "community"
+  },
+  {
+   "name": "@canary-builds/dsh-mobile-ui",
+   "version": "fcea3a07f9f3a963375400bc9032a1a71df444a7",
+   "integrity": "fcea3a07f9f3a963375400bc9032a1a71df444a7",
+   "publishedAt": "2026-09-06T02:10:22Z",
+   "repository": "https://github.com/canarybuilds/dsh-mobile-ui",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "ui",
+    "summary": {
+     "en": "Mobile and PWA interface enhancements for DeepSeek Harness, inside your existing web UI."
+    },
+    "capabilities": []
+   },
+   "source": "github",
+   "repo": "canarybuilds/dsh-mobile-ui",
+   "added": "2026-11-12",
+   "installSize": 882792,
+   "tier": "community"
+  },
+  {
+   "name": "@canary-builds/dsh-mobile-ui",
+   "version": "1.1.2",
+   "integrity": "sha512-cP/8v0Y9r/BJD6gZX8hph8r4WHnzjUxigd4Q3jv24coQY6kD/YMEHnunROW5zE6vQhURvTjhzNwfdDiq16WpAA==",
+   "publishedAt": "2026-09-06T01:26:18.725Z",
+   "repository": "https://github.com/Canary-Builds/dsh-mobile-ui",
+   "license": "MIT",
+   "metadata": "derived",
+   "catalog": {
+    "category": "ui",
+    "summary": {
+     "en": "Mobile and PWA interface enhancements for DeepSeek Harness, inside your existing web UI."
+    },
+    "capabilities": []
+   },
+   "source": "npm",
+   "added": "2026-09-06",
+   "publisher": "mareekkk",
+   "unpackedSize": 20319,
+   "installSize": 20319,
+   "tier": "community"
+  },
+  {
+   "name": "@callaiapi/seo",
+   "version": "0.1.0",
+   "integrity": "sha512-vnMazsJyEj/f8HnWT+8OEEUQcV86sqPWDQleH0nWLCjVI3isfaYONetKbsaBxKQPKYohRaMm1RERtjRCcbA68w==",
+   "publishedAt": "2026-11-03T12:30:50.063Z",
+   "repository": "https://github.com/hanshengcc/callai-seo-mcp",
+   "license": "MIT",
+   "metadata": "declared",
+   "catalog": {
+    "category": "integration",
+    "summary": {
+     "en": "Live SEO data for your agent: Google/Bing SERP, keyword difficulty, competitor gaps, backlinks, page audits. Pay as you go.",
+     "zh": "给 Agent 接上实时 SEO 数据：Google/Bing 搜索结果、关键词难度、竞品差距、外链与页面体检，按量计费。"
+    },
+    "capabilities": [
+     "mcp-client",
+     "skills",
+     "tools",
+     "credentials"
+    ]
+   },
+   "source": "npm",
+   "added": "2026-11-04",
+   "publisher": "callaiapi",
+   "peers": [
+    "@deepseek-ai/cordis",
+    "@deepseek-ai/dsh-mcp-client"
+   ],
+   "unpackedSize": 37363,
+   "installSize": 37363,
+   "dshPeers": {
+    "@deepseek-ai/dsh-mcp-client": ">=0.2.0-rc.2"
+   },
+   "engines": ">=0.2.0-rc.2",
+   "dependencies": 1,
+   "tier": "community",
+   "icon": "017c46b41f5f566ecf96460d9561ccf35b3c8016df5fc7003f4edcd869f3d769"
+  }
+ ]
+}
