@@ -30,6 +30,7 @@ if (cmd === 'fix' && spec) {
     for (const c of r.changes) console.log(`  ${c.tier} ${c.rule}  ${c.file}: ${c.detail}`)
     for (const a of r.needsApproval) console.log(`  needs approval: ${a.kind} ${a.packages?.join(', ') ?? ''} — ${a.why}`)
     for (const u of r.unresolved) console.log(`  unresolved: ${u.code} — ${u.hint}`)
+    if (r.notRepairable) console.log(`  not repaired: ${r.reason}`)
     console.log(`  verdict: ${r.verdict}${r.artifact?.usable ? `  → ${r.artifact.file}` : ''}${r.error ? `  (error: ${r.error})` : ''}`)
   }
   process.exit({ pass: 0, fixed: 0, fail: 1, incompatible: 2 }[r.verdict] ?? 3)

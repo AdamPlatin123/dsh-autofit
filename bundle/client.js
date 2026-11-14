@@ -65,6 +65,7 @@ async function installBundleCompat(manager, spec) {
         dockByRules: '规则',
         dockByAgent: 'agent',
         dockUnfixed: '修不好：{reason}',
+        dockNotRepairable: '这个来源只能试装，不能修复（只有 npm 包和本地文件能修复）',
         dockApproval: '需要你批准：{why}',
         dockApprove: '允许并重试',
         dockReview: '待你确认',
@@ -118,6 +119,9 @@ async function installBundleCompat(manager, spec) {
         detailHow: '点「用 Autofit 安装」后会先在临时环境里试装；不通过就自动修复，修好后再装进当前 profile。进度在右下角的胶囊里，点开可看详情。',
         tabInstall: '用 Autofit 安装',
         tabOf: '共 {total} 个',
+        hintTrialOnly: 'Git 来源只能试装',
+        hintTarballTrialOnly: 'tarball 来源只能试装',
+        hintUnpinned: '版本不固定',
         radarOk: '雷达实测通过',
         radarIncompatible: '雷达实测不兼容',
         radarPending: '雷达待测',
@@ -235,6 +239,7 @@ async function installBundleCompat(manager, spec) {
         dockByRules: 'rules',
         dockByAgent: 'the agent',
         dockUnfixed: 'Could not fix: {reason}',
+        dockNotRepairable: 'This source can only be trialled, not repaired (only npm packages and local files can be)',
         dockApproval: 'Needs your approval: {why}',
         dockApprove: 'Allow and retry',
         dockReview: 'Needs your review',
@@ -288,6 +293,9 @@ async function installBundleCompat(manager, spec) {
         detailHow: '"Install with autofix" first trial-installs it in a throwaway profile; if that fails it is repaired automatically, and the passing build is installed into this profile. Progress lives in the pill in the bottom-right corner — click it for details.',
         tabInstall: 'Install with autofix',
         tabOf: '{total} plugins',
+        hintTrialOnly: 'Git source: trial only',
+        hintTarballTrialOnly: 'Tarball source: trial only',
+        hintUnpinned: 'Version not pinned',
         radarOk: 'Radar: runs',
         radarIncompatible: 'Radar: incompatible',
         radarPending: 'Radar: not yet tested',
@@ -1306,6 +1314,17 @@ async function installBundleCompat(manager, spec) {
       return h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, t(key))
     }
 
+    /** Where a catalog item comes from (its first source) and whether it can be repaired; nothing for a 0.4.0 Host. */
+    function sourceChips(t, it, titles) {
+      const out = []
+      const first = Array.isArray(it.sources) ? it.sources[0] : null
+      if (first) out.push(h('span', { key: 'src', className: 'dsh-autofit-chip', title: it.sources.join(', ') }, pickText(titles && titles[first]) || first))
+      const kind = it.install && it.install.kind
+      if (kind && kind !== 'npm') out.push(h('span', { key: 'kind', className: 'dsh-autofit-chip' }, t(kind === 'tarball' ? 'hintTarballTrialOnly' : 'hintTrialOnly')))
+      if (it.install && it.install.pinned === false) out.push(h('span', { key: 'pin', className: 'dsh-autofit-chip' }, t('hintUnpinned')))
+      return out
+    }
+
     function AutofitTab({ t, ctx }) {
       const dialog = useAutofitDialog()
       const [q, setQ] = useState('')
@@ -1321,12 +1340,14 @@ async function installBundleCompat(manager, spec) {
         const token = ++seq.current
         setLoading(true)
         setError(null)
-        const r = await callJson(CATALOG_PATH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: query, offset, limit: 30 }) })
+        const r = await callJson(CATALOG_PATH, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: query, offset, limit: 30, itemKeys: true }) })
         if (token !== seq.current) return
         setLoading(false)
         if (!r.ok) { setError((r.error && r.error.message) || t('errorRpc')); return }
         setTotal(r.value.total)
-        setMeta({ source: r.value.source, radarAt: r.value.radarAt })
+        const titles = {}
+        for (const s of r.value.sourceStatus || []) if (s && s.id) titles[s.id] = s.title
+        setMeta({ source: r.value.source, radarAt: r.value.radarAt, titles })
         setItems((prev) => (offset ? prev.concat(r.value.items) : r.value.items))
       }, [t])
 
@@ -1344,15 +1365,15 @@ async function installBundleCompat(manager, spec) {
           meta ? h('span', null, `${t('tabSource')}: ${String(meta.source || '').replace(/^https?:\/\//, '').split('/')[0]}${meta.radarAt ? ` · ${t('tabRadar')} ${String(meta.radarAt).slice(0, 10)}` : ''}`) : null),
         error ? h(ErrorBox, { t, message: error }) : null,
         detail ? h(CatalogDetail, { t, item: detail, onClose: () => setDetail(null) }) : null,
-        h('div', { className: 'dsh-autofit-cards' }, items.map((it) => h('div', { key: it.name, className: 'dsh-autofit-card' },
+        h('div', { className: 'dsh-autofit-cards' }, items.map((it) => h('div', { key: it.key ?? it.name, className: 'dsh-autofit-card' },
           h('button', { type: 'button', className: 'dsh-autofit-card-open', title: t('detailOpen'), onClick: () => setDetail(it) },
             h('span', { className: 'dsh-autofit-card-title' }, pickText(it.title) || it.name)),
           h('div', { className: 'dsh-autofit-card-meta' }, h('code', null, it.spec), it.category ? h('span', { className: 'dsh-autofit-chip' }, it.category) : null,
-            it.stars != null ? h('span', null, `★ ${it.stars}`) : null, radarChip(t, it.radar)),
+            it.stars != null ? h('span', null, `★ ${it.stars}`) : null, radarChip(t, it.radar), ...sourceChips(t, it, meta && meta.titles)),
           h('div', { className: 'dsh-autofit-card-desc' }, pickText(it.description)),
           h('div', { className: 'dsh-autofit-card-foot' },
             h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => setDetail(it) }, t('detailOpen')),
-            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: (event) => void startAutofitJob(it.spec, null, { from: rectOf(event.currentTarget) }) }, t('tabInstall')))))),
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: (event) => void startAutofitJob(it.spec, null, { from: rectOf(event.currentTarget), key: it.key, sourceId: it.chosenSource }) }, t('tabInstall')))))),
         loading ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('tabLoading'))) : null,
         !loading && !error && !items.length ? h('div', { className: 'dsh-autofit-section-desc' }, t('tabEmpty')) : null,
         !loading && items.length < total ? h('div', { className: 'dsh-autofit-actions' }, h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void load(q, items.length) }, t('tabMore'))) : null)
@@ -1367,7 +1388,7 @@ async function installBundleCompat(manager, spec) {
       }, [onClose])
       const link = (href, label) => (href ? h('a', { href: String(href).replace(/^git\+/, '').replace(/\.git$/, ''), target: '_blank', rel: 'noreferrer noopener' }, label) : null)
       const row = (k, v) => (v == null || v === '' ? null : h('div', { className: 'dsh-autofit-detail-row' }, h('span', null, k), h('span', null, v)))
-      const install = (event) => { const from = rectOf(event.currentTarget); onClose(); void startAutofitJob(item.spec, null, { from }) }
+      const install = (event) => { const from = rectOf(event.currentTarget); onClose(); void startAutofitJob(item.spec, null, { from, key: item.key, sourceId: item.chosenSource }) }
       return h('div', { className: 'dsh-autofit-detail-backdrop', onMouseDown: (e) => { if (e.target === e.currentTarget) onClose() } },
         h('aside', { className: 'dsh-autofit-detail', role: 'dialog', 'aria-modal': 'true', 'aria-label': pickText(item.title) || item.name },
           h('div', { className: 'dsh-autofit-detail-head' },
@@ -1605,12 +1626,14 @@ async function installBundleCompat(manager, spec) {
       const expand = !!(opts && opts.expand)
       // The pill appears at the click, before the host answers: a placeholder row stands in until the job id arrives.
       const tempId = `pending-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-      upsertJob({ id: tempId, spec, status: 'queued', events: [] })
+      // A job from a catalog card names its item and source; the Host refuses browse-only sources (trust gate).
+      const origin = { key: (opts && opts.key) || null, sourceId: (opts && opts.sourceId) || null }
+      upsertJob({ id: tempId, spec, ...origin, status: 'queued', events: [] })
       setDock({ open: true, minimized: !expand, pop: expand ? dock.pop : Date.now() })
       if (!expand) flyToPill(opts && opts.from)
-      const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [] })
+      const r = await postJson(JOB.start, { spec, allowBuilds: allowBuilds || [], ...(origin.sourceId ? origin : {}) })
       setDock({ jobs: dock.jobs.filter((j) => j.id !== tempId), focus: dock.focus === tempId ? null : dock.focus })
-      if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
+      if (!r.ok) { upsertJob({ id: `error-${Date.now()}`, spec, ...origin, status: 'failed', events: [{ type: 'done', outcome: 'error', reason: (r.error && r.error.message) || 'request failed' }] }); return }
       upsertJob(r.value)
       // Don't take the stage from a job that is running right now; the new one queues behind it, folded.
       const cur = dock.jobs.find((j) => j.id === dock.focus)
@@ -1650,6 +1673,7 @@ async function installBundleCompat(manager, spec) {
           if (e.outcome === 'pass') return { icon: '✓', text: t('dockPass') }
           if (e.outcome === 'fixed' && e.review) return { icon: '⚠', text: fmt(t, 'dockFixedReview', { n: e.lines == null ? '?' : e.lines }) }
           if (e.outcome === 'fixed') return { icon: '✓', text: fmt(t, 'dockFixed', { by: e.by === 'agent' ? t('dockByAgent') : t('dockByRules') }) }
+          if (e.outcome === 'not-repairable') return { icon: '✗', text: t('dockNotRepairable') }
           if (e.outcome === 'needs-approval') return { icon: '⚠', text: fmt(t, 'dockApproval', { why: (e.needsApproval || []).map((a) => `${a.why} (${(a.packages || []).join(', ')})`).join('; ') }) }
           return { icon: '✗', text: fmt(t, 'dockUnfixed', { reason: e.reason || (e.unresolved || []).map((u) => u.hint).join('; ') || e.outcome }) }
         case 'installed': return e.error ? { icon: '✗', text: `${t('installFailed')}: ${e.error}` } : { icon: '✓', text: `${t('dockInstalled')} (${e.application || 'applied'})` }
@@ -1764,10 +1788,10 @@ async function installBundleCompat(manager, spec) {
           h('span', { style: { flex: 1 } }),
           job.status === 'queued' || job.status === 'running'
             ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockCancel')) : null,
-          approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages, { expand: true }) }, t('dockApprove')) : null,
+          approval ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void startAutofitJob(job.spec, approval.packages, { expand: true, key: job.key, sourceId: job.sourceId }) }, t('dockApprove')) : null,
           review ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void postJson(JOB.cancel, { id: job.id }).then((r) => r.ok && upsertJob(r.value, true)) }, t('dockDecline')) : null,
           review ? h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', onClick: () => void installReady(job, true) }, t('dockInstallReviewed')) : null,
-          !busy && !approval && !review && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec, null, { expand: true }) }, t('dockRetry')) : null,
+          !busy && !approval && !review && job.status !== 'installed' ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => void startAutofitJob(job.spec, null, { expand: true, key: job.key, sourceId: job.sourceId }) }, t('dockRetry')) : null,
           !busy ? h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => dismissJob(job.id) }, t('dockDismiss')) : null))
     }
 

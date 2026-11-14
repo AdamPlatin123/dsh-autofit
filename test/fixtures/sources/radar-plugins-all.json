@@ -1,0 +1,111 @@
+{
+ "schema": "dsh-radar/v1",
+ "generated_at": "2026-11-13T21:16:09Z",
+ "plugins": [
+  {
+   "repo": "ranxianglei/billion-context",
+   "name": "ranxianglei-billion-context",
+   "verdict": "pending",
+   "stars": 6477,
+   "desc": "A context-compression plugin for month-long single sessions (billions of tokens) ,small context windows (a 100"
+  },
+  {
+   "repo": "superdesigndev/treg",
+   "name": "superdesigndev-treg",
+   "verdict": "pending",
+   "stars": 3987,
+   "desc": "OpenRouter for agent tools"
+  },
+  {
+   "repo": "yexi-by/dsh-unrestricted",
+   "name": "yexi-by-dsh-unrestricted",
+   "verdict": "ok",
+   "stars": 1156,
+   "desc": "DeepSeek Harness 提示词破限插件：通过系统提示词解除模型回答限制，深度适配 Web 与桌面端多模式及工具调用"
+  },
+  {
+   "repo": "tong-io/tongflow",
+   "name": "tong-io-tongflow",
+   "verdict": "ok",
+   "stars": 1032,
+   "desc": "Agent-Human-Friendly, Modality-First, Enterprise-Level GenAI Workflow Platform"
+  },
+  {
+   "repo": "Anionex/dsh-vision-toolkit",
+   "name": "dsh-vision-toolkit",
+   "verdict": "pending",
+   "stars": 887,
+   "desc": "让纯文本模型更好地做视觉任务的DeepSeek Harness插件：带意图的图片问答、长截图 OCR、UI 还原等｜DeepSeek Harness-native integration for agent-vision"
+  },
+  {
+   "repo": "chenxiachan/thoughtdag",
+   "name": "chenxiachan-thoughtdag",
+   "verdict": "ok",
+   "stars": 516,
+   "desc": "Your thinking deserves a map: an infinite canvas where LLM conversations grow into an editable thought graph"
+  },
+  {
+   "repo": "Aloneswork/deepseek-harness-evolving-memory",
+   "name": "deepseek-harness-evolving-memory",
+   "verdict": "untested",
+   "stars": 0,
+   "desc": "DeepSeek Harness 本地语义演化式长期记忆插件｜Local semantic evolving memory for DSH"
+  },
+  {
+   "repo": "zn-dk/dsh-zhipu-toolkit",
+   "name": "dsh-zhipu-toolkit",
+   "verdict": "untested",
+   "stars": 0,
+   "desc": "智谱 BigModel GLM 双端点模型目录（Coding Plan 与普通 API），实时模型发现、实测思考档位映射，可视化设置卡片管理 Key/端点/默认推理档，本地 API Key 支持存入 DSH 凭证库；npm `dsh-zhipu-toolkit`@0.1.0"
+  },
+  {
+   "repo": "mem9-ai/mem9",
+   "name": "mem9-ai-mem9",
+   "verdict": "incompatible",
+   "stars": 1220,
+   "desc": "Unlimited memory for OpenClaw"
+  },
+  {
+   "repo": "agentrq/agentrq",
+   "name": "agentrq-agentrq",
+   "verdict": "incompatible",
+   "stars": 1136,
+   "desc": "AgentRQ: Human-in-loop realtime conversational task manager for AI Agents"
+  },
+  {
+   "repo": "toby-bridges/api-relay-audit",
+   "name": "toby-bridges-api-relay-audit",
+   "verdict": "incompatible",
+   "stars": 866,
+   "desc": "Local security audit for AI API relays and LLM proxies: detects prompt injection, model substitution, tool-cal"
+  },
+  {
+   "repo": "openma-ai/open-managed-agents",
+   "name": "openma-ai-open-managed-agents",
+   "verdict": "ok",
+   "stars": 313,
+   "desc": "Self-host AI agents with Claude Managed Agents and OpenAI Agents API support〔📦〕"
+  },
+  {
+   "repo": "MemTensor/memmy-agent",
+   "name": "memtensor-memmy-agent",
+   "verdict": "ok",
+   "stars": 2002,
+   "desc": "—〔📦〕"
+  },
+  {
+   "repo": "Moeblack/dsh-prompt-studio",
+   "name": "dsh-prompt-studio",
+   "verdict": "pending",
+   "stars": 2,
+   "desc": "DSH plugin: edit user and built-in system-prompt sections with live preview (Prompt Studio) 〔PR〕"
+  },
+  {
+   "repo": "zhang66633/.dsh-plugin-installer",
+   "name": ".dsh-plugin-installer",
+   "verdict": "incompatible",
+   "stars": 2,
+   "desc": "DeepSeek Harness（dsh）的插件商店 + 安装助手：在 Web GUI 里逛插件目录，一键确认安装，agent 替你装好"
+  }
+ ]
+}
