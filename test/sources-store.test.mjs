@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { after, before, test } from 'node:test'
 import {
-  DEFAULT_SOURCES, applySourceChange, fetchJson, hostMarketSources, loadRadar, loadSource, loadSourceConfig,
+  DEFAULT_SOURCES, USER_INDEX_TIMEOUT_MS, applySourceChange, fetchJson, fetchOptionsFor, hostMarketSources, loadRadar, loadSource, loadSourceConfig,
   probeSource, saveSourceConfig,
 } from '../lib/sources/store.js'
 import * as publicApi from '../lib/sources/index.js'
@@ -330,6 +330,35 @@ test('probeSource summarizes an index for the add-source dialog', async () => {
   await assert.rejects(probeSource('file:///etc/passwd'), { code: 'scheme' })
 })
 
+test('community catalogs load and probe as community:<id>, with the adapter title, through the cache', async () => {
+  const LANSHU = fixtureText('community/lanshu-api.json')
+  const OMNI = fixtureText('community/omni-catalog.json')
+  reset({ '/lanshu': json(LANSHU, { etag: '"l1"' }), '/omni': json(OMNI), '/go': (req, res) => res.writeHead(302, { location: '/omni' }).end() })
+  const p = await probeSource(`${base}/omni`, { hostVersion: '0.2.1' })
+  assert.equal(p.format, 'community:omni-catalog')
+  assert.deepEqual(Object.keys(p.title).sort(), ['en', 'zh'])
+  assert.ok(p.count > 0 && p.count === p.npm + p.git + p.other)
+  await assert.rejects(probeSource(`${base}/go`), { code: 'redirect' }, 'user indexes still refuse redirects')
+
+  const dir = tmp()
+  try {
+    const source = { id: 'user-lanshu', kind: 'user-index', urls: [`${base}/lanshu`], trust: 'browse' }
+    const r = await loadSource(source, { dataDir: dir, now: () => 1000 })
+    assert.equal(r.meta.state, 'ok')
+    assert.equal(r.meta.format, 'community:lanshu-api')
+    assert.equal(r.meta.title.en, 'lanshuagent DSH plugin directory API')
+    assert.ok(r.offerings.length > 0 && r.offerings.every((o) => o.sourceId === 'user-lanshu' && o.install.kind === 'git'))
+    assert.ok(r.meta.skipped > 0, 'unpinned rows are tallied')
+    const again = await loadSource(source, { dataDir: dir, now: () => 2000 })
+    assert.equal(hits.at(-1).inm, '"l1"', 'revalidated by ETag')
+    assert.equal(again.meta.format, 'community:lanshu-api')
+    assert.deepEqual(again.offerings, r.offerings)
+    assert.deepEqual(again.meta.title, r.meta.title)
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+})
+
 /* ------------------------------------------------------------------ config */
 
 test('loadSourceConfig: defaults when the file is missing or garbage', async () => {
@@ -470,9 +499,11 @@ test('hostMarketSources gives stable ids; the public entry re-exports the store'
   assert.equal(a[0].id, b[0].id)
   assert.deepEqual(hostMarketSources(null), [])
   for (const name of ['loadSource', 'loadRadar', 'fetchJson', 'probeSource', 'applySourceChange', 'loadSourceConfig',
-    'saveSourceConfig', 'readFormat1', 'readShop', 'mergeCatalog', 'queryCatalog', 'buildIndex', 'detectFormat']) {
+    'saveSourceConfig', 'readFormat1', 'readShop', 'mergeCatalog', 'queryCatalog', 'buildIndex', 'detectFormat', 'detectCommunity', 'readCommunity', 'presetById']) {
     assert.equal(typeof publicApi[name], 'function', name)
   }
+  assert.ok(Array.isArray(publicApi.PRESETS) && publicApi.PRESETS.length > 0)
+  assert.ok(Array.isArray(publicApi.COMMUNITY_ADAPTERS) && publicApi.COMMUNITY_ADAPTERS.length > 0)
 })
 
 test('a corrupt cache file is ignored, not fatal', async () => {
@@ -514,4 +545,11 @@ test('loadRadar never throws on a damaged cache, and a damaged cache is not reva
   } finally {
     rmSync(dataDir, { recursive: true, force: true })
   }
+})
+
+test('fetchOptionsFor: user indexes refuse redirects and get the long body timeout (large community catalogs)', () => {
+  assert.ok(USER_INDEX_TIMEOUT_MS >= 60000)
+  assert.deepEqual(fetchOptionsFor({ kind: 'user-index' }, {}), { fetch: undefined, redirect: 'error', timeoutMs: USER_INDEX_TIMEOUT_MS })
+  assert.equal(fetchOptionsFor({ kind: 'user-index' }, { timeoutMs: 500 }).timeoutMs, 500, 'an explicit timeout wins')
+  assert.deepEqual(fetchOptionsFor({ kind: 'builtin-index' }, {}), { fetch: undefined, redirect: 'follow' })
 })

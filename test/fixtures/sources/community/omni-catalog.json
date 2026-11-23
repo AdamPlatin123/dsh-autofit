@@ -1,0 +1,983 @@
+{
+  "format": "omni-dsh-catalog-v1",
+  "catalogRevision": "71769b18fba63a69af0aba69ba6abfeb3cdea897",
+  "generatedAt": "2026-10-09T13:14:08.000Z",
+  "count": 3626,
+  "source": {
+    "repository": "https://github.com/diegosouzapw/awesome-omni-dsh-plugins",
+    "revision": "71769b18fba63a69af0aba69ba6abfeb3cdea897"
+  },
+  "notice": "Community-maintained, unofficial catalog. Entries are third-party code — review the source and pin the listed commit when installing.",
+  "entries": [
+    {
+      "schemaVersion": 1,
+      "id": "00080000-dsh-project-memory",
+      "name": "dsh-project-memory",
+      "description": {
+        "en": "Persistent project memory for dsh agents: index docs (PDF/Markdown/text) and code symbols into a searchable per-workspace store, recall them with cited sources, and keep experience entries (problems - solutions) searchable on demand.",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "memory-rag",
+      "tags": [
+        "dsh",
+        "dsh-plugin",
+        "deepseek-harness",
+        "memory",
+        "project-memory",
+        "rag",
+        "codebase",
+        "cordis"
+      ],
+      "source": {
+        "repository": "https://github.com/00080000/dsh-project-memory",
+        "repositoryNodeId": "R_kgDOT9RapQ",
+        "subpath": null,
+        "commit": "338b96e73786967c6486a6507940bd393b0a7203"
+      },
+      "creator": {
+        "github": "00080000"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-24T17:14:03.099Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 1
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-24T17:19:51.000Z",
+      "install": "dsh plugin --profile web add github:00080000/dsh-project-memory"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "007m7-dsh-cli-app",
+      "name": "@deepseek-ai/dsh-cli-app",
+      "description": {
+        "en": "The DeepSeek Harness local interactive terminal UI with commands, sessions, authentication, and Agent tools",
+        "evidencePath": "packages/bundle/cli-app/README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "models-providers-routing",
+      "tags": [
+        "local",
+        "interactive",
+        "terminal",
+        "commands",
+        "sessions",
+        "authentication",
+        "agent",
+        "tools",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/007M7/DeepCode",
+        "repositoryNodeId": "R_kgDOT3cLfQ",
+        "subpath": "packages/bundle/cli-app",
+        "commit": "a0edf49d2e41adfa573bf3c5656f0cafee3caf45"
+      },
+      "creator": {
+        "github": "007M7"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "packages/bundle/cli-app/cordis.patch.yml"
+      },
+      "repositoryScope": "monorepo",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-24T17:15:21.038Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "undefined-parent-repository",
+        "stars": null
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-24T17:20:51.000Z",
+      "install": "dsh plugin --profile web add github:007M7/DeepCode#path:packages/bundle/cli-app"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "ultronen-dsh-archived-chats",
+      "name": "Archive Management",
+      "description": {
+        "en": "Manage archived chats with search, preview, restore, workspace bulk archiving, ZIP backups, and a Recycle Bin.",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "sessions-productivity",
+      "tags": [
+        "deepseek-harness",
+        "dsh",
+        "dsh-plugin",
+        "archive",
+        "sessions",
+        "web-ui"
+      ],
+      "source": {
+        "repository": "https://github.com/Ultronen/dsh-archived-chats",
+        "repositoryNodeId": "R_kgDOT5pXsw",
+        "subpath": null,
+        "commit": "f519985a4bc7add41602e35931582dde60ea8e53"
+      },
+      "creator": {
+        "github": "Ultronen"
+      },
+      "package": {
+        "ecosystem": "npm",
+        "name": "dsh-archived-chats",
+        "version": "1.4.1",
+        "integrity": "sha512-LNezIiY5wNZa6A7Ct1VO9vdgtDzeXSwmy8x62LrfPhggPOjOuA2SpTu6a0+TQ+7jTpHoxsswBpegXH1kDDl+Yg=="
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-09-21T20:04:58.162Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 23
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-21T05:09:36.000Z",
+      "install": "dsh plugin --profile web add github:Ultronen/dsh-archived-chats"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "undeadsheep-dsh-file-preview",
+      "name": "@undeadsheep/dsh-file-preview",
+      "description": {
+        "en": "Workspace file tree listing and text preview/editing backed by a Host Remote for the DeepSeek Harness (distributable bundle: host service + client UI)",
+        "evidencePath": "packages/dsh-file-preview/README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "coding-developer-tools",
+      "tags": [
+        "workspace",
+        "file",
+        "tree",
+        "listing",
+        "text",
+        "preview",
+        "editing",
+        "backed",
+        "host",
+        "remote",
+        "distributable",
+        "bundle",
+        "service",
+        "client",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/UndeadSheep/dsh-file-preview",
+        "repositoryNodeId": "R_kgDOT435_w",
+        "subpath": "packages/dsh-file-preview",
+        "commit": "9b3689bf214cd54779a9da3a9effc3b4f128a2ac"
+      },
+      "creator": {
+        "github": "UndeadSheep"
+      },
+      "package": {
+        "ecosystem": "npm",
+        "name": "@undeadsheep/dsh-file-preview",
+        "version": "0.1.2",
+        "integrity": "sha512-ovWQvdQL0G51ifCYbmN9GRH2tr7Soa8Ce6lhaNoShh6VZTDHSxSmr15tRxscbi7+piSFn+7SwCRvinNlqYZK7A=="
+      },
+      "dsh": {
+        "profiles": [
+          "default"
+        ],
+        "evidencePath": "packages/dsh-file-preview/cordis.patch.yml"
+      },
+      "repositoryScope": "monorepo",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-29T20:32:16.107Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "undefined-parent-repository",
+        "stars": null
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-30T10:10:53.000Z",
+      "install": "dsh plugin --profile default add github:UndeadSheep/dsh-file-preview#path:packages/dsh-file-preview"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "sr043-dsh-chat-manager",
+      "name": "dsh-chat-manager",
+      "description": {
+        "en": "DeepSeek Harness chat history and session management: search archives, restore conversations, and delete safely",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "sessions-productivity",
+      "tags": [
+        "dsh-plugin",
+        "deepseek-harness",
+        "session",
+        "session-manager",
+        "session-management",
+        "conversation",
+        "archive",
+        "unarchive",
+        "restore",
+        "history-search",
+        "chat-history",
+        "conversation-history",
+        "archived-sessions",
+        "session-delete",
+        "permanent-delete",
+        "delete"
+      ],
+      "source": {
+        "repository": "https://github.com/WSL043/dsh-chat-manager",
+        "repositoryNodeId": "R_kgDOT5QqVA",
+        "subpath": null,
+        "commit": "875cb4b6a985c6b8ca31a8536de86f87ea03f0d8"
+      },
+      "creator": {
+        "github": "SR043"
+      },
+      "package": {
+        "ecosystem": "npm",
+        "name": "dsh-chat-manager",
+        "version": "1.2.1",
+        "integrity": "sha512-IFJcfYS571pTiRxq79faQ3fcLiIEyMAqJEtQPdq4T4t2ehOKlCRtbjZO9LdUCz8PKLM7pXZmwqmCnHxky9dR9w=="
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "archived",
+        "checkedAt": "2026-08-31T15:52:56.140Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 5
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "media": [
+        {
+          "kind": "screenshot",
+          "url": "https://raw.githubusercontent.com/WSL043/dsh-chat-manager/875cb4b6a985c6b8ca31a8536de86f87ea03f0d8/docs/assets/hero.png",
+          "alt": "DeepSeek Harness 聊天历史与归档会话管理器，支持搜索、恢复和安全永久删除"
+        },
+        {
+          "kind": "screenshot",
+          "url": "https://raw.githubusercontent.com/WSL043/dsh-chat-manager/875cb4b6a985c6b8ca31a8536de86f87ea03f0d8/docs/assets/archive-manager.png",
+          "alt": "DeepSeek Harness 原生归档会话管理器，支持聊天历史搜索、恢复和永久删除"
+        },
+        {
+          "kind": "screenshot",
+          "url": "https://raw.githubusercontent.com/WSL043/dsh-chat-manager/875cb4b6a985c6b8ca31a8536de86f87ea03f0d8/docs/assets/confirm-delete.png",
+          "alt": "DeepSeek Harness 安全永久删除会话的中文二次确认弹窗"
+        }
+      ],
+      "addedAt": "2026-08-31T16:13:49.000Z",
+      "install": "dsh plugin --profile web add github:WSL043/dsh-chat-manager"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "docjlm-dsh-arknights",
+      "name": "dsh-arknights",
+      "description": {
+        "en": "Unofficial non-commercial Arknights astral-garden skin for DeepSeek Harness Web, featuring Pramanix and Eyjafjalla artwork.",
+        "evidencePath": "skins/pramanix-eyjafjalla/README.md"
+      },
+      "unofficial": true,
+      "kind": "skin-theme",
+      "primaryCategory": "entertainment-customization",
+      "tags": [
+        "unofficial",
+        "commercial",
+        "arknights",
+        "astral",
+        "garden",
+        "skin",
+        "featuring",
+        "pramanix",
+        "eyjafjalla",
+        "artwork",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/DocJlm/dsh-arknights",
+        "repositoryNodeId": "R_kgDOT5vOyA",
+        "subpath": "skins/pramanix-eyjafjalla",
+        "commit": "6419ea4d249945daa4bc05112b32ee868f5d2d6c"
+      },
+      "creator": {
+        "github": "DocJlm"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "skins/pramanix-eyjafjalla/cordis.patch.yml"
+      },
+      "repositoryScope": "monorepo",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-19T03:46:25.822Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "undefined-parent-repository",
+        "stars": null
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-19T05:06:39.000Z",
+      "install": "dsh plugin --profile web add github:DocJlm/dsh-arknights#path:skins/pramanix-eyjafjalla"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "gxinxing-deepseek-harness-tui",
+      "name": "deepseek-harness-tui",
+      "description": {
+        "en": "Interactive terminal chat TUI for DeepSeek Harness: a full-screen curses-style client for driving dsh sessions from the terminal.",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "client-interface",
+      "primaryCategory": "user-interface-dashboards",
+      "tags": [
+        "interactive",
+        "terminal",
+        "chat",
+        "full",
+        "screen",
+        "curses",
+        "style",
+        "client",
+        "driving",
+        "sessions",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/gxinxing/deepseek-harness-tui",
+        "repositoryNodeId": "R_kgDOT3iQng",
+        "subpath": null,
+        "commit": "0c251a26a3228ffc6d4195f9dd31db45ddbc557f"
+      },
+      "creator": {
+        "github": "gxinxing"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "headless"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-19T03:42:45.768Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 7
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-19T05:06:14.000Z",
+      "install": "dsh plugin --profile headless add github:gxinxing/deepseek-harness-tui"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2008924-dsh-progress-viz-plugin",
+      "name": "dsh-progress-viz-plugin",
+      "description": {
+        "en": "bash cd publish/dsh-progress-viz/plugin pnpm install --registry https://registry.npmmirror.com pnpm build dsh plugin --profile headless add <本插件目录绝对路径",
+        "evidencePath": "plugin/README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "browser-automation",
+      "tags": [
+        "dsh",
+        "dsh-plugin",
+        "progress",
+        "dashboard"
+      ],
+      "source": {
+        "repository": "https://github.com/2008924/dsh-progress-viz",
+        "repositoryNodeId": "R_kgDOT4qT8Q",
+        "subpath": "plugin",
+        "commit": "736909845ac33cf5ac671e1a4b6beecc814d983f"
+      },
+      "creator": {
+        "github": "2008924"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "headless"
+        ],
+        "evidencePath": "plugin/cordis.patch.yml"
+      },
+      "repositoryScope": "monorepo",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-21T05:24:30.944Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "undefined-parent-repository",
+        "stars": null
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-21T10:43:35.000Z",
+      "install": "dsh plugin --profile headless add github:2008924/dsh-progress-viz#path:plugin"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "cyjyyd-dsh-ssh-tui",
+      "name": "dsh-ssh-tui",
+      "description": {
+        "en": "Terminal UI for DeepSeek Harness on jump hosts and high-latency links: plain ANSI, incremental repaint, and a session that survives a dropped SSH connection and can be resumed from its log.",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "user-interface-dashboards",
+      "tags": [
+        "tui",
+        "remote",
+        "ssh",
+        "terminal",
+        "low-bandwidth",
+        "session-recovery",
+        "ansi"
+      ],
+      "source": {
+        "repository": "https://github.com/cyjyyd/dsh-ssh-tui",
+        "repositoryNodeId": "R_kgDOT6M2Sw",
+        "subpath": null,
+        "commit": "caf82b13f63b6366f0bdf72d1815fe15acc24209"
+      },
+      "creator": {
+        "github": "cyjyyd"
+      },
+      "package": {
+        "ecosystem": "npm",
+        "name": "dsh-ssh-tui",
+        "version": "0.7.1",
+        "integrity": "sha512-3qiTIu52vc/BDEhw8BaLFsMOEyBBC4iLEprEKYTT+iL1zmXEcMlEDrCQ/ug7Gv/LDYGeKTAGlZqs2H/evF+WIA=="
+      },
+      "dsh": {
+        "profiles": [
+          "tui"
+        ],
+        "evidencePath": "package.json"
+      },
+      "repositoryScope": "dedicated",
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 2
+      },
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-09-21T20:06:55.000Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "media": [
+        {
+          "kind": "screenshot",
+          "url": "https://raw.githubusercontent.com/cyjyyd/dsh-ssh-tui/caf82b13f63b6366f0bdf72d1815fe15acc24209/docs/screenshots/compare.png",
+          "alt": "Official headless stdout next to the same task rendered by dsh-ssh-tui"
+        }
+      ],
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-09-22T14:18:25.000Z",
+      "install": "dsh plugin --profile tui add github:cyjyyd/dsh-ssh-tui"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "1624318455-dsh-plugin-tts",
+      "name": "@dsh-external/dsh-plugin-tts",
+      "description": {
+        "en": "- 中文 README （简体中文） - RVC Custom Voice Guide — custom voices · chunked progressive playback · compact index · voice packs · portable runtime - User Guide (执行手册) — step-by-step, for first-time users - Adaptive chunked playback design — how gapless long reads work",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "vision-audio-multimodal",
+      "tags": [
+        "custom",
+        "voice",
+        "guide",
+        "voices",
+        "chunked",
+        "progressive",
+        "playback",
+        "compact",
+        "index",
+        "packs",
+        "portable",
+        "runtime",
+        "user",
+        "step",
+        "first",
+        "time"
+      ],
+      "source": {
+        "repository": "https://github.com/1624318455/dsh-plugin-tts",
+        "repositoryNodeId": "R_kgDOT48FpA",
+        "subpath": null,
+        "commit": "136ed935bcaa741e623164dd7f9328f1bfce5481"
+      },
+      "creator": {
+        "github": "1624318455"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web",
+          "headless"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-23T04:51:33.555Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 9
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-23T09:21:24.000Z",
+      "install": "dsh plugin --profile web add github:1624318455/dsh-plugin-tts"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a903067276-rgb-dsh-file-upload",
+      "name": "dsh-file-upload",
+      "description": {
+        "en": "Upload button + drag-and-drop files into DSH conversation as local paths (works with any vision plugin)",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "models-providers-routing",
+      "tags": [
+        "dsh",
+        "deepseek-harness",
+        "file-upload",
+        "drag-drop",
+        "vision",
+        "web-ui"
+      ],
+      "source": {
+        "repository": "https://github.com/a903067276-rgb/dsh-file-upload",
+        "repositoryNodeId": "R_kgDOT6l0cA",
+        "subpath": null,
+        "commit": "9aad269a5cf19539ec081c79f561edf4c47bd099"
+      },
+      "creator": {
+        "github": "a903067276-rgb"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-21T04:48:13.173Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 6
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-21T05:07:32.000Z",
+      "install": "dsh plugin --profile web add github:a903067276-rgb/dsh-file-upload"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "glfzr-dsh-file-upload",
+      "name": "dsh-file-upload",
+      "description": {
+        "en": "Codex-style drag-drop for DSH web GUI: drag any file, it lands in ~/.dsh-dropbox, and the path lands in the composer as a whole blue chip (the mandatory .b64 suffix is display-hidden; the real path serializes on submit). Hot-pluggable: install with dsh plugin --profile web add ./plugins/file-upload , no dsh source chan",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "user-interface-dashboards",
+      "tags": [
+        "codex",
+        "style",
+        "drag",
+        "drop",
+        "file",
+        "lands",
+        "dropbox",
+        "path",
+        "composer",
+        "whole",
+        "blue",
+        "chip",
+        "mandatory",
+        "suffix",
+        "display",
+        "hidden"
+      ],
+      "source": {
+        "repository": "https://github.com/GLFzr/dsh-file-upload",
+        "repositoryNodeId": "R_kgDOT4ZkpQ",
+        "subpath": null,
+        "commit": "baa569938c03404b4eac6c6740c27afb49b60ba8"
+      },
+      "creator": {
+        "github": "GLFzr"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-23T04:51:39.576Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 8
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-23T09:24:23.000Z",
+      "install": "dsh plugin --profile web add github:GLFzr/dsh-file-upload"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "benhuhuan-dsh-tui",
+      "name": "@deepseek-ai/dsh-tui",
+      "description": {
+        "en": "Interactive pi-tui terminal front door for DeepSeek Harness agents",
+        "evidencePath": "packages/ui/tui/README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "user-interface-dashboards",
+      "tags": [
+        "interactive",
+        "terminal",
+        "front",
+        "door",
+        "agents",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/BenHuHuan/dhs-tuicode",
+        "repositoryNodeId": "R_kgDOT4KNkw",
+        "subpath": "packages/ui/tui",
+        "commit": "06900f6932bde3d593bda420809196b75fc6e30b"
+      },
+      "creator": {
+        "github": "BenHuHuan"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "headless"
+        ],
+        "evidencePath": "packages/ui/tui/cordis.patch.yml"
+      },
+      "repositoryScope": "monorepo",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-21T04:49:01.839Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "undefined-parent-repository",
+        "stars": null
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-21T05:07:45.000Z",
+      "install": "dsh plugin --profile headless add github:BenHuHuan/dhs-tuicode#path:packages/ui/tui"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "turtle1999-dsh-tui",
+      "name": "@deepseek-ai/dsh-tui",
+      "description": {
+        "en": "Interactive pi-tui terminal front door for DeepSeek Harness agents: session picker, streaming chat view and keyboard-first controls.",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "client-interface",
+      "primaryCategory": "user-interface-dashboards",
+      "tags": [
+        "interactive",
+        "terminal",
+        "front",
+        "door",
+        "agents",
+        "session",
+        "picker",
+        "streaming",
+        "chat",
+        "view",
+        "keyboard",
+        "first",
+        "controls",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/turtle1999/turtle-ui",
+        "repositoryNodeId": "R_kgDOT1JF8Q",
+        "subpath": null,
+        "commit": "b08ed69e4c4edbd0dcaba556fa7b5ea6cd0f91e2"
+      },
+      "creator": {
+        "github": "turtle1999"
+      },
+      "package": {
+        "ecosystem": "source"
+      },
+      "dsh": {
+        "profiles": [
+          "default"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "BSD-3-Clause"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-19T03:42:52.261Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 7
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-19T05:06:14.000Z",
+      "install": "dsh plugin --profile default add github:turtle1999/turtle-ui"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "0xsline-dsh-spotlight",
+      "name": "@0xsline/dsh-spotlight",
+      "description": {
+        "en": "Keyboard-first command palette for DeepSeek Harness Web",
+        "evidencePath": "README.md"
+      },
+      "unofficial": true,
+      "kind": "plugin",
+      "primaryCategory": "browser-automation",
+      "tags": [
+        "keyboard",
+        "first",
+        "command",
+        "palette",
+        "dsh"
+      ],
+      "source": {
+        "repository": "https://github.com/0xsline/dsh-spotlight",
+        "repositoryNodeId": "R_kgDOT3YMUg",
+        "subpath": null,
+        "commit": "dd7ef5ed160aa1a624559de16eafd4ea9406d7ed"
+      },
+      "creator": {
+        "github": "0xsline"
+      },
+      "package": {
+        "ecosystem": "npm",
+        "name": "@0xsline/dsh-spotlight",
+        "version": "0.0.2",
+        "integrity": "sha512-xqJyEjLjFShNgliG1TCHJf0umTZzW12byg4YKAJ8r+SeZsJ+D733+lPmzHkX7mKu6rjF35d5e1iypesiEkaqTQ=="
+      },
+      "dsh": {
+        "profiles": [
+          "web"
+        ],
+        "evidencePath": "cordis.patch.yml"
+      },
+      "repositoryScope": "dedicated",
+      "license": {
+        "spdx": "MIT"
+      },
+      "verification": {
+        "status": "eligible",
+        "checkedAt": "2026-08-23T04:51:18.218Z",
+        "repositoryIdentity": "resolved",
+        "smokeTest": null
+      },
+      "popularity": {
+        "starsPolicy": "exact-repository",
+        "stars": 10
+      },
+      "provenance": {
+        "discussion": null,
+        "comment": null
+      },
+      "addedAt": "2026-08-23T09:21:15.000Z",
+      "install": "dsh plugin --profile web add github:0xsline/dsh-spotlight"
+    }
+  ]
+}

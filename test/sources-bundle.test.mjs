@@ -127,3 +127,41 @@ test('disabling a source drops its data: re-enabling it loads it again', async (
   assert.equal(loads(), before + 1, 'nothing of the disabled source was kept, so it loads again (within its TTL)')
   assert.deepEqual(on.body.value.items.map((it) => it.name).sort(), ['from-awesome', 'from-slow'])
 })
+
+test('/sources/presets lists the presets; /sources/set adds one by presetId as a browse-only user index', async () => {
+  const list = await call('sources/presets')
+  assert.equal(list.status, 200)
+  const { presets } = list.body.value
+  assert.ok(presets.length > 0 && presets.every((p) => p.alreadyAdded === false && p.sourceId === null && p.url && p.title.en))
+  const dshSo = presets.find((p) => p.id === 'dsh-so')
+  assert.equal(dshSo.license, 'CC-BY-4.0')
+
+  const add = await call('sources/set', { add: { presetId: 'dsh-so' } })
+  assert.equal(add.status, 200)
+  const added = add.body.value.sources.find((s) => s.url === dshSo.url || s.urls?.includes(dshSo.url))
+  assert.ok(added, 'the preset url is a source now')
+  assert.equal(added.kind, 'user-index', 'fetched like any user index (redirect: error)')
+  assert.equal(added.trust, 'browse')
+  assert.deepEqual(added.title, dshSo.title)
+  const after = (await call('sources/presets')).body.value.presets.find((p) => p.id === 'dsh-so')
+  assert.equal(after.alreadyAdded, true)
+  assert.equal(after.sourceId, added.id)
+  assert.equal((await call('sources/set', { add: { presetId: 'dsh-so' } })).status, 409, 'adding it twice is a duplicate')
+
+  const trusted = await call('sources/set', { add: { presetId: 'omni-catalog', trust: 'trusted' } })
+  assert.equal(trusted.status, 200)
+  assert.equal(trusted.body.value.sources.find((s) => s.title?.en === presetsTitle(presets, 'omni-catalog')).trust, 'trusted')
+
+  assert.equal((await call('sources/set', { add: { presetId: 'nope' } })).status, 404)
+  assert.equal((await call('sources/set', { add: { presetId: 7 } })).status, 400)
+  assert.equal((await call('sources/set', { add: { presetId: 'vlln', url: 'https://evil.test/i.json' } })).status, 400, 'the url comes from the preset only')
+  assert.equal((await call('sources/set', { add: { presetId: 'vlln', trust: 'builtin' } })).status, 400)
+
+  for (const s of (await call('sources/list')).body.value.sources) {
+    if (s.kind === 'user-index') assert.equal((await call('sources/set', { remove: s.id })).status, 200)
+  }
+})
+
+function presetsTitle(presets, id) {
+  return presets.find((p) => p.id === id).title.en
+}

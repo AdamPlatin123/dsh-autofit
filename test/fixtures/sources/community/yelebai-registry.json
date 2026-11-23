@@ -1,0 +1,640 @@
+{
+ "schemaVersion": 2,
+ "generatedAt": "2026-11-12T18:47:30.683Z",
+ "plugins": [
+  {
+   "owner": "0-v-0",
+   "repo": "dsh-grantwrite-patch",
+   "fullName": "0-v-0/dsh-grantwrite-patch",
+   "description": "Windows sandbox ACL-repair plugin for DeepSeek Harness (dsh) — fix the grantWrite failure (SetNamedSecurityInfoW Win32 5) and retry the command invisibly",
+   "stars": 0,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "TypeScript",
+   "license": "MIT",
+   "updatedAt": "2026-10-11T14:48:34.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "73a867ad4aa3bde993f34ce970a66d5805dfe6d4",
+   "htmlUrl": "https://github.com/0-v-0/dsh-grantwrite-patch",
+   "topics": [
+    "acl",
+    "deepseek-harness",
+    "dsh-plugin",
+    "permissions",
+    "sandbox",
+    "windows"
+   ],
+   "packageName": "dsh-grantwrite-patch",
+   "version": "0.1.0",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": false,
+   "install": {
+    "mode": "automatic",
+    "source": "npm",
+    "spec": "dsh-grantwrite-patch@0.1.0",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/0-v-0/dsh-grantwrite-patch#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "00080000",
+   "repo": "dsh-project-memory",
+   "fullName": "00080000/dsh-project-memory",
+   "description": "Read-time project memory plugin for DeepSeek Harness (dsh)",
+   "stars": 33,
+   "forks": 3,
+   "openIssues": 1,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-11-12T13:24:43.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "34d5f5084068956357bb326638165938e67543fa",
+   "htmlUrl": "https://github.com/00080000/dsh-project-memory",
+   "topics": [
+    "agent-memory",
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh-plugins",
+    "plugin",
+    "project",
+    "project-memory"
+   ],
+   "packageName": "@yolk_vat-y/dsh-project-memory",
+   "version": "0.7.0",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:00080000/dsh-project-memory#34d5f5084068956357bb326638165938e67543fa",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/00080000/dsh-project-memory#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "01NGVI-QINGYI",
+   "repo": "dsh-mistral-pro",
+   "fullName": "01NGVI-QINGYI/dsh-mistral-pro",
+   "description": "在 DeepSeek Harness 中接入 Mistral 订阅，提供模型路由、多账号故障切换和输入框额度面板。",
+   "stars": 2,
+   "forks": 0,
+   "openIssues": 1,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-11-12T14:16:41.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "263a4f0e7f62438eb3c5ab05c89c51a5aa7e9ae8",
+   "htmlUrl": "https://github.com/01NGVI-QINGYI/dsh-mistral-pro",
+   "topics": [
+    "ai-coding",
+    "ai-plugin",
+    "coding-agent",
+    "cordis",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "dsh-plugins",
+    "failover",
+    "llm",
+    "llm-provider",
+    "mistral",
+    "mistral-ai",
+    "mistral-api",
+    "mistral-vibe",
+    "model-routing",
+    "multi-account",
+    "quota-monitoring",
+    "usage-tracking",
+    "vibe-coding"
+   ],
+   "packageName": "dsh-mistral-pro",
+   "version": "0.1.2",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:01NGVI-QINGYI/dsh-mistral-pro#263a4f0e7f62438eb3c5ab05c89c51a5aa7e9ae8",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/01NGVI-QINGYI/dsh-mistral-pro#readme"
+   },
+   "verifiedAt": "2026-11-08T16:41:13.083Z"
+  },
+  {
+   "owner": "030611",
+   "repo": "dsh-verification-receipt",
+   "fullName": "030611/dsh-verification-receipt",
+   "description": "Privacy-minimal heuristic per-turn verification summaries for DeepSeek Harness",
+   "stars": 4,
+   "forks": 0,
+   "openIssues": 3,
+   "language": "TypeScript",
+   "license": "MIT",
+   "updatedAt": "2026-10-30T03:31:14.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "ee3c6167f1b323f66f9412907f1ef6697cbf488d",
+   "htmlUrl": "https://github.com/030611/dsh-verification-receipt",
+   "topics": [
+    "agent-infrastructure",
+    "deepseek-harness",
+    "developer-tools",
+    "dsh-plugin",
+    "verification"
+   ],
+   "packageName": "dsh-verification-receipt",
+   "version": "0.1.1",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": false,
+   "install": {
+    "mode": "guided",
+    "source": "github",
+    "spec": "github:030611/dsh-verification-receipt#ee3c6167f1b323f66f9412907f1ef6697cbf488d",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": true,
+    "requiresRestart": true,
+    "manualSteps": true,
+    "instructionsUrl": "https://github.com/030611/dsh-verification-receipt#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "07vvvv",
+   "repo": "memory-eternal-ui-restyle",
+   "fullName": "07vvvv/memory-eternal-ui-restyle",
+   "description": "UI restyle of EternalNight996/memory-eternal — DSH 记忆插件界面重构（衍生版，原作者 EternalNight996，MIT License）",
+   "stars": 1,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-11-07T22:58:52.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "8b95d7f5fdae8b663bee07f8a16941dd8aa4abe8",
+   "htmlUrl": "https://github.com/07vvvv/memory-eternal-ui-restyle",
+   "topics": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "knowledge-base",
+    "markdown",
+    "memory",
+    "plugin",
+    "sqlite",
+    "ui"
+   ],
+   "packageName": "memory-eternal",
+   "version": "0.9.15",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "guided",
+    "source": "npm",
+    "spec": "memory-eternal@0.9.15",
+    "profiles": [
+     "web",
+     "desktop"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": true,
+    "instructionsUrl": "https://github.com/07vvvv/memory-eternal-ui-restyle#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "0N3-0",
+   "repo": "dsh-tui-mcp-manager",
+   "fullName": "0N3-0/dsh-tui-mcp-manager",
+   "description": "  面向 dsh-TUI 的原生 MCP Server 管理插件：通过 /mcp-manager 浮窗完成 MCP CRUD、启停、Sets、复制、Inspector、Tool schema、Doctor Lite 和凭据引用管理，并将配   置原子写入当前 profile，支持 Cordis HMR 热重载。",
+   "stars": 0,
+   "forks": 0,
+   "openIssues": 1,
+   "language": "TypeScript",
+   "license": "MIT",
+   "updatedAt": "2026-10-18T03:24:28.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "6df5ee5f59ec14fefed3dc3e6f165a20840148e9",
+   "htmlUrl": "https://github.com/0N3-0/dsh-tui-mcp-manager",
+   "topics": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh-tui",
+    "mcp"
+   ],
+   "packageName": "dsh-tui-mcp-manager",
+   "version": "0.1.6",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": false,
+   "dshStd": {
+    "status": "valid",
+    "profile": "tui-admission/0.15",
+    "manifestVersion": "0.15",
+    "pluginId": "com.dsh-tui.mcp-manager",
+    "requirements": [
+     "commands.dsh/v1alpha1#Command"
+    ],
+    "permissions": [
+     "commands.invoke"
+    ],
+    "authorizationRequired": false,
+    "subscriptions": [],
+    "checks": [
+     "TUI-PKG-001",
+     "TUI-PKG-002"
+    ],
+    "issues": []
+   },
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:0N3-0/dsh-tui-mcp-manager#6df5ee5f59ec14fefed3dc3e6f165a20840148e9",
+    "profiles": [
+     "dsh-tui"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/0N3-0/dsh-tui-mcp-manager#readme"
+   },
+   "verifiedAt": "2026-10-19T19:57:26.371Z"
+  },
+  {
+   "owner": "0xsline",
+   "repo": "dsh-spotlight",
+   "fullName": "0xsline/dsh-spotlight",
+   "description": "Keyboard-first command palette for DeepSeek Harness Web",
+   "stars": 23,
+   "forks": 7,
+   "openIssues": 8,
+   "language": "TypeScript",
+   "license": "MIT",
+   "updatedAt": "2026-10-12T08:31:23.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "b3565e8629d9a393d764681e96f4c41100cc12fa",
+   "htmlUrl": "https://github.com/0xsline/dsh-spotlight",
+   "topics": [
+    "dsh-plugin"
+   ],
+   "packageName": "@0xsline/dsh-spotlight",
+   "version": "0.0.2",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "npm",
+    "spec": "@0xsline/dsh-spotlight@0.0.2",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/0xsline/dsh-spotlight#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "1148281964",
+   "repo": "dsh-token-stats",
+   "fullName": "1148281964/dsh-token-stats",
+   "description": "DeepSeek Harness 全局 Token 用量统计插件 | Real usage tracking, durable ledger, cost estimation (OpenRouter pricing), draggable FAB & detail dashboard.",
+   "stars": 1,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-08-24T08:07:22.000Z",
+   "defaultBranch": "master",
+   "verifiedCommit": "ca0c98635bd9e32c1da73e74816e365c73555c94",
+   "htmlUrl": "https://github.com/1148281964/dsh-token-stats",
+   "topics": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh-plugin"
+   ],
+   "packageName": "dsh-token-stats",
+   "version": "0.6.1",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:1148281964/dsh-token-stats#ca0c98635bd9e32c1da73e74816e365c73555c94",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/1148281964/dsh-token-stats#readme"
+   },
+   "verifiedAt": "2026-10-22T21:37:35.304Z"
+  },
+  {
+   "owner": "1841220388zzzcccxxx-star",
+   "repo": "dsh-token-stats",
+   "fullName": "1841220388zzzcccxxx-star/dsh-token-stats",
+   "description": "Token usage & cost statistics plugin for DeepSeek Harness — per model / date / session, cost estimation (USD/CNY), CSV/JSON export | DeepSeek Harness Token 用量统计插件：按模型/日期/会话统计用量与费用，支持 CSV/JSON 导出",
+   "stars": 2,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-09-29T05:00:45.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "7bc65dc9901ba1dee62b49cee571eabcdd31c569",
+   "htmlUrl": "https://github.com/1841220388zzzcccxxx-star/dsh-token-stats",
+   "topics": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "plugin",
+    "stats",
+    "token",
+    "usage"
+   ],
+   "packageName": "dsh-token-stats",
+   "version": "1.1.0",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:1841220388zzzcccxxx-star/dsh-token-stats#7bc65dc9901ba1dee62b49cee571eabcdd31c569",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/1841220388zzzcccxxx-star/dsh-token-stats#readme"
+   },
+   "verifiedAt": "2026-10-22T21:37:35.304Z"
+  },
+  {
+   "owner": "4sa1ary9",
+   "repo": "dockyard-dsh",
+   "fullName": "4sa1ary9/dockyard-dsh",
+   "description": "Windows fork of Dockyard DSH: composer provider picker for Codex / Grok / Claude / Cursor / Antigravity",
+   "stars": 0,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-10-30T12:59:00.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "7dcb175b80abe02da023a602dd2692a1f2d06d84",
+   "htmlUrl": "https://github.com/4sa1ary9/dockyard-dsh",
+   "topics": [
+    "dockyard",
+    "dsh-plugin",
+    "windows"
+   ],
+   "packageName": "@dockyard-dsh/plugin",
+   "version": "0.1.1",
+   "bundlePatch": "./packages/dsh-plugin/cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:4sa1ary9/dockyard-dsh#7dcb175b80abe02da023a602dd2692a1f2d06d84",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/4sa1ary9/dockyard-dsh#readme"
+   },
+   "verifiedAt": "2026-10-06T06:23:31.305Z"
+  },
+  {
+   "owner": "EternalNight996",
+   "repo": "memory-eternal",
+   "fullName": "EternalNight996/memory-eternal",
+   "description": "🧠 给 AI 一个可信的第二大脑：本地 SQLite · 先审核再入库 · 不可篡改审计 · 记忆账本。🕷 蜘蛛侠皮肤 · 🔍 自建集 R@5 99.1% / LongMemEval-S 97.2% · 🧩 一个库接入 DSH / Claude Code / Codex / Cursor / 任意 MCP · ⭐ MIT 开源 · 🚀 零依赖开箱即用",
+   "stars": 180,
+   "forks": 10,
+   "openIssues": 3,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-11-12T15:24:24.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "c10e6d336cdccb84f575c088ce41d25bc01011f5",
+   "htmlUrl": "https://github.com/EternalNight996/memory-eternal",
+   "topics": [
+    "agent-memory",
+    "ai-memory",
+    "audit-log",
+    "claude-code",
+    "codex",
+    "cursor",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "knowledge-graph",
+    "local-first",
+    "long-term-memory",
+    "longmemeval",
+    "mcp",
+    "mcp-server",
+    "memory",
+    "openclaw",
+    "second-brain",
+    "self-hosted",
+    "sqlite"
+   ],
+   "packageName": "memory-eternal",
+   "version": "0.40.1",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "guided",
+    "source": "npm",
+    "spec": "memory-eternal@0.40.1",
+    "profiles": [
+     "web",
+     "desktop"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": true,
+    "instructionsUrl": "https://github.com/EternalNight996/memory-eternal#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "humblebanana",
+   "repo": "dsh-record-replay",
+   "fullName": "humblebanana/dsh-record-replay",
+   "description": "DeepSeek Harness record macOS desktop workflows by demonstration and turn them into agent skills (open-record-replay skill + orr_* tools)",
+   "stars": 13,
+   "forks": 2,
+   "openIssues": 0,
+   "language": "TypeScript",
+   "license": "MIT",
+   "updatedAt": "2026-09-10T01:42:09.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "32d06f7db906914e278d1552728d1d63f191d6ad",
+   "htmlUrl": "https://github.com/humblebanana/dsh-record-replay",
+   "topics": [
+    "computer-use",
+    "deepseek-harness",
+    "dsh-plugin",
+    "macos",
+    "record-replay"
+   ],
+   "packageName": "dsh-record-replay",
+   "version": "0.2.0",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": false,
+   "install": {
+    "mode": "automatic",
+    "source": "npm",
+    "spec": "dsh-record-replay@0.2.0",
+    "profiles": [
+     "headless",
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/humblebanana/dsh-record-replay#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "jcs130",
+   "repo": "dsh-minecraft-agent",
+   "fullName": "jcs130/dsh-minecraft-agent",
+   "description": "Minecraft Agent for DeepSeek Harness Web/Desktop: live game view, native reasoning and tools, configurable personas, server notebooks and local survival knowledge. / 我的世界智能体",
+   "stars": 4,
+   "forks": 0,
+   "openIssues": 2,
+   "language": "JavaScript",
+   "license": "MIT",
+   "updatedAt": "2026-11-12T18:09:47.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "6c526667f8402872992f9bcfb050c8eaa96cf7b5",
+   "htmlUrl": "https://github.com/jcs130/dsh-minecraft-agent",
+   "topics": [
+    "agent",
+    "ai-agent",
+    "deepseek-harness",
+    "dsh-plugin",
+    "harness2",
+    "minecraft",
+    "mineflayer"
+   ],
+   "packageName": "@jcs130/dsh-minecraft-agent",
+   "version": "0.3.0-rc.26",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "guided",
+    "source": "npm",
+    "spec": "@jcs130/dsh-minecraft-agent@0.3.0-rc.26",
+    "profiles": [
+     "web",
+     "desktop"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": true,
+    "instructionsUrl": "https://github.com/YELEBAI/dsh-plugin-marketplace/blob/main/docs/security/minecraft-agent.md"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  },
+  {
+   "owner": "Jydsh",
+   "repo": "dsh-ding-card",
+   "fullName": "Jydsh/dsh-ding-card",
+   "description": "dsh上基于dsh-im插件开发的插件，主要接入钉钉卡片模板，可设计，可拓展可测试的功能。",
+   "stars": 1,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "JavaScript",
+   "license": null,
+   "updatedAt": "2026-11-06T08:32:48.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "e0a1af65430aba4b05f08d9c3ef1eb7ffb7c5426",
+   "htmlUrl": "https://github.com/Jydsh/dsh-ding-card",
+   "topics": [
+    "dsh-plugin"
+   ],
+   "packageName": "dsh-ding-card",
+   "version": "2026.11.06",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "github",
+    "spec": "github:Jydsh/dsh-ding-card#e0a1af65430aba4b05f08d9c3ef1eb7ffb7c5426",
+    "profiles": [
+     "desktop",
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/Jydsh/dsh-ding-card#readme"
+   },
+   "verifiedAt": "2026-11-06T15:56:29.084Z"
+  },
+  {
+   "owner": "kangshifu1",
+   "repo": "dsh-record-replay",
+   "fullName": "kangshifu1/dsh-record-replay",
+   "description": "Record & Replay for DSH web GUI: session replay, replay packs, screen recording -> skill generation. #dsh-plugin",
+   "stars": 1,
+   "forks": 0,
+   "openIssues": 0,
+   "language": "TypeScript",
+   "license": "Apache-2.0",
+   "updatedAt": "2026-11-03T03:26:54.000Z",
+   "defaultBranch": "main",
+   "verifiedCommit": "e1015e57a4f815dba5f4776f6ae9d969a3e25ddf",
+   "htmlUrl": "https://github.com/kangshifu1/dsh-record-replay",
+   "topics": [
+    "dsh-plugin",
+    "tool"
+   ],
+   "packageName": "dsh-record-replay",
+   "version": "0.2.0",
+   "bundlePatch": "./cordis.patch.yml",
+   "hasClient": true,
+   "install": {
+    "mode": "automatic",
+    "source": "npm",
+    "spec": "dsh-record-replay@0.2.0",
+    "profiles": [
+     "web"
+    ],
+    "requiresBuildApproval": false,
+    "requiresRestart": true,
+    "manualSteps": false,
+    "instructionsUrl": "https://github.com/kangshifu1/dsh-record-replay#readme"
+   },
+   "verifiedAt": "2026-11-12T18:20:25.751Z"
+  }
+ ]
+}

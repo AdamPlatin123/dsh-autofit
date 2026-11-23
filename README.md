@@ -125,7 +125,7 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 | awesome 索引（jsDelivr，备用 awesome-dsh-plugin.com） | `awesome` | format 1 | 开 | builtin |
 | 插件雷达 | `radar` | dsh-radar/v1，只叠加判定和星数，不单独出卡片 | 开 | builtin |
 | DSH 插件市场里配置的索引 | `host-<哈希>` | format 1 / dsh-plugin-shop | 装了实验性插件市场（`pluginMarket` 服务）才有 | host |
-| 你添加的索引 | `user-<哈希>` | format 1、dsh-plugin-shop（指针或数据文件）、npm 搜索结果 | — | browse 或 trusted |
+| 你添加的索引（包括预设市场） | `user-<哈希>` | format 1、dsh-plugin-shop（指针或数据文件）、npm 搜索结果、几种社区目录格式（见下文「预设市场」） | — | browse 或 trusted |
 | 雷达收录的仓库 | `radar-repos` | dsh-radar/v1 | 关 | browse |
 | npm 搜索（实验） | `npm` | npm search v1（`keywords:dsh-plugin`，最多 5,250 条） | 关 | browse |
 
@@ -157,9 +157,42 @@ npx dsh-autofit fix <插件 spec> [--allow-builds node-pty] [--json]
 | `/api/autofit/catalog` | `{ q?, offset?, limit?, sources?, category?, radar?, sort?, installed?, itemKeys? }` | 合并后的目录；0.4.0 的字段全部保留，另有 `facets`、`sourceStatus`，每个条目另有 `key`、`sources`、`chosenSource`、`install`、`conflict`、`trust` 等；不带 `itemKeys: true` 时按 0.4.0 客户端处理（见上文） |
 | `/api/autofit/sources/list` | `{}` | 来源列表与加载状态 |
 | `/api/autofit/sources/probe` | `{ url }` | 添加前预览一个索引（格式、条目数、npm/git 数量、与现有目录重复/冲突的数量） |
-| `/api/autofit/sources/set` | `{ id, enabled?, trust?, priority? }` / `{ add: { url, trust?, title? } }` / `{ remove: id }` | 修改来源 |
+| `/api/autofit/sources/presets` | `{}` | 预设市场列表，每项带 `alreadyAdded` 和 `sourceId`（已添加时是对应来源的 id，否则 null） |
+| `/api/autofit/sources/set` | `{ id, enabled?, trust?, priority? }` / `{ add: { url, trust?, title? } }` / `{ add: { presetId, trust? } }` / `{ remove: id }` | 修改来源；按 `presetId` 添加时地址和标题取自预设 |
 | `/api/autofit/sources/refresh` | `{ id? }` | 立即重新加载一个或全部来源 |
 | `/api/autofit/job/start` | `{ spec, allowBuilds?, key?, sourceId? }` | 「用 Autofit 安装」；带 `sourceId` 时按上面的信任规则检查 |
+
+### 预设市场
+
+`lib/sources/presets.js`（`import { PRESETS, presetById } from 'dsh-autofit/sources'`）收录了一批社区插件市场，可以一键添加（`/api/autofit/sources/set { add: { presetId } }`）。条目数是 2026-11-21 用对应读取器完整读一遍得到的可安装条目数，之后会变。
+
+| 市场 | presetId | 格式 | 条目 | 数据许可证 |
+|---|---|---|---|---|
+| DSH.SO 安装验证市场 | `dsh-so` | format 1 | 15,411 | CC-BY-4.0 |
+| dsh.works awesome 插件 | `dsh-works` | format 1 | 12,780 | MIT |
+| DSH Desk 插件目录 | `dshdesk` | format 1 | 20,428 | MIT |
+| realguan 插件市场 | `realguan` | format 1 | 11,789 | CC0-1.0 |
+| dshfind 插件目录 | `dshfind` | format 1 | 8,954 | 未声明 |
+| 开放插件市场 | `dshopen` | format 1 | 1,341 | GPL-3.0 |
+| Bruce 的精选插件 | `bruc3van` | format 1 | 2,553 | MIT |
+| DSH Go 插件市场 | `ccch1mneyyy` | format 1 | 41 | AGPL-3.0 |
+| vlln 的插件 | `vlln` | format 1 | 13 | MIT |
+| DSH 插件索引（中文） | `jingjiangze` | format 1 | 13,854 | GPL-3.0 |
+| DSH 插件索引（自建） | `xfish987` | format 1 | 13,971 | MIT |
+| DSH 插件索引（dsh-plugin 标签） | `whoishuhu` | format 1 | 24,110 | 未声明 |
+| awesome 全量目录 | `awesome-plugins` | awesome-plugins | 11,713 | CC0-1.0 |
+| YELEBAI 插件市场 | `yelebai-registry` | yelebai-registry | 18,715 | MIT |
+| Omni DSH 插件目录 | `omni-catalog` | omni-catalog | 3,626 | CC0-1.0 |
+| Lanshu 插件中心 | `lanshu-api` | lanshu-api | 132 | MIT |
+| web-casa 插件精选 | `webcasa-plugins` | webcasa-plugins | 331 | 未声明 |
+| dshmk 插件市场 | `dshmk-api` | dshmk-api | 2,500 | MIT |
+| w2112515 插件市场 | `w2112515-catalog` | w2112515-catalog | 26,553 | MIT |
+
+- **预设默认不受信任。** 添加后和你自己输入的索引一样，是 `browse` 来源（只浏览，从卡片安装会被拒绝），要自己标为 trusted；也照样不跟随重定向，每个条目照样经过同样的安装标识规则。
+- **许可证照实显示。** 列表里的许可证是发布方声明的数据许可证；`未声明` 表示没找到，转载或镜像前请自己确认。
+- **dsh.so 要求署名**（CC-BY-4.0）：注明来自 dsh.so，保留它的时间标记（generatedAt/asOf/checkedAt），大批量导出或完整镜像前先联系对方。
+- 社区目录格式由 `lib/sources/community/` 里的适配器读取，每种格式一个文件；只认得准的格式：一个文档同时像两种格式时不读。只收录固定了版本或 commit 的条目，以及（awesome 全量目录、web-casa 列表里的）默认分支 GitHub 安装，后者标「版本不固定」。
+- 没收录：qianyumeng0228/dsh-store（一半条目没有版本，DSH 自己的解析器拒绝整个索引）、Smart-DSH-Market（YELEBAI 注册表的旧副本）、brokep、DSH-Spicy、CatGuard35。
 
 ## 桌面版
 

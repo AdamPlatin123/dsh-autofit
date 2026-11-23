@@ -1,0 +1,786 @@
+{
+ "schemaVersion": 1,
+ "generatedAt": "2026-11-21T10:59:09.954Z",
+ "scannerVersion": "7",
+ "topic": "dsh-plugin",
+ "integrity": {
+  "algorithm": "sha256",
+  "digest": "db1b59cd5fb952f21a1e430dbe364183bbf9b7d05757d8cdaf9a639e3d072727"
+ },
+ "summary": {
+  "entryCount": 26557,
+  "invalidEntryCount": 0,
+  "packCount": 1
+ },
+ "entries": [
+  {
+   "repositoryId": "1409967843",
+   "repository": {
+    "fullName": "0-v-0/dsh-grantwrite-patch",
+    "url": "https://github.com/0-v-0/dsh-grantwrite-patch",
+    "defaultBranch": "main",
+    "commitSha": "73a867ad4aa3bde993f34ce970a66d5805dfe6d4",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-grantwrite-patch",
+    "version": "0.1.0",
+    "description": "Windows sandbox ACL-repair plugin for DeepSeek Harness (dsh) — fix the grantWrite failure (SetNamedSecurityInfoW Win32 5) and retry the command invisibly",
+    "license": "MIT"
+   },
+   "topics": [
+    "acl",
+    "deepseek-harness",
+    "dsh-plugin",
+    "permissions",
+    "sandbox",
+    "windows"
+   ],
+   "keywords": [
+    "acl",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "windows-sandbox"
+   ],
+   "stars": 0,
+   "repositoryCreatedAt": "2026-10-08T08:09:07Z",
+   "lastCodePushAt": "2026-11-16T13:18:54Z",
+   "firstSeenAt": "2026-10-11T09:58:59.785Z",
+   "indexedAt": "2026-11-17T11:49:30.451Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/0-v-0/dsh-grantwrite-patch.git#73a867ad4aa3bde993f34ce970a66d5805dfe6d4",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "build-script",
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1339316901",
+   "repository": {
+    "fullName": "00080000/dsh-project-memory",
+    "url": "https://github.com/00080000/dsh-project-memory",
+    "defaultBranch": "main",
+    "commitSha": "d8b4788e2ae535768bb643440b4eeb22812d1830",
+    "archived": false
+   },
+   "package": {
+    "name": "@yolk_vat-y/dsh-project-memory",
+    "version": "0.7.1",
+    "description": "Persistent project memory for dsh agents: index docs (PDF/Markdown/text) and code symbols into a searchable per-workspace store, recall them with cited sources, and keep experience entries (problems -> solutions) searchable on demand.",
+    "license": "MIT"
+   },
+   "topics": [
+    "agent-memory",
+    "deepseek-harness",
+    "dsh-plugin",
+    "dsh-plugins",
+    "plugin",
+    "project",
+    "project-memory"
+   ],
+   "keywords": [
+    "codebase",
+    "cordis",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "memory",
+    "project-memory",
+    "rag"
+   ],
+   "stars": 32,
+   "repositoryCreatedAt": "2026-08-19T08:40:32Z",
+   "lastCodePushAt": "2026-11-21T07:00:23Z",
+   "firstSeenAt": "2026-08-20T03:58:38.838Z",
+   "indexedAt": "2026-11-21T10:59:09.954Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/00080000/dsh-project-memory.git#d8b4788e2ae535768bb643440b4eeb22812d1830",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1443815949",
+   "repository": {
+    "fullName": "007350/dsh-screenshot-board",
+    "url": "https://github.com/007350/dsh-screenshot-board",
+    "defaultBranch": "main",
+    "commitSha": "19cdbe6be2ac792f08b71dc35f9aafa9cb4f4285",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-screenshot-board",
+    "version": "0.2.0",
+    "description": "截图批注、修改任务与 Agent 交接工作台",
+    "license": "MIT"
+   },
+   "topics": [
+    "cordis",
+    "deepseek-harness",
+    "dsh-plugin",
+    "screenshot"
+   ],
+   "keywords": [
+    "annotation",
+    "deepseek-harness",
+    "dsh-plugin",
+    "screenshot"
+   ],
+   "stars": 1,
+   "repositoryCreatedAt": "2026-11-03T04:39:44Z",
+   "lastCodePushAt": "2026-11-03T04:40:11Z",
+   "firstSeenAt": "2026-11-03T10:50:31.498Z",
+   "indexedAt": "2026-11-03T10:50:31.498Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/007350/dsh-screenshot-board.git#19cdbe6be2ac792f08b71dc35f9aafa9cb4f4285",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "build-script",
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1452445091",
+   "repository": {
+    "fullName": "0131kikimy/dsh-council",
+    "url": "https://github.com/0131kikimy/dsh-council",
+    "defaultBranch": "main",
+    "commitSha": "36f8c51710c3c9eab00cc7e339c74bde4020df63",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-council",
+    "version": "0.1.0",
+    "description": "循环决议 · Council — 三智能体（Leader / 执行者 / 检验者）独立上下文的循环执行插件：Leader 与用户对话并分配任务，执行者动手，检验者按可被 Leader 修订的标准判定，直到达标后 Leader 终检并回复用户。",
+    "license": "MIT"
+   },
+   "topics": [
+    "agent-team",
+    "council",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "leader-executor-verifier",
+    "multi-agent"
+   ],
+   "keywords": [
+    "agent-team",
+    "council",
+    "deepseek-harness",
+    "dsh",
+    "dsh-bundle",
+    "dsh-plugin",
+    "leader-executor-verifier",
+    "loop"
+   ],
+   "stars": 1,
+   "repositoryCreatedAt": "2026-11-10T09:19:58Z",
+   "lastCodePushAt": "2026-11-10T09:20:10Z",
+   "firstSeenAt": "2026-11-10T11:09:36.574Z",
+   "indexedAt": "2026-11-10T11:09:36.574Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/0131kikimy/dsh-council.git#36f8c51710c3c9eab00cc7e339c74bde4020df63",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1411579405",
+   "repository": {
+    "fullName": "01men/boxfill",
+    "url": "https://github.com/01men/boxfill",
+    "defaultBranch": "main",
+    "commitSha": "e31232193c0332fcd15ea9a538986686927dda1c",
+    "archived": false
+   },
+   "package": {
+    "name": "boxfill",
+    "version": "1.0.0",
+    "description": "物流箱体测算工具 —— 装柜方案、运费与拼单测算；H5 端零依赖，MCP 服务端供 Agent 接入",
+    "license": "MIT"
+   },
+   "topics": [
+    "bin-packing",
+    "container-packing",
+    "deepseek-harness",
+    "dsh-plugin",
+    "freight",
+    "logistics",
+    "mcp",
+    "mcp-server"
+   ],
+   "keywords": [],
+   "stars": 0,
+   "repositoryCreatedAt": "2026-10-09T09:10:47Z",
+   "lastCodePushAt": "2026-11-03T21:39:17Z",
+   "firstSeenAt": "2026-11-04T10:53:28.508Z",
+   "indexedAt": "2026-11-04T10:53:28.508Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/01men/boxfill.git#e31232193c0332fcd15ea9a538986686927dda1c",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1333357514",
+   "repository": {
+    "fullName": "030611/qiushi-dsh-evidence-audit",
+    "url": "https://github.com/030611/qiushi-dsh-evidence-audit",
+    "defaultBranch": "main",
+    "commitSha": "94fae130b2845309e1dcabac14696fddb18f8f3a",
+    "archived": false
+   },
+   "package": {
+    "name": "qiushi-dsh-evidence-audit",
+    "version": "0.1.0",
+    "description": "Observe-only hash-chained evidence receipts for DeepSeek Harness",
+    "license": "MIT"
+   },
+   "topics": [
+    "agent-infrastructure",
+    "ai-agents",
+    "audit",
+    "deepseek-harness",
+    "dsh-plugin",
+    "evidence"
+   ],
+   "keywords": [
+    "audit",
+    "deepseek-harness",
+    "dsh-plugin",
+    "evidence",
+    "jsonl"
+   ],
+   "stars": 3,
+   "repositoryCreatedAt": "2026-08-13T17:10:56Z",
+   "lastCodePushAt": "2026-08-14T13:08:45Z",
+   "firstSeenAt": "2026-08-15T11:33:19.826Z",
+   "indexedAt": "2026-08-15T15:31:46.998Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/030611/qiushi-dsh-evidence-audit.git#94fae130b2845309e1dcabac14696fddb18f8f3a",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "build-script",
+    "git-source",
+    "lifecycle-script"
+   ],
+   "installScripts": {
+    "prepare": "pnpm run build"
+   },
+   "rating": null
+  },
+  {
+   "repositoryId": "1333136466",
+   "repository": {
+    "fullName": "0xsline/dsh-spotlight",
+    "url": "https://github.com/0xsline/dsh-spotlight",
+    "defaultBranch": "main",
+    "commitSha": "b3565e8629d9a393d764681e96f4c41100cc12fa",
+    "archived": false
+   },
+   "package": {
+    "name": "@0xsline/dsh-spotlight",
+    "version": "0.0.2",
+    "description": "Keyboard-first command palette for DeepSeek Harness Web",
+    "license": "MIT"
+   },
+   "topics": [
+    "dsh-plugin"
+   ],
+   "keywords": [],
+   "stars": 23,
+   "repositoryCreatedAt": "2026-08-13T13:16:27Z",
+   "lastCodePushAt": "2026-08-24T09:03:11Z",
+   "firstSeenAt": "2026-08-15T11:33:19.826Z",
+   "indexedAt": "2026-08-25T03:58:55.250Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/0xsline/dsh-spotlight.git#b3565e8629d9a393d764681e96f4c41100cc12fa",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "build-script",
+    "git-source",
+    "lifecycle-script"
+   ],
+   "installScripts": {
+    "prepare": "node scripts/prepare.mjs"
+   },
+   "rating": null
+  },
+  {
+   "repositoryId": "1418691015",
+   "repository": {
+    "fullName": "1015677515/dsh-prompt-ErrorNotes-desk",
+    "url": "https://github.com/1015677515/dsh-prompt-ErrorNotes-desk",
+    "defaultBranch": "main",
+    "commitSha": "efc5bd3095aac9444374f259a67123aa8a9b12a8",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-prompt-ErrorNotes-desk",
+    "version": "1.3.1",
+    "description": "Two panels in the conversation header: edit the cross-conversation global prompt and a genuinely per-conversation prompt (each conversation keeps its own Markdown file under prompt-desk/sessions/), and keep a categorised error-experience library that is injected into the system prompt — including drafts captured automatically from the agent's own self-reported mistakes.",
+    "license": "MIT"
+   },
+   "topics": [
+    "dsh-plugin"
+   ],
+   "keywords": [
+    "agent",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "memory",
+    "mistakes",
+    "prompt",
+    "system-prompt"
+   ],
+   "stars": 6,
+   "repositoryCreatedAt": "2026-10-14T09:49:18Z",
+   "lastCodePushAt": "2026-11-04T06:59:47Z",
+   "firstSeenAt": "2026-10-15T08:16:38.366Z",
+   "indexedAt": "2026-11-04T10:53:28.508Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/1015677515/dsh-prompt-ErrorNotes-desk.git#efc5bd3095aac9444374f259a67123aa8a9b12a8",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1374274469",
+   "repository": {
+    "fullName": "1624318455/dsh-plugin-adapter",
+    "url": "https://github.com/1624318455/dsh-plugin-adapter",
+    "defaultBranch": "master",
+    "commitSha": "a0a716f3b3c5e8b6df90b00a0d5b40330a257503",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-plugin-adapter",
+    "version": null,
+    "description": "Free OpenCode Zen models for DeepSeek Harness (DSH): native dsh-llm adapter plugin, no API key.",
+    "license": "MIT"
+   },
+   "topics": [
+    "dsh-plugin"
+   ],
+   "keywords": [],
+   "stars": 4,
+   "repositoryCreatedAt": "2026-09-17T10:35:12Z",
+   "lastCodePushAt": "2026-10-26T04:00:14Z",
+   "firstSeenAt": "2026-09-18T08:13:46.131Z",
+   "indexedAt": "2026-10-26T08:53:02.739Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/1624318455/dsh-plugin-adapter.git#a0a716f3b3c5e8b6df90b00a0d5b40330a257503",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1380798383",
+   "repository": {
+    "fullName": "6shenhonghong9/dsh-startup-screen",
+    "url": "https://github.com/6shenhonghong9/dsh-startup-screen",
+    "defaultBranch": "main",
+    "commitSha": "872ae017ff2183d195495b26111b61f518f7b420",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-startup-screen",
+    "version": "1.3.1",
+    "description": "DeepSeek Harness 启动界面与启动动画：黑幕 DeepSeek 标识 → 过曝洗白 → 暖白档案底板 → 交互式访问授权序列（需要访问许可 / 身份资料确认 / 接收访问需求 / 开始读取权限 / 读取完毕·核验通过 / 欢迎访问）。中文主字 + 英文等宽副标题，真声素材 + 界面音效，身份名称等参数在 DSH 设置页可改。web profile 与 DeepSeek Harness Desktop 桌面端通用。桌面端（Windows）播放启动动画期间把标题栏整层透明化：最小化/最大化/关闭按钮与其底色一并不可见，播放结束自动还原。",
+    "license": "MIT"
+   },
+   "topics": [
+    "dsh",
+    "dsh-plugin",
+    "harness",
+    "plugin",
+    "startup-animation"
+   ],
+   "keywords": [
+    "boot-animation",
+    "deepseek-harness",
+    "deepseek-harness-desktop",
+    "dsh",
+    "dsh-plugin",
+    "splash",
+    "startup"
+   ],
+   "stars": 871,
+   "repositoryCreatedAt": "2026-09-22T03:02:34Z",
+   "lastCodePushAt": "2026-11-18T09:17:18Z",
+   "firstSeenAt": "2026-10-30T09:58:55.797Z",
+   "indexedAt": "2026-11-18T11:39:30.706Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/6shenhonghong9/dsh-startup-screen.git#872ae017ff2183d195495b26111b61f518f7b420",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1445642320",
+   "repository": {
+    "fullName": "Buir5/_turn-sound",
+    "url": "https://github.com/Buir5/_turn-sound",
+    "defaultBranch": "main",
+    "commitSha": "7a7733f1cc8bdccac81aa7bfe70fcfd9cde99467",
+    "archived": false
+   },
+   "package": {
+    "name": "_turn-sound",
+    "version": "0.3.1",
+    "description": "回合结束提示音 + 可拖动额度浮层（含人民币扣费/余额对比）",
+    "license": "MIT"
+   },
+   "topics": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "notification",
+    "quota"
+   ],
+   "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "notification",
+    "sound"
+   ],
+   "stars": 0,
+   "repositoryCreatedAt": "2026-11-04T12:39:10Z",
+   "lastCodePushAt": "2026-11-05T04:33:34Z",
+   "firstSeenAt": "2026-11-05T10:53:18.367Z",
+   "indexedAt": "2026-11-05T10:53:18.367Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/Buir5/_turn-sound.git#7a7733f1cc8bdccac81aa7bfe70fcfd9cde99467",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1350368388",
+   "repository": {
+    "fullName": "FishBottle7/opencode2dsh",
+    "url": "https://github.com/FishBottle7/opencode2dsh",
+    "defaultBranch": "master",
+    "commitSha": "37d3ea202187767d6576ef72798e270c12da9b4e",
+    "archived": false
+   },
+   "package": {
+    "name": "opencode2dsh",
+    "version": null,
+    "description": "Free OpenCode Zen models for DeepSeek Harness (DSH): native dsh-llm adapter plugin, no API key.",
+    "license": "MIT"
+   },
+   "topics": [
+    "cordis",
+    "cordis-plugin",
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "free-api",
+    "free-llm",
+    "free-llm-access",
+    "free-models",
+    "llm",
+    "llm-agents",
+    "llm-provider",
+    "nodejs",
+    "opencode-zen",
+    "typescript"
+   ],
+   "keywords": [],
+   "stars": 411,
+   "repositoryCreatedAt": "2026-08-29T07:22:12Z",
+   "lastCodePushAt": "2026-11-03T09:04:03Z",
+   "firstSeenAt": "2026-08-29T10:02:29.707Z",
+   "indexedAt": "2026-11-03T10:50:31.498Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/FishBottle7/opencode2dsh.git#37d3ea202187767d6576ef72798e270c12da9b4e",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "manual",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1347141146",
+   "repository": {
+    "fullName": "fufengyuan/dsh-council",
+    "url": "https://github.com/fufengyuan/dsh-council",
+    "defaultBranch": "main",
+    "commitSha": "6df786402231bd85cbf892b672cab950e754f53f",
+    "archived": false
+   },
+   "package": {
+    "name": "dsh-council",
+    "version": "1.0.0",
+    "description": "Council of High Intelligence for dsh web — multi-perspective debate with live DAG panel",
+    "license": "MIT"
+   },
+   "topics": [
+    "deepseek-harness",
+    "dsh-plugin"
+   ],
+   "keywords": [],
+   "stars": 2,
+   "repositoryCreatedAt": "2026-08-26T09:23:39Z",
+   "lastCodePushAt": "2026-09-04T02:07:56Z",
+   "firstSeenAt": "2026-08-27T14:11:04.109Z",
+   "indexedAt": "2026-09-04T07:58:07.102Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/fufengyuan/dsh-council.git#6df786402231bd85cbf892b672cab950e754f53f",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  },
+  {
+   "repositoryId": "1335777176",
+   "repository": {
+    "fullName": "mxl2498/dsh-balance",
+    "url": "https://github.com/mxl2498/dsh-balance",
+    "defaultBranch": "main",
+    "commitSha": "3523f8ed1d8387f0734266589d81fd06f7bdc9a5",
+    "archived": false
+   },
+   "package": {
+    "name": "@dsh-external/余额悬浮球",
+    "version": "0.1.0",
+    "description": "DSH Web 插件：悬浮显示 DeepSeek 账户余额，点击直达官网充值页",
+    "license": "MIT"
+   },
+   "topics": [
+    "deepseek",
+    "deepseek-harness",
+    "dsb",
+    "dsh-plugin",
+    "plugin"
+   ],
+   "keywords": [],
+   "stars": 1,
+   "repositoryCreatedAt": "2026-08-16T09:18:10Z",
+   "lastCodePushAt": "2026-09-04T10:45:52Z",
+   "firstSeenAt": "2026-08-17T04:01:50.681Z",
+   "indexedAt": "2026-09-05T07:39:37.555Z",
+   "source": {
+    "kind": "git",
+    "ref": "git+https://github.com/mxl2498/dsh-balance.git#3523f8ed1d8387f0734266589d81fd06f7bdc9a5",
+    "packageJsonPath": "package.json",
+    "patchPath": "cordis.patch.yml"
+   },
+   "validation": {
+    "status": "valid",
+    "code": "valid-bundle",
+    "message": null
+   },
+   "compatibility": "unknown",
+   "installability": "one-click-eligible",
+   "riskSignals": [
+    "git-source"
+   ],
+   "installScripts": null,
+   "rating": null
+  }
+ ],
+ "packs": [
+  {
+   "repositoryId": "1335075454",
+   "repository": {
+    "fullName": "w2112515/dsh-essentials-pack",
+    "url": "https://github.com/w2112515/dsh-essentials-pack",
+    "defaultBranch": "main",
+    "commitSha": "2978d48bbbb998bfae5fc67fa1647f15a5136fc1",
+    "archived": false
+   },
+   "name": "DSH Category Star Leaders",
+   "description": "The highest-starred catalog-admitted entry of each DSH Plugin Marketplace category, mechanically selected from the 2026-08-17 catalog snapshot (3,543 admitted entries). Inclusion states a fact about the catalog; it is not an evaluation or a recommendation. 本整合包按 2026-08-17 目录快照（3543 条收录）机械选取每个分类中 star 数最高的收录条目；收录是事实陈述，不构成评价或推荐。",
+   "items": [
+    {
+     "fullName": "kingOfSoySauce/dsh-liang-skin",
+     "repositoryId": "1334246540"
+    },
+    {
+     "fullName": "sandbaseai/sandbase-harness",
+     "repositoryId": "1297278222"
+    },
+    {
+     "fullName": "omdsh-dev/DSH-better-sidebar",
+     "repositoryId": "1326893710"
+    }
+   ],
+   "stars": 0,
+   "repositoryCreatedAt": "2026-08-15T12:37:56Z",
+   "lastCodePushAt": "2026-08-17T15:39:48Z",
+   "firstSeenAt": "2026-08-15T16:46:23.762Z",
+   "indexedAt": "2026-08-17T15:42:46.939Z",
+   "validation": {
+    "status": "valid",
+    "code": "valid-pack",
+    "message": null
+   }
+  }
+ ],
+ "ratings": null
+}
