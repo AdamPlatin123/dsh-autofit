@@ -1,0 +1,364 @@
+{
+  "version": "2026-08-25",
+  "total": 331,
+  "generatedAt": "2026-08-25T02:11:40.418Z",
+  "plugins": [
+    {
+      "slug": "liustack-modlens",
+      "name": "@liustack/modlens",
+      "nameZh": "@liustack/modlens",
+      "description": "Plug-in vision for text-only LLMs, powered by the free Antigravity CLI",
+      "descriptionZh": "为纯文本LLM提供即插即用的视觉能力，由免费的Antigravity CLI驱动",
+      "npmPackage": "@liustack/modlens",
+      "categories": [
+        "plugin-productivity"
+      ],
+      "repoUrl": "https://github.com/liustack/modlens",
+      "author": "liustack",
+      "license": "MIT",
+      "latestVersion": "3.24.2",
+      "downloadsCached": 0,
+      "stars": 3604,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add @liustack/modlens",
+      "cordisUrl": "https://cordis.run/plugins/liustack-modlens"
+    },
+    {
+      "slug": "dsh-better-sidebar",
+      "name": "dsh-better-sidebar",
+      "nameZh": "dsh-better-sidebar",
+      "description": "DSH web plugin: a VSCode-like right sidebar (explorer / editor / terminal / git / browser), isolated per conversation session. Exposes a service for other plugins to register sidebar tabs and file viewers.",
+      "descriptionZh": "DSH 网页插件：提供类似 VSCode 的右侧边栏（资源管理器 / 编辑器 / 终端 / Git / 浏览器），按对话会话隔离。对外暴露服务，供其他插件注册侧边栏标签和文件查看器。",
+      "npmPackage": "dsh-better-sidebar",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/omdsh-dev/DSH-better-sidebar",
+      "author": "omdsh-dev",
+      "license": "MIT",
+      "latestVersion": "0.16.0",
+      "downloadsCached": 0,
+      "stars": 2809,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add dsh-better-sidebar",
+      "cordisUrl": "https://cordis.run/plugins/dsh-better-sidebar"
+    },
+    {
+      "slug": "dsh-cc-tui",
+      "name": "dsh-cc-tui",
+      "nameZh": "dsh-cc-tui",
+      "description": "Claude Code style interactive TUI front door for DeepSeek Harness agents, built on the ported Ink core.",
+      "descriptionZh": "为 DeepSeek Harness 智能体打造的 Claude Code 风格交互式 TUI 入口，基于移植的 Ink 核心构建。",
+      "npmPackage": "dsh-cc-tui",
+      "categories": [
+        "dev-assistant"
+      ],
+      "repoUrl": "https://github.com/ccch1mneyyy/dsh-cc-tui",
+      "author": "ccch1mneyyy",
+      "license": "MIT",
+      "latestVersion": "0.4.2",
+      "downloadsCached": 0,
+      "stars": 2473,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add dsh-cc-tui",
+      "cordisUrl": "https://cordis.run/plugins/dsh-cc-tui"
+    },
+    {
+      "slug": "dsh-agent-teams",
+      "name": "@nanmicoder/dsh-agent-teams",
+      "nameZh": "@nanmicoder/dsh-agent-teams",
+      "description": "AgentTeams for DeepSeek Harness: multi-agent team collaboration (captain, members, tasks with dependencies, messaging) driven by natural language, with a tree monitor in the web GUI",
+      "descriptionZh": "用于 DeepSeek Harness 的 AgentTeams：由自然语言驱动的多智能体团队协作（队长、成员、带依赖关系的任务、消息传递），并在 Web GUI 中提供树状监控器。",
+      "npmPackage": "https://github.com/NanmiCoder/dsh-agent-teams",
+      "categories": [
+        "data-integration"
+      ],
+      "repoUrl": "https://github.com/NanmiCoder/dsh-agent-teams",
+      "author": "NanmiCoder",
+      "license": "MIT",
+      "latestVersion": "0.1.13",
+      "downloadsCached": null,
+      "stars": 953,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/NanmiCoder/dsh-agent-teams",
+      "cordisUrl": "https://cordis.run/plugins/dsh-agent-teams"
+    },
+    {
+      "slug": "dsh-external-dsh-vision-toolkit",
+      "name": "@dsh-external/dsh-vision-toolkit",
+      "nameZh": "@dsh-external/dsh-vision-toolkit",
+      "description": "DeepSeek Harness-native integration for agent-vision-toolkit: image Q&A, OCR, grounding, UI restoration, pixel diff, Artifacts, and Web UI.",
+      "descriptionZh": "DeepSeek Harness 原生集成 agent-vision-toolkit：图像问答、OCR、视觉定位、UI 还原、像素差异、Artifacts 和 Web UI。",
+      "npmPackage": "@dsh-external/dsh-vision-toolkit",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/Anionex/dsh-vision-toolkit",
+      "author": "Anionex",
+      "license": "MIT",
+      "latestVersion": "0.1.4",
+      "downloadsCached": 0,
+      "stars": 818,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add @dsh-external/dsh-vision-toolkit",
+      "cordisUrl": "https://cordis.run/plugins/dsh-external-dsh-vision-toolkit"
+    },
+    {
+      "slug": "dsh-external-dsh-ads",
+      "name": "@dsh-external/dsh-ads",
+      "nameZh": "@dsh-external/dsh-ads",
+      "description": "DSH ad-infestation plugin: localized Chinese portal ads and English scam-ad parody, with fake pop-ups, a jackpot wheel, rewarded inference ads, and fake-game animation.",
+      "descriptionZh": "DSH广告侵扰插件：本地化中文门户广告与英文诈骗广告戏仿，含虚假弹窗、大奖转盘、奖励式推理广告及假游戏动画。",
+      "npmPackage": "https://github.com/Nagi-ovo/dsh-ads",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/Nagi-ovo/dsh-ads",
+      "author": "Nagi-ovo",
+      "license": "BSD-3-Clause",
+      "latestVersion": "0.1.0",
+      "downloadsCached": null,
+      "stars": 560,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/Nagi-ovo/dsh-ads",
+      "cordisUrl": "https://cordis.run/plugins/dsh-external-dsh-ads"
+    },
+    {
+      "slug": "omdsh-dev-dsh-genui",
+      "name": "@changfenhuang/dsh-genui",
+      "nameZh": "@changfenhuang/dsh-genui",
+      "description": "GenUI for DeepSeek Harness: interactive UI components rendered inline in assistant replies via the ```dsh-ui fence — layout, charts, plots, forms, quizzes, mermaid, 3D scenes, and an action event loop back to the model. Ships the fence-teaching host plugin, the browser renderer (client half), and the genui skill.",
+      "descriptionZh": "DeepSeek Harness 的 GenUI：通过 ```dsh-ui 围栏在助手回复中内联渲染交互式 UI 组件——布局、图表、绘图、表单、测验、mermaid、3D 场景，以及将操作事件循环回传模型。包含围栏教学宿主插件、浏览器渲染器（客户端部分）和 genui 技能。",
+      "npmPackage": "https://github.com/omdsh-dev/dsh-genui",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/omdsh-dev/dsh-genui",
+      "author": "omdsh-dev",
+      "license": "MIT",
+      "latestVersion": "0.9.2",
+      "downloadsCached": null,
+      "stars": 323,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/omdsh-dev/dsh-genui",
+      "cordisUrl": "https://cordis.run/plugins/omdsh-dev-dsh-genui"
+    },
+    {
+      "slug": "whale-girl",
+      "name": "whale-girl",
+      "nameZh": "whale-girl",
+      "description": "DSH Web GUI 内的桌面宠物（QQ 宠物形态）",
+      "descriptionZh": "DSH Web GUI 内的桌面宠物（QQ 宠物形态）",
+      "npmPackage": "whale-girl",
+      "categories": [
+        "plugin-productivity"
+      ],
+      "repoUrl": "https://github.com/vlln/whale-girl",
+      "author": "vlln",
+      "license": "MIT",
+      "latestVersion": "0.1.0",
+      "downloadsCached": 0,
+      "stars": 280,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add whale-girl",
+      "cordisUrl": "https://cordis.run/plugins/whale-girl"
+    },
+    {
+      "slug": "oh-dsh-desktop",
+      "name": "@oh-dsh/desktop",
+      "nameZh": "@oh-dsh/desktop",
+      "description": "Oh-DSH: installable Desktop, Web, and TUI surfaces over DeepSeek Harness",
+      "descriptionZh": "Oh-DSH：基于 DeepSeek Harness 的可安装桌面、Web 和 TUI 界面",
+      "npmPackage": "https://github.com/hust-open-atom-club/oh-dsh",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/hust-open-atom-club/oh-dsh",
+      "author": "hust-open-atom-club",
+      "license": null,
+      "latestVersion": "0.1.9",
+      "downloadsCached": null,
+      "stars": 268,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/hust-open-atom-club/oh-dsh",
+      "cordisUrl": "https://cordis.run/plugins/oh-dsh-desktop"
+    },
+    {
+      "slug": "dsh-external-dsh-visualize",
+      "name": "@dsh-external/dsh-visualize",
+      "nameZh": "@dsh-external/dsh-visualize",
+      "description": "DSH inline visualization plugin: a visualize tool + bundled skill let the model render interactive HTML fragments as sandboxed cards in the conversation (Codex /visualize semantics).",
+      "descriptionZh": "DSH 内联可视化插件：可视化工具 + 内置技能，让模型把对话中的交互式 HTML 片段渲染为沙箱卡片（Codex /visualize 语义）。",
+      "npmPackage": "https://github.com/Nagi-ovo/dsh-visualize",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/Nagi-ovo/dsh-visualize",
+      "author": "Nagi-ovo",
+      "license": "BSD-3-Clause",
+      "latestVersion": "0.1.2",
+      "downloadsCached": null,
+      "stars": 212,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/Nagi-ovo/dsh-visualize",
+      "cordisUrl": "https://cordis.run/plugins/dsh-external-dsh-visualize"
+    },
+    {
+      "slug": "dsh-plugin-dsh-review-loop",
+      "name": "@dsh-plugin/dsh-review-loop",
+      "nameZh": "@dsh-plugin/dsh-review-loop",
+      "description": null,
+      "descriptionZh": null,
+      "npmPackage": "https://github.com/wuxiangru915/dsh-review-loop",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/wuxiangru915/dsh-review-loop",
+      "author": "wuxiangru915",
+      "license": "MIT",
+      "latestVersion": "0.1.0",
+      "downloadsCached": null,
+      "stars": 2,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/wuxiangru915/dsh-review-loop",
+      "cordisUrl": "https://cordis.run/plugins/dsh-plugin-dsh-review-loop"
+    },
+    {
+      "slug": "dsh-plugin-pkgseek",
+      "name": "dsh-plugin-pkgseek",
+      "nameZh": "dsh-plugin-pkgseek",
+      "description": "PkgSeek Linux package, command and CVE intelligence as native DeepSeek Harness tools",
+      "descriptionZh": "PkgSeek 将 Linux 软件包、命令和 CVE 情报作为 DeepSeek Harness 原生工具提供",
+      "npmPackage": "dsh-plugin-pkgseek",
+      "categories": [
+        "dev-assistant"
+      ],
+      "repoUrl": "https://github.com/web-casa/dsh-plugin-pkgseek",
+      "author": null,
+      "license": "MIT",
+      "latestVersion": "0.1.1",
+      "downloadsCached": 0,
+      "stars": 1,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add dsh-plugin-pkgseek",
+      "cordisUrl": "https://cordis.run/plugins/dsh-plugin-pkgseek"
+    },
+    {
+      "slug": "delivery-review-plugin",
+      "name": "delivery-review-plugin",
+      "nameZh": "delivery-review-plugin",
+      "description": "DSH 专属双 Agent 交付协作插件：/dsh-delivery 命令 + 确定性状态机（JS 纯函数）+ 结构化审查结论（schema 校验）+ Web 活动面板（状态路由+浮层）+ 按任务规模自动分级。基于 DSH 原生能力（ask_user_question / toolFilter 只读隔离 / webServer 路由 / skills 注册），不使用 git notes、不由 LLM 手写状态。",
+      "descriptionZh": "双 Agent 交付协作工作流（loop 模式）的 DeepSeek Harness 移植版：/delivery-review 命令 + 审查材料自动生成 + fixer/reviewer/planner 隔离子代理。基于 DSH 原生子代理消息通道（不使用 git notes）。",
+      "npmPackage": "https://github.com/xiaoxiao-svg/delivery-review-dsh-plugin",
+      "categories": [
+        "themes-ui"
+      ],
+      "repoUrl": "https://github.com/xiaoxiao-svg/delivery-review-dsh-plugin",
+      "author": "xiaoxiao-svg",
+      "license": "MIT",
+      "latestVersion": "2.0.0",
+      "downloadsCached": null,
+      "stars": 0,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/xiaoxiao-svg/delivery-review-dsh-plugin",
+      "cordisUrl": "https://cordis.run/plugins/delivery-review-plugin"
+    },
+    {
+      "slug": "dsh-pixel-whale",
+      "name": "dsh-pixel-whale",
+      "nameZh": "dsh-pixel-whale",
+      "description": "A lively pixel-whale loading companion for DeepSeek Harness Web.",
+      "descriptionZh": "为 DeepSeek Harness Web 打造的活泼像素鲸鱼加载伴侣。",
+      "npmPackage": "https://github.com/yoke233/dsh-pixel-whale",
+      "categories": [
+        "plugin-productivity"
+      ],
+      "repoUrl": "https://github.com/yoke233/dsh-pixel-whale",
+      "author": "yoke233",
+      "license": "MIT",
+      "latestVersion": "0.1.0",
+      "downloadsCached": null,
+      "stars": 0,
+      "securityStatus": "clean",
+      "sourceType": "github",
+      "installCommand": "dsh plugin --profile <name> add https://github.com/yoke233/dsh-pixel-whale",
+      "cordisUrl": "https://cordis.run/plugins/dsh-pixel-whale"
+    },
+    {
+      "slug": "webcasa-web",
+      "name": "@webcasa/deepseek-harness-marketplace",
+      "nameZh": "@webcasa/deepseek-harness-marketplace",
+      "description": "Cordis marketplace plugin for DeepSeek Harness",
+      "descriptionZh": "Cordis marketplace plugin for DeepSeek Harness",
+      "npmPackage": "@webcasa/deepseek-harness-marketplace",
+      "categories": [
+        "dev-assistant"
+      ],
+      "repoUrl": "https://github.com/web-casa/DeepSeek-Harness-Marketplace-Cordis",
+      "author": null,
+      "license": "MIT",
+      "latestVersion": "0.1.1",
+      "downloadsCached": null,
+      "stars": 0,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add @webcasa/deepseek-harness-marketplace",
+      "cordisUrl": "https://cordis.run/plugins/webcasa-web"
+    },
+    {
+      "slug": "dsh-model-selector",
+      "name": "dsh-model-selector",
+      "nameZh": "dsh-model-selector",
+      "description": "DeepSeek Harness model selector upgrade: one-level model & reasoning-effort picker with 5 Liang tiers, custom model aliases, and peak/off-peak price countdown.",
+      "descriptionZh": "DeepSeek Harness model selector upgrade: one-level model & reasoning-effort picker with 5 Liang tiers, custom model aliases, and peak/off-peak price countdown.",
+      "npmPackage": "dsh-model-selector",
+      "categories": [
+        "dev-assistant"
+      ],
+      "repoUrl": "https://github.com/bitterSmilezzz/dsh-model-selector",
+      "author": "bitterSmilezzz",
+      "license": "Apache-2.0",
+      "latestVersion": "0.2.0",
+      "downloadsCached": null,
+      "stars": null,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add dsh-model-selector",
+      "cordisUrl": "https://cordis.run/plugins/dsh-model-selector"
+    },
+    {
+      "slug": "dsh-skill-manager",
+      "name": "dsh-skill-manager",
+      "nameZh": "dsh-skill-manager",
+      "description": "In-GUI skill manager for the dsh web GUI: a top-level Skills entry in Settings (movable into the Plugins section) that lists every installed skill (name, description, model/user invocation type, source root), with search. Read-only browser of the local sk",
+      "descriptionZh": "dsh 网页 GUI 的界面内技能管理器：设置中的顶级“技能”入口（可移入“插件”区域），列出所有已安装技能（名称、描述、模型/用户调用类型、源根目录），支持搜索。本地技能的只读浏览器。",
+      "npmPackage": "dsh-skill-manager",
+      "categories": [
+        "plugin-productivity"
+      ],
+      "repoUrl": "https://github.com/bitterSmilezzz/dsh-skill-manager",
+      "author": "bitterSmilezzz",
+      "license": "MIT",
+      "latestVersion": "0.1.3",
+      "downloadsCached": 0,
+      "stars": null,
+      "securityStatus": "clean",
+      "sourceType": "registry",
+      "installCommand": "dsh plugin --profile <name> add dsh-skill-manager",
+      "cordisUrl": "https://cordis.run/plugins/dsh-skill-manager"
+    }
+  ]
+}

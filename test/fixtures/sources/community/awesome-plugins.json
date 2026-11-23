@@ -1,0 +1,563 @@
+{
+  "name": "awesome-dsh-plugin",
+  "url": "https://awesome-dsh-plugin.com",
+  "source": "https://github.com/awesome-dsh-plugin/awesome-dsh-plugin",
+  "updated": "2026-11-21",
+  "count": 19,
+  "categories": {
+    "agi": {
+      "en": "AGI Architecture Exploration",
+      "zh": "AGI 架构探索"
+    },
+    "ui": {
+      "en": "UI Enhancements",
+      "zh": "UI 增强"
+    },
+    "usage": {
+      "en": "Usage & Billing",
+      "zh": "用量与计费"
+    },
+    "tools": {
+      "en": "Tools & Capabilities",
+      "zh": "工具与能力"
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-living#core",
+      "owner": "AlexisVon",
+      "url": "https://github.com/AlexisVon/dsh-living/tree/main/packages/core",
+      "page": "https://awesome-dsh-plugin.com/p/AlexisVon/dsh-living--packages-core/",
+      "category": "agi",
+      "description": {
+        "en": "A runtime for an agent that lives by its own settings: a 10–60 minute auto-wake grid, three-layer SQLite memory consolidated at night, an auto-evolving persona (nightly rewrite with version history) plus a journal, and WorldGem channels for Bilibili, WeChat and the PetKit feeder.",
+        "zh": "按设定活着的 agent 运行时：10–60 分钟自动唤醒、夜睡整理的三层 SQLite 记忆、每晚自动演化并保留版本历史的人设与日记，以及 B站 / 微信 / 小佩喂食器 WorldGem 通道。"
+      },
+      "npm": "dsh-living",
+      "version": "0.3.14",
+      "stars": 1,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": 1826,
+      "downloadsStart": "2026-10-22",
+      "downloadsEnd": "2026-11-20",
+      "downloadsCheckedAt": "2026-11-21",
+      "install": "dsh plugin --profile web add dsh-living",
+      "added": "2026-11-19"
+    },
+    {
+      "name": "dsh-j-space",
+      "owner": "AnonyJcy",
+      "url": "https://github.com/AnonyJcy/dsh-j-space",
+      "page": "https://awesome-dsh-plugin.com/p/AnonyJcy/dsh-j-space/",
+      "category": "agi",
+      "description": {
+        "en": "J-Space Cognition Suite SV1 native agent preset and standalone Cordis plugin: 13 modules, persistent controller and decoupled workspace.",
+        "zh": "J-Space Cognition Suite SV1 原生智能体预设与 Cordis 插件：提供 13 大认知工程模块、持久化控制器与状态外化工作区。"
+      },
+      "npm": "@anonyjcy/dsh-j-space",
+      "version": "1.2.6",
+      "stars": 6,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": 2371,
+      "downloadsStart": "2026-10-22",
+      "downloadsEnd": "2026-11-20",
+      "downloadsCheckedAt": "2026-11-21",
+      "capabilities": [
+        "fs-write",
+        "fs-read",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add @anonyjcy/dsh-j-space",
+      "added": "2026-09-20"
+    },
+    {
+      "name": "dsh-preset-deep",
+      "owner": "anticbv",
+      "url": "https://github.com/anticbv/dsh-preset-deep",
+      "page": "https://awesome-dsh-plugin.com/p/anticbv/dsh-preset-deep/",
+      "category": "agi",
+      "description": {
+        "en": "A fifth DeepSeek Harness work mode that requires a falsification design (at least two pieces of evidence that could disprove the plan) in every plan and tags each factual claim with its source (\\[文件]/\\[检索]/\\[记忆]) or \\[未知]; evidence grading follows the project's AGENTS.md.",
+        "zh": "给 DeepSeek Harness 增加第五个工作模式：每个计划必须含「证伪设计」（至少两条能推翻方案的证据），每条事实须标来源（\\[文件]/\\[检索]/\\[记忆]）或 \\[未知]；取证分级按项目 AGENTS.md 执行。"
+      },
+      "npm": "dsh-preset-deep",
+      "version": "0.1.5",
+      "stars": 4,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": 1490,
+      "downloadsStart": "2026-10-22",
+      "downloadsEnd": "2026-11-20",
+      "downloadsCheckedAt": "2026-11-21",
+      "capabilities": [
+        "shell",
+        "dynamic-code",
+        "fs-write",
+        "fs-read",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add dsh-preset-deep",
+      "added": "2026-11-08",
+      "icon": "https://raw.githubusercontent.com/anticbv/dsh-preset-deep/main/assets/icon.png"
+    },
+    {
+      "name": "dsh-prompt-polish",
+      "owner": "benrong2048-boop",
+      "url": "https://github.com/benrong2048-boop/dsh-prompt-polish",
+      "page": "https://awesome-dsh-plugin.com/p/benrong2048-boop/dsh-prompt-polish/",
+      "category": "agi",
+      "description": {
+        "en": "Turns a one-line DSH draft into a complete task brief (role / goal / constraints / output format). The engine is a byte-verified port of linshenkx/prompt-optimizer (three modes, 10 templates identical to upstream); history is consent-gated with version chains and structural comparison; every run reports its token usage. Nothing is written back or sent without a click.",
+        "zh": "把 DSH 输入框里的一句话补成完整任务书（角色/目标/约束/输出格式）。引擎是 linshenkx/prompt-optimizer 的逐字节移植：三种优化模式、10 个模板与上游一致；历史为授权制、带版本链与结构对比；每次润色的 token 消耗可见。未经点击不写回、不发送。"
+      },
+      "npm": "@benrong/dsh-prompt-polish",
+      "tarball": "https://github.com/benrong2048-boop/dsh-prompt-polish/releases/download/v0.2.6/benrong-dsh-prompt-polish-0.2.6.tgz",
+      "version": "0.2.6",
+      "stars": 14,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": 2547,
+      "downloadsStart": "2026-10-22",
+      "downloadsEnd": "2026-11-20",
+      "downloadsCheckedAt": "2026-11-21",
+      "capabilities": [
+        "network",
+        "llm"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add @benrong/dsh-prompt-polish",
+      "added": "2026-10-13"
+    },
+    {
+      "name": "dsh-big-fat-whale-maid-adaptive",
+      "owner": "CanaryJing",
+      "url": "https://github.com/CanaryJing/dsh-big-fat-whale-maid-adaptive",
+      "page": "https://awesome-dsh-plugin.com/p/CanaryJing/dsh-big-fat-whale-maid-adaptive/",
+      "category": "agi",
+      "description": {
+        "en": "Agent preset with adaptive tool presentation and environment-aware shell routing. Ports modules from yjh051108/dsh-routing-suite and xiaobright/dsh-anchored-standard (the former is listed here), so do not enable it alongside those presets. Requires DSH 0.2.2 or later; high uses PTC with on-demand tool unlocks and max uses PTC with the full available tool catalog.",
+        "zh": "提供自适应工具呈现与环境适配 Shell 路由的智能体预设。复用了从 yjh051108/dsh-routing-suite 与 xiaobright/dsh-anchored-standard 移植的模块（前者已收录），不要与这两个预设同时启用。需要 DSH 0.2.2 及以上；high 使用 PTC 与按需解锁，max 使用 PTC 与完整可用工具目录。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/CanaryJing/dsh-big-fat-whale-maid-adaptive/releases/download/v3.2.4/dsh-preset-big-fat-whale-maid-adaptive-3.2.4.tgz",
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-read",
+        "env",
+        "llm"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add \"https://github.com/CanaryJing/dsh-big-fat-whale-maid-adaptive/releases/download/v3.2.4/dsh-preset-big-fat-whale-maid-adaptive-3.2.4.tgz\"",
+      "added": "2026-10-27"
+    },
+    {
+      "name": "dsh-advisor-flow",
+      "owner": "ccll",
+      "url": "https://github.com/ccll/dsh-advisor-flow",
+      "page": "https://awesome-dsh-plugin.com/p/ccll/dsh-advisor-flow/",
+      "category": "agi",
+      "description": {
+        "en": "Executor/advisor workflow ported from pi-advisor-flow: the executor calls ask_advisor for a second opinion at key decisions, after repeated failures and before completion; equivalent repeated tool calls are intercepted before execution for an advisor review with a proceed/revise/blocked verdict, and hard mode force-reviews every turn before it closes. Per-call token and cost ledger with /advisor status readout, privacy tiers for repo context and file contents, six-shape secret redaction, and a web settings card; advisor failures never stall the main loop.",
+        "zh": "移植自 pi-advisor-flow 的执行者/顾问工作流：执行者经 ask_advisor 工具按需请求第二意见（可附问题、草稿、仓库上下文档位与点名文件）；等价工具调用重复达到阈值时在执行前拦截，由顾问以 proceed/revise/blocked 三值裁决，硬模式下回合收口前强制评审；提供逐次 token 与成本台账、/advisor status 状态读数、仓库上下文与文件内容分级授权、六类密钥形状脱敏与 web 设置卡；advisor 失败不停摆主循环。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/ccll/dsh-advisor-flow/releases/download/v0.2.1/dsh-advisor-flow-0.2.1.tgz",
+      "version": null,
+      "stars": 5,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-write",
+        "fs-read"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add \"https://github.com/ccll/dsh-advisor-flow/releases/download/v0.2.1/dsh-advisor-flow-0.2.1.tgz\"",
+      "added": "2026-10-17"
+    },
+    {
+      "name": "dsh-paperflight#plugin",
+      "owner": "bagpipe1289",
+      "url": "https://github.com/bagpipe1289/dsh-paperflight/tree/main/plugin",
+      "page": "https://awesome-dsh-plugin.com/p/bagpipe1289/dsh-paperflight--plugin/",
+      "category": "ui",
+      "description": {
+        "en": "PaperFlight is an experimental future-retro DSH Web workbench with session management, file previews, approvals, and optional preset-scoped browser and terminal tools.",
+        "zh": "纸航 PaperFlight 是实验性的未来复古 DSH Web 工作台，提供会话管理、文件预览、审批和按预设启用的可选浏览器与终端工具。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/bagpipe1289/dsh-paperflight/releases/download/v0.1.0-preview.60/dsh-paperflight-0.1.0-preview.60.tgz",
+      "version": null,
+      "stars": 3,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "install": "dsh plugin --profile web add \"https://github.com/bagpipe1289/dsh-paperflight/releases/download/v0.1.0-preview.60/dsh-paperflight-0.1.0-preview.60.tgz\"",
+      "added": "2026-10-17"
+    },
+    {
+      "name": "amoji#amoji",
+      "owner": "5101good",
+      "url": "https://github.com/5101good/amoji/tree/main/adapters/dsh",
+      "page": "https://awesome-dsh-plugin.com/p/5101good/amoji--adapters-dsh/",
+      "category": "ui",
+      "description": {
+        "en": "AI-native expressions for two-way chat: people see images, while text-only models read fixed meanings; includes a picker, custom expressions, import/export, and two visual styles.",
+        "zh": "用于双向聊天的 AI 原生表情：人看图片，纯文本模型读取固定语义；支持表情选择、自建表情、导入导出和两套画风。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/5101good/amoji/releases/download/v1.0.0/amoji-dsh-1.0.0.tgz",
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-09-24T17:02:46.730Z",
+      "install": "dsh plugin --profile web add \"https://github.com/5101good/amoji/releases/download/v1.0.0/amoji-dsh-1.0.0.tgz\"",
+      "added": "2026-09-23"
+    },
+    {
+      "name": "dsh-pet-plus#dsh-pet",
+      "owner": "cloudatlasx",
+      "url": "https://github.com/cloudatlasx/dsh-pet-plus/tree/main/dsh-pet",
+      "page": "https://awesome-dsh-plugin.com/p/cloudatlasx/dsh-pet-plus--dsh-pet/",
+      "category": "ui",
+      "description": {
+        "en": "An enhanced fork of PC2005-cloud/dsh-pet (do not install it alongside the upstream dsh-pet): a desktop pet for DSH with schedule reminders, approval and question bubbles you can answer in place, a 20-entry history ledger, double-click corner cycling, a configurable data directory, a step/elapsed progress line, snooze and one-hour mute, a right-click menu whose order and hidden items you can edit in settings (chat first by default), and a task-queue progress bar inside the work bubble.",
+        "zh": "PC2005-cloud/dsh-pet 的增强分支，不能与上游 dsh-pet 同装：定时任务到点由宠物提醒，审批与提问可直接在宠物气泡里作答，弹过的事件收进 20 条记录，双击换角落、数据目录可配置、工作气泡带「第几步 · 用了多久」，忙时可「等会儿」或静音一小时；右键菜单的顺序与显隐可在设置页里调（默认「对话」在最前），工作气泡里还有一条任务队列进度条。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/cloudatlasx/dsh-pet-plus/releases/download/v0.15.0/dsh-pet-plus-0.15.0.tgz",
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "install": "dsh plugin --profile web add \"https://github.com/cloudatlasx/dsh-pet-plus/releases/download/v0.15.0/dsh-pet-plus-0.15.0.tgz\"",
+      "added": "2026-11-05",
+      "icon": "https://raw.githubusercontent.com/cloudatlasx/dsh-pet-plus/main/dsh-pet/assets/logo.png"
+    },
+    {
+      "name": "dsh-intelligent-UI",
+      "owner": "lisihao",
+      "url": "https://github.com/lisihao/dsh-intelligent-UI",
+      "page": "https://awesome-dsh-plugin.com/p/lisihao/dsh-intelligent-UI/",
+      "category": "ui",
+      "description": {
+        "en": "Optional source-preserving chat rendering with selectable themes, offline Uiverse component tools and a report-local evidence workspace. Preview for DSH 0.2.1-rc.2.",
+        "zh": "可选接管对话渲染，保留原文与数据，提供可切换主题、离线 Uiverse 组件工具和报告内证据工作区。适配 DSH 0.2.1-rc.2 的预览版。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/lisihao/dsh-intelligent-UI/releases/download/%40lisihao%2Fdsh-solar-intelligent-experience-platform%400.1.0-preview.2/lisihao-dsh-solar-intelligent-experience-platform-0.1.0-preview.2.tgz",
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "dynamic-code",
+        "fs-write",
+        "fs-read",
+        "network"
+      ],
+      "capabilityRedLines": [
+        "uses plaintext http:// to www.eclipse.org"
+      ],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add \"https://github.com/lisihao/dsh-intelligent-UI/releases/download/%40lisihao%2Fdsh-solar-intelligent-experience-platform%400.1.0-preview.2/lisihao-dsh-solar-intelligent-experience-platform-0.1.0-preview.2.tgz\"",
+      "added": "2026-11-01"
+    },
+    {
+      "name": "dsh-outsourcing-expert",
+      "owner": "Funny1Potato",
+      "url": "https://github.com/Funny1Potato/dsh-outsourcing-expert",
+      "page": "https://awesome-dsh-plugin.com/p/Funny1Potato/dsh-outsourcing-expert/",
+      "category": "agi",
+      "description": {
+        "en": "Agent presets whose leader does no work itself: every non-management tool call is denied at the harness boundary so the task has to go to a subagent, after a one-time lookup of the available subagent models and a per-task model choice; a second preset deliberately picks the model least suited to the task.",
+        "zh": "让领导不亲自干活的 agent preset：非管理类工具调用在 harness 边界一律被拒，任务只能外包给子智能体，选人前先一次性摸清可选子智能体模型、再按任务逐个选型；另一个 preset 故意挑最不适合该任务的模型。"
+      },
+      "npm": "dsh-outsourcing-expert",
+      "tarball": "https://github.com/Funny1Potato/dsh-outsourcing-expert/releases/latest/download/dsh-outsourcing-expert.tgz",
+      "version": "1.2.5",
+      "stars": 7,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": 1929,
+      "downloadsStart": "2026-10-22",
+      "downloadsEnd": "2026-11-20",
+      "downloadsCheckedAt": "2026-11-21",
+      "capabilities": [
+        "fs-write",
+        "fs-read",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add dsh-outsourcing-expert",
+      "added": "2026-10-15"
+    },
+    {
+      "name": "dsh-cursor-toolkit",
+      "owner": "kingchen95272025",
+      "url": "https://github.com/kingchen95272025/dsh-cursor-toolkit",
+      "page": "https://awesome-dsh-plugin.com/p/kingchen95272025/dsh-cursor-toolkit/",
+      "category": "agi",
+      "description": {
+        "en": "Ships the Cursor agent preset plus the rules, skills, and MCP servers declared under .cursor, with a panel that reads and switches each of them.",
+        "zh": "自带「Cursor 模式」预设，并把 .cursor 下的规则、技能与 MCP server 接入 Agent 上下文，另提供查看与逐个开关它们的面板。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/kingchen95272025/dsh-cursor-toolkit/releases/latest/download/dsh-cursor-toolkit.tgz",
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "fs-write",
+        "fs-read",
+        "network"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add \"https://github.com/kingchen95272025/dsh-cursor-toolkit/releases/latest/download/dsh-cursor-toolkit.tgz\"",
+      "added": "2026-11-19",
+      "icon": "https://raw.githubusercontent.com/kingchen95272025/dsh-cursor-toolkit/main/assets/icon-180.png"
+    },
+    {
+      "name": "milancat-bot",
+      "owner": "alexbu512",
+      "url": "https://github.com/alexbu512/milancat-bot",
+      "page": "https://awesome-dsh-plugin.com/p/alexbu512/milancat-bot/",
+      "category": "agi",
+      "description": {
+        "en": "Grok-bot-style AI organization in the sidebar: a chief-of-staff agent creates departments, roles and per-department group chats, dispatches each task to child agents running on this machine, and reports finished work back as one assistant message. Its HTTP routes have no DSH access check, and they can create agents and dispatch tasks to them.",
+        "zh": "把 Grok bot 式的 AI 组织搬进 DSH 左侧栏：总裁助理建部门、立岗位、开部门群，任务分派给本机真实运行的子 agent，做完的活由助理汇总成一条消息回报。它的 HTTP 路由没有 DSH 的访问检查，而这些路由可以创建智能体并向其派发任务。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 4,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-write",
+        "fs-read",
+        "network",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:alexbu512/milancat-bot",
+      "added": "2026-11-13",
+      "icon": "https://raw.githubusercontent.com/alexbu512/milancat-bot/main/assets/icon.png"
+    },
+    {
+      "name": "DSH-AGINT",
+      "owner": "Anmulzhao",
+      "url": "https://github.com/Anmulzhao/DSH-AGINT",
+      "page": "https://awesome-dsh-plugin.com/p/Anmulzhao/DSH-AGINT/",
+      "category": "agi",
+      "description": {
+        "en": "Self-evolving agent framework on DeepSeek Harness (dsh): 40 Cordis plugins and 4 presets covering memory, reflection, gates, metrics and an auditable evolution loop. Not a one-command install. Clone the repo and run install/install.sh --profile=web (needs bash, Node 20+, python3, DSH 0.1.7-rc.1 or newer with an initialized profile), then restart.",
+        "zh": "基于 DeepSeek Harness 的自进化智能体框架：40 个 Cordis 插件、4 套 preset，含记忆、反思、门禁、度量与可审计的进化闭环。不是一条命令装完。需克隆仓库并运行 install/install.sh --profile=web（依赖 bash、Node 20+、python3、DSH 0.1.7-rc.1 及以上且目标 profile 已初始化），装完重启。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 10,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-write",
+        "fs-read",
+        "network",
+        "env",
+        "subagent"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:Anmulzhao/DSH-AGINT",
+      "added": "2026-10-25",
+      "icon": "https://raw.githubusercontent.com/Anmulzhao/DSH-AGINT/main/docs/assets/brand/png/agint-icon-256.png"
+    },
+    {
+      "name": "portable-dsh-multi-agent-plugin",
+      "owner": "WDahah",
+      "url": "https://github.com/WDahah/portable-dsh-multi-agent-plugin",
+      "page": "https://awesome-dsh-plugin.com/p/WDahah/portable-dsh-multi-agent-plugin/",
+      "category": "agi",
+      "description": {
+        "en": "Route each task to one model and its review to a different one, with qualification evidence, failover and a durable journal.",
+        "zh": "把任务派给一个模型、把评审交给另一个模型，并带有资格证据、故障转移与持久日志。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 3,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-write",
+        "fs-read",
+        "network",
+        "env",
+        "llm"
+      ],
+      "capabilityRedLines": [
+        "reads credentials/secrets AND has network access"
+      ],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:WDahah/portable-dsh-multi-agent-plugin",
+      "added": "2026-09-30"
+    },
+    {
+      "name": "DSH-Coach-mode#coach-mode-bundle",
+      "owner": "slimeball2026",
+      "url": "https://github.com/slimeball2026/DSH-Coach-mode/tree/main/coach-mode-bundle",
+      "page": "https://awesome-dsh-plugin.com/p/slimeball2026/DSH-Coach-mode--coach-mode-bundle/",
+      "category": "agi",
+      "description": {
+        "en": "Let AI Help users learn how to do a task,but not finish tasks for users.",
+        "zh": "让 AI 带你自己动手学会一个工具，而不是替你做完。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 22,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:slimeball2026/DSH-Coach-mode#path:/coach-mode-bundle",
+      "added": "2026-11-17"
+    },
+    {
+      "name": "dsh-plugin#dsh-claude-code-web",
+      "owner": "zhoulvyuan",
+      "url": "https://github.com/zhoulvyuan/dsh-plugin/tree/master/dsh-claude-code-web",
+      "page": "https://awesome-dsh-plugin.com/p/zhoulvyuan/dsh-plugin--dsh-claude-code-web/",
+      "category": "agi",
+      "description": {
+        "en": "Claude Code-style workbench in DSH: workspace/session sidebar, streaming document-style transcript with unified tool cards and thinking, Markdown and Mermaid rendering, dark theme, and a draggable overlay panel backed by an in-host HTTP/WebSocket service.",
+        "zh": "在 DSH 内提供 Claude Code 风格工作台：工作区/会话侧栏、流式文档式对话与统一工具卡、思考过程、Markdown 与 Mermaid 渲染、暗色主题，以及由宿主内 HTTP/WebSocket 服务驱动的可拖动悬浮面板。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 2,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "network",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:zhoulvyuan/dsh-plugin#path:/dsh-claude-code-web",
+      "added": "2026-10-17"
+    },
+    {
+      "name": "小票机用量卡（dsh-usage-printer）",
+      "owner": "bingomu",
+      "url": "https://github.com/bingomu/dsh-usage-printer",
+      "page": "https://awesome-dsh-plugin.com/p/bingomu/dsh-usage-printer/",
+      "category": "usage",
+      "description": {
+        "en": "Sidebar receipt printer for DeepSeek balance — a dot-matrix screen shows the remaining balance amount, with a lit dot field tracking the balance level and a peak/off-peak price band, and a receipt slides out on hover with balance, spend and per-token prices.",
+        "zh": "侧栏小票机：点阵屏显示余额金额，点阵底纹按余额水位亮起并带峰谷价格带，鼠标悬停时从槽口送出一张明细小票（余额、已充值、今日/本月花费、单价）。"
+      },
+      "npm": null,
+      "version": null,
+      "stars": 0,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "network",
+        "credentials",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add github:bingomu/dsh-usage-printer",
+      "added": "2026-11-07"
+    },
+    {
+      "name": "DSH QQ Zone",
+      "owner": "LFELKEEA",
+      "url": "https://github.com/LFELKEEA/dsh-qq-zone",
+      "page": "https://awesome-dsh-plugin.com/p/LFELKEEA/dsh-qq-zone/",
+      "category": "tools",
+      "description": {
+        "en": "Publishes and reads QQ Zone posts through SnowLuma's OneBot qzone_* actions (SnowLuma 2.2+ signed in to QQ), and lets the agent understand images with a local vision model (OpenAI-compatible gateway) or Windows OCR.",
+        "zh": "通过 SnowLuma 的 OneBot qzone_* 动作发/看/删/赞/评论 QQ 空间说说（需 SnowLuma 2.2+ 且已登录 QQ），并让机器人用本地视觉模型（OpenAI 兼容网关）或 Windows OCR 看懂图片。"
+      },
+      "npm": null,
+      "tarball": "https://github.com/LFELKEEA/dsh-qq-zone/releases/download/v0.1.1/dsh-qq-zone.tgz",
+      "version": null,
+      "stars": 2,
+      "starsCheckedAt": "2026-11-21T03:30:08.861Z",
+      "downloads": null,
+      "downloadsStart": null,
+      "downloadsEnd": null,
+      "downloadsCheckedAt": null,
+      "capabilities": [
+        "shell",
+        "fs-read",
+        "network",
+        "env"
+      ],
+      "capabilityRedLines": [],
+      "capabilityCheckedAt": "2026-11-21T17:20:36.667Z",
+      "install": "dsh plugin --profile web add \"https://github.com/LFELKEEA/dsh-qq-zone/releases/download/v0.1.1/dsh-qq-zone.tgz\"",
+      "added": "2026-11-03",
+      "icon": "https://raw.githubusercontent.com/LFELKEEA/dsh-qq-zone/master/assets/icon-180.png"
+    }
+  ]
+}

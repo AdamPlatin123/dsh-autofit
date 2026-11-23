@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { detectFormat, npmSearchUrls, readNpmSearch, readRadarRepos, readShop, shopDataUrl } from '../lib/sources/adapters.js'
+import { COMMUNITY_ADAPTERS, communityAdapter, communityClaims, detectCommunity, readCommunity } from '../lib/sources/community/index.js'
 
 const fixture = (name) => JSON.parse(readFileSync(new URL(`./fixtures/sources/${name}`, import.meta.url), 'utf8'))
 const RADAR = fixture('radar-plugins-all.json')
@@ -19,6 +20,60 @@ test('detectFormat recognizes every readable shape', () => {
   for (const doc of [null, [], 'x', RADAR, { format: 2, plugins: [] }, { plugins: [] }, { objects: [] }]) {
     assert.equal(detectFormat(doc), null, JSON.stringify(doc)?.slice(0, 40))
   }
+})
+
+test('detectFormat: every fixture in test/fixtures/sources/** is detected as exactly its own format', () => {
+  const own = {
+    'format1-whoishuhu.json': 'format1',
+    'npm-search-page.json': 'npm-search',
+    'radar-plugins-all.json': null, // read by source kind radar-repos, never by detection
+    'shop-plugins.json': 'shop-data',
+    'shop-pointer.json': 'shop-pointer',
+  }
+  const top = readdirSync(new URL('./fixtures/sources/', import.meta.url)).filter((f) => f.endsWith('.json'))
+  assert.deepEqual(top.sort(), Object.keys(own).sort(), 'a new fixture needs its expected format here')
+  for (const f of top) assert.equal(detectFormat(fixture(f)), own[f], f)
+  const community = readdirSync(new URL('./fixtures/sources/community/', import.meta.url)).filter((f) => f.endsWith('.json'))
+  assert.deepEqual(community.map((f) => f.replace(/.json$/, '')).sort(), COMMUNITY_ADAPTERS.map((a) => a.id).sort(),
+    'one fixture per community adapter')
+  for (const f of community) {
+    const doc = fixture(`community/${f}`)
+    const id = f.replace(/.json$/, '')
+    assert.equal(detectFormat(doc), `community:${id}`, f)
+    assert.deepEqual(communityClaims(doc), [id], `only ${id} claims ${f}`)
+  }
+})
+
+test('detectFormat: other families with a low schemaVersion and a plugins array are not shop data', () => {
+  for (const doc of [
+    { schemaVersion: 2, generatedAt: '2026-11-01', plugins: [{ name: 'x', install: 'npm i x' }] }, // dsh.market sv2 shape
+    { schemaVersion: 2, catalog: 'v2', plugins: [{ repo: 'o/r' }] }, // Ericwong catalog-v2 shape
+    { schemaVersion: 4, plugins: [] },
+    { schemaVersion: 1, plugins: [] },
+    { schemaVersion: 4, plugins: { url: 'p.json', sha256: 'a'.repeat(64) } },
+  ]) {
+    assert.equal(detectFormat(doc), null, JSON.stringify(doc).slice(0, 60))
+  }
+  assert.equal(detectFormat({ schemaVersion: 5, plugins: [] }), 'shop-data')
+  assert.equal(detectFormat({ schemaVersion: 6, plugins: { url: 'p.json', sha256: 'a'.repeat(64) } }), 'shop-pointer')
+})
+
+test('community registry: a document two adapters claim is never read silently', () => {
+  const both = { ...fixture('community/dshmk-api.json'), ...fixture('community/w2112515-catalog.json') }
+  assert.deepEqual(communityClaims(both).sort(), ['dshmk-api', 'w2112515-catalog'])
+  assert.equal(detectCommunity(both), null)
+  assert.equal(detectFormat(both), null)
+  assert.throws(() => readCommunity(both, { sourceId: 's' }), { name: 'TypeError', message: /ambiguous/ })
+  assert.throws(() => readCommunity({ plugins: [] }, { sourceId: 's' }), TypeError)
+  assert.throws(() => readCommunity(fixture('community/omni-catalog.json'), { sourceId: 's', adapterId: 'dshmk-api' }), TypeError)
+  const r = readCommunity(fixture('community/omni-catalog.json'), { sourceId: 's', adapterId: 'omni-catalog' })
+  assert.equal(r.adapter, 'omni-catalog')
+  assert.ok(r.offerings.length > 0 && r.offerings.every((o) => o.sourceId === 's'))
+  assert.equal(communityAdapter('omni-catalog').id, 'omni-catalog')
+  assert.equal(communityAdapter('__proto__'), null)
+  assert.ok(Object.isFrozen(COMMUNITY_ADAPTERS) && COMMUNITY_ADAPTERS.every((a) => Object.isFrozen(a) && a.title.zh && a.title.en))
+  // a detect that throws counts as not claimed
+  assert.deepEqual(communityClaims({ get plugins() { throw new Error('boom') } }), [])
 })
 
 test('readRadarRepos offers unpinned GitHub installs for real radar rows', () => {

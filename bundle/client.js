@@ -213,6 +213,43 @@ async function installBundleCompat(manager, spec) {
         duration: '耗时',
         hostVersion: '宿主版本',
         spec: 'Spec',
+        sourcesOpen: '来源',
+        sourcesTitle: '目录来源',
+        sourcesHint: '目录由下面这些来源合并而成。「仅浏览」来源的插件可以查看，但要先标为「信任」才能试装和安装。',
+        sourcesLoading: '正在读取来源…',
+        sourcesEnabled: '启用',
+        sourcesCount: '{n} 个插件',
+        sourcesStateOk: '正常',
+        sourcesStateStale: '使用缓存',
+        sourcesStateFailed: '加载失败',
+        sourcesStateDisabled: '已停用',
+        sourcesStatePending: '等待加载',
+        sourcesTrustBuiltin: '内置',
+        sourcesTrustHost: 'DSH 市场',
+        sourcesTrustBrowse: '仅浏览',
+        sourcesTrustTrusted: '信任',
+        sourcesKindBuiltinIndex: '内置索引',
+        sourcesKindRadarOverlay: '雷达',
+        sourcesKindRadarRepos: '雷达仓库',
+        sourcesKindNpmSearch: 'npm 搜索',
+        sourcesKindHostMarket: 'DSH 市场',
+        sourcesKindUserIndex: '自行添加',
+        sourcesMarkTrusted: '标为信任',
+        sourcesMarkBrowse: '改回仅浏览',
+        sourcesTrustConfirm: '标为信任后，就能直接从「{name}」试装并安装插件，插件代码会在你的电脑上运行。只信任你了解的市场。',
+        sourcesRemove: '移除',
+        sourcesRemoveConfirm: '把「{name}」从来源中移除？以后可以再添加。',
+        sourcesConfirm: '确认',
+        sourcesCancel: '取消',
+        presetsTitle: '推荐市场',
+        presetsHint: '社区维护的插件市场。添加后为「仅浏览」，需要安装时再标为信任。条目数为 {at} 实测。',
+        presetsEntries: '{n} 个条目',
+        presetsLicense: '许可证：{v}',
+        presetsLicenseUnknown: '许可证不明',
+        presetsLicenseUnknownHint: '发布者没有说明数据的许可证，使用前请自行确认。',
+        presetsAttribution: '署名要求',
+        presetsAdd: '添加（仅浏览）',
+        presetsAdded: '已添加',
       },
       en: {
         dockTitle: 'Autofit install',
@@ -387,6 +424,43 @@ async function installBundleCompat(manager, spec) {
         duration: 'Duration',
         hostVersion: 'Host version',
         spec: 'Spec',
+        sourcesOpen: 'Sources',
+        sourcesTitle: 'Catalog sources',
+        sourcesHint: 'The catalog merges the sources below. Plugins from a browse-only source can be viewed, but the source must be marked trusted before they can be trialled or installed.',
+        sourcesLoading: 'Reading sources…',
+        sourcesEnabled: 'Enabled',
+        sourcesCount: '{n} plugins',
+        sourcesStateOk: 'OK',
+        sourcesStateStale: 'Using cache',
+        sourcesStateFailed: 'Failed to load',
+        sourcesStateDisabled: 'Disabled',
+        sourcesStatePending: 'Not loaded yet',
+        sourcesTrustBuiltin: 'Built-in',
+        sourcesTrustHost: 'DSH market',
+        sourcesTrustBrowse: 'Browse only',
+        sourcesTrustTrusted: 'Trusted',
+        sourcesKindBuiltinIndex: 'Built-in index',
+        sourcesKindRadarOverlay: 'Radar',
+        sourcesKindRadarRepos: 'Radar repositories',
+        sourcesKindNpmSearch: 'npm search',
+        sourcesKindHostMarket: 'DSH market',
+        sourcesKindUserIndex: 'Added by you',
+        sourcesMarkTrusted: 'Mark trusted',
+        sourcesMarkBrowse: 'Back to browse only',
+        sourcesTrustConfirm: 'Once trusted, plugins from "{name}" can be trial-installed and installed directly, and their code runs on your computer. Only trust markets you know.',
+        sourcesRemove: 'Remove',
+        sourcesRemoveConfirm: 'Remove "{name}" from your sources? You can add it again later.',
+        sourcesConfirm: 'Confirm',
+        sourcesCancel: 'Cancel',
+        presetsTitle: 'Recommended markets',
+        presetsHint: 'Community-run plugin markets. They are added as browse only; mark one trusted when you want to install from it. Entry counts were measured on {at}.',
+        presetsEntries: '{n} entries',
+        presetsLicense: 'License: {v}',
+        presetsLicenseUnknown: 'License unknown',
+        presetsLicenseUnknownHint: 'The publisher states no license for this data; check before relying on it.',
+        presetsAttribution: 'Attribution',
+        presetsAdd: 'Add (browse only)',
+        presetsAdded: 'Added',
       },
     }
 
@@ -503,6 +577,14 @@ async function installBundleCompat(manager, spec) {
 .dsh-autofit-section{margin-top:16px;padding-top:14px;border-top:1px solid var(--dsw-alias-border-l2);display:flex;flex-direction:column;gap:8px;font-size:12px}
 .dsh-autofit-section-title{margin:0;font-size:13px;font-weight:600}
 .dsh-autofit-section-desc{margin:0;color:var(--dsw-alias-label-secondary);line-height:1.6}
+.dsh-autofit-src-list{display:flex;flex-direction:column;gap:8px}
+.dsh-autofit-src{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-2);font-size:12px}
+.dsh-autofit-src.is-off{opacity:.7}
+.dsh-autofit-src-head{display:flex;align-items:center;gap:8px}
+.dsh-autofit-src-name{flex:1;min-width:0;font-weight:600;font-size:12.5px;word-break:break-word}
+.dsh-autofit-src-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:var(--dsw-alias-label-tertiary);font-size:11px}
+.dsh-autofit-src-meta a{color:var(--dsw-alias-label-link,#2f6fe4)}
+.dsh-autofit-src-err{color:var(--dsw-alias-state-error-primary);font-size:11px;word-break:break-word}
 `.trim()
 
     function StyleTag() {
@@ -1334,7 +1416,10 @@ async function installBundleCompat(manager, spec) {
       const [loading, setLoading] = useState(false)
       const [error, setError] = useState(null)
       const [detail, setDetail] = useState(null)
+      const [sourcesOpen, setSourcesOpen] = useState(false)
       const seq = useRef(0)
+      const qRef = useRef(q)
+      qRef.current = q
 
       const load = useCallback(async (query, offset) => {
         const token = ++seq.current
@@ -1356,15 +1441,22 @@ async function installBundleCompat(manager, spec) {
         return () => clearTimeout(timer)
       }, [q, load])
 
+      // A source change reloads the catalog from the top with the current query.
+      // returns the load promise so the sources panel can refresh its states once the catalog has settled
+      const reloadCatalog = useCallback(() => load(qRef.current, 0), [load])
+      const closeSources = useCallback(() => setSourcesOpen(false), [])
+
       return h('div', { className: 'dsh-autofit-tab' }, h(StyleTag),
         dialog.open && overlayHosts === 0 ? h(AutofitDialog, { t, ctx, initialSpec: dialog.initialSpec, onClose: closeAutofitDialog }) : null,
         h(AutofitDock, { t, inline: true }),  // shows only when no overlay dock owns the page
         h('div', { className: 'dsh-autofit-tab-head' },
           h('input', { className: 'dsh-autofit-input', type: 'search', value: q, placeholder: t('tabSearch'), onChange: (e) => setQ(e.target.value) }),
           h('span', null, fmt(t, 'tabOf', { total })),
-          meta ? h('span', null, `${t('tabSource')}: ${String(meta.source || '').replace(/^https?:\/\//, '').split('/')[0]}${meta.radarAt ? ` · ${t('tabRadar')} ${String(meta.radarAt).slice(0, 10)}` : ''}`) : null),
+          meta ? h('span', null, `${t('tabSource')}: ${String(meta.source || '').replace(/^https?:\/\//, '').split('/')[0]}${meta.radarAt ? ` · ${t('tabRadar')} ${String(meta.radarAt).slice(0, 10)}` : ''}`) : null,
+          h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: () => setSourcesOpen(true) }, t('sourcesOpen'))),
         error ? h(ErrorBox, { t, message: error }) : null,
         detail ? h(CatalogDetail, { t, item: detail, onClose: () => setDetail(null) }) : null,
+        sourcesOpen ? h(SourcesPanel, { t, onClose: closeSources, onChanged: reloadCatalog }) : null,
         h('div', { className: 'dsh-autofit-cards' }, items.map((it) => h('div', { key: it.key ?? it.name, className: 'dsh-autofit-card' },
           h('button', { type: 'button', className: 'dsh-autofit-card-open', title: t('detailOpen'), onClick: () => setDetail(it) },
             h('span', { className: 'dsh-autofit-card-title' }, pickText(it.title) || it.name)),
@@ -1411,6 +1503,144 @@ async function installBundleCompat(manager, spec) {
           h('div', { className: 'dsh-autofit-detail-foot' },
             h('button', { type: 'button', className: 'dsh-autofit-btn', onClick: onClose }, t('detailClose')),
             h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', autoFocus: true, onClick: install }, t('tabInstall')))))
+    }
+
+    /* ------------------------------------------------------------------ sources panel */
+
+    const SOURCES = { list: '/api/autofit/sources/list', presets: '/api/autofit/sources/presets', set: '/api/autofit/sources/set' }
+    const SOURCE_STATE = { ok: ['sourcesStateOk', 'success'], stale: ['sourcesStateStale', 'warn'], failed: ['sourcesStateFailed', 'error'], disabled: ['sourcesStateDisabled', 'neutral'], pending: ['sourcesStatePending', 'neutral'] }
+    const SOURCE_KIND = { 'builtin-index': 'sourcesKindBuiltinIndex', 'radar-overlay': 'sourcesKindRadarOverlay', 'radar-repos': 'sourcesKindRadarRepos', 'npm-search': 'sourcesKindNpmSearch', 'host-market': 'sourcesKindHostMarket', 'user-index': 'sourcesKindUserIndex' }
+    const SOURCE_TRUST = { builtin: 'sourcesTrustBuiltin', host: 'sourcesTrustHost', browse: 'sourcesTrustBrowse', trusted: 'sourcesTrustTrusted' }
+    const num = (n) => { try { return Number(n).toLocaleString() } catch { return String(n) } }
+    const sourceName = (s) => pickText(s.title) || String(s.url || s.id || '').replace(/^https?:\/\//, '')
+
+    /**
+     * The catalog's sources and the curated preset markets. Every change goes through `/sources/set` (one at a time;
+     * the Host serializes them anyway); `onChanged` reloads the catalog. Trusting a source and removing one ask first.
+     */
+    function SourcesPanel({ t, onClose, onChanged }) {
+      const [sources, setSources] = useState(null)
+      const [presets, setPresets] = useState(null)
+      const [error, setError] = useState(null)
+      const [busy, setBusy] = useState(false)
+      const [confirm, setConfirm] = useState(null) // { id, action: 'trust' | 'remove' }
+      const alive = useRef(true)
+      useEffect(() => () => { alive.current = false }, [])
+
+      const loadPresets = useCallback(async () => {
+        const r = await postJson(SOURCES.presets, {})
+        if (alive.current && r.ok) setPresets(Array.isArray(r.value && r.value.presets) ? r.value.presets : [])
+      }, [])
+
+      const loadSources = useCallback(async ({ quiet } = {}) => {
+        const r = await postJson(SOURCES.list, {})
+        if (!alive.current) return
+        if (r.ok) setSources(r.value.sources || []); else if (!quiet) setError((r.error && r.error.message) || t('errorRpc'))
+      }, [t])
+
+      useEffect(() => {
+        void loadSources()
+        void loadPresets()
+      }, [loadPresets, loadSources])
+
+      // A source just added or turned on stays 'pending' until its first load ends; /sources/set answers before
+      // that, so poll the list while any enabled source is pending to show its count or its error.
+      const pending = Array.isArray(sources) && sources.some((s) => s && s.enabled && s.state === 'pending')
+      useEffect(() => {
+        if (!pending) return undefined
+        const timer = setInterval(() => void loadSources({ quiet: true }), 3000)
+        return () => clearInterval(timer)
+      }, [pending, loadSources])
+
+      useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape' && !busy) onClose() }
+        window.addEventListener('keydown', onKey)
+        return () => window.removeEventListener('keydown', onKey)
+      }, [busy, onClose])
+
+      const change = useCallback(async (body, { presetsToo } = {}) => {
+        setBusy(true)
+        setError(null)
+        setConfirm(null)
+        const r = await postJson(SOURCES.set, body)
+        if (!alive.current) return
+        setBusy(false)
+        if (!r.ok) { setError((r.error && r.error.message) || t('errorRpc')); return }
+        setSources(r.value.sources || [])
+        if (presetsToo) void loadPresets()
+        // the catalog reload waits for the changed source; refresh the states it leaves behind
+        const settled = () => void loadSources({ quiet: true })
+        Promise.resolve(onChanged ? onChanged() : undefined).then(settled, settled)
+      }, [loadPresets, loadSources, onChanged, t])
+
+      const confirmBox = (s) => {
+        if (!confirm || confirm.id !== s.id) return null
+        const trust = confirm.action === 'trust'
+        return h('div', { className: 'dsh-autofit-box dsh-autofit-box-warn' },
+          fmt(t, trust ? 'sourcesTrustConfirm' : 'sourcesRemoveConfirm', { name: sourceName(s) }),
+          h('div', { className: 'dsh-autofit-actions', style: { marginTop: 8 } },
+            h('button', { type: 'button', className: 'dsh-autofit-btn dsh-autofit-btn-primary', disabled: busy,
+              onClick: () => void change(trust ? { id: s.id, trust: 'trusted' } : { remove: s.id }, { presetsToo: !trust }) }, t('sourcesConfirm')),
+            h('button', { type: 'button', className: 'dsh-autofit-btn', disabled: busy, onClick: () => setConfirm(null) }, t('sourcesCancel'))))
+      }
+
+      const sourceRow = (s) => {
+        const [stateKey, tone] = SOURCE_STATE[s.state] || [null, 'neutral']
+        const settable = s.trust === 'browse' || s.trust === 'trusted'
+        return h('div', { key: s.id, className: `dsh-autofit-src${s.enabled ? '' : ' is-off'}` },
+          h('div', { className: 'dsh-autofit-src-head' },
+            h('span', { className: 'dsh-autofit-src-name', title: s.url || s.id }, sourceName(s)),
+            h('label', { className: 'dsh-autofit-checkbox' },
+              h('input', { type: 'checkbox', checked: !!s.enabled, disabled: busy, onChange: (e) => void change({ id: s.id, enabled: e.target.checked }) }),
+              h('span', null, t('sourcesEnabled')))),
+          h('div', { className: 'dsh-autofit-src-meta' },
+            h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${tone}` }, stateKey ? t(stateKey) : String(s.state || '—')),
+            h('span', { className: 'dsh-autofit-chip' }, SOURCE_KIND[s.kind] ? t(SOURCE_KIND[s.kind]) : String(s.kind || '—')),
+            h('span', { className: `dsh-autofit-badge dsh-autofit-badge-${s.trust === 'browse' ? 'warn' : 'neutral'}` }, SOURCE_TRUST[s.trust] ? t(SOURCE_TRUST[s.trust]) : String(s.trust || '—')),
+            Number.isFinite(s.count) ? h('span', null, fmt(t, 'sourcesCount', { n: num(s.count) })) : null),
+          s.error && (s.state === 'failed' || s.state === 'stale') ? h('div', { className: 'dsh-autofit-src-err' }, s.error.message || s.error.code) : null,
+          settable || s.kind === 'user-index'
+            ? h('div', { className: 'dsh-autofit-actions' },
+                s.trust === 'browse' ? h('button', { type: 'button', className: 'dsh-autofit-btn', disabled: busy, onClick: () => setConfirm({ id: s.id, action: 'trust' }) }, t('sourcesMarkTrusted')) : null,
+                s.trust === 'trusted' ? h('button', { type: 'button', className: 'dsh-autofit-btn', disabled: busy, onClick: () => void change({ id: s.id, trust: 'browse' }) }, t('sourcesMarkBrowse')) : null,
+                s.kind === 'user-index' ? h('button', { type: 'button', className: 'dsh-autofit-btn', disabled: busy, onClick: () => setConfirm({ id: s.id, action: 'remove' }) }, t('sourcesRemove')) : null)
+            : null,
+          confirmBox(s))
+      }
+
+      const presetRow = (p) => h('div', { key: p.id, className: 'dsh-autofit-src' },
+        h('div', { className: 'dsh-autofit-src-head' },
+          h('span', { className: 'dsh-autofit-src-name' }, pickText(p.title) || p.id),
+          p.alreadyAdded
+            ? h('span', { className: 'dsh-autofit-badge dsh-autofit-badge-success' }, t('presetsAdded'))
+            : h('button', { type: 'button', className: 'dsh-autofit-btn', disabled: busy, onClick: () => void change({ add: { presetId: p.id } }, { presetsToo: true }) }, t('presetsAdd'))),
+        h('div', { className: 'dsh-autofit-src-meta' },
+          Number.isFinite(p.entries) ? h('span', null, fmt(t, 'presetsEntries', { n: num(p.entries) })) : null,
+          p.license
+            ? h('span', { className: 'dsh-autofit-chip' }, fmt(t, 'presetsLicense', { v: p.license }))
+            : h('span', { className: 'dsh-autofit-badge dsh-autofit-badge-warn', title: t('presetsLicenseUnknownHint') }, t('presetsLicenseUnknown')),
+          p.homepage ? h('a', { href: p.homepage, target: '_blank', rel: 'noreferrer noopener' }, String(p.homepage).replace(/^https?:\/\//, '').replace(/\/$/, '')) : null),
+        p.attribution ? h('div', { className: 'dsh-autofit-section-desc' }, h('strong', null, t('presetsAttribution')), ': ', pickText(p.attribution)) : null)
+
+      const checkedAt = presets && presets.length ? presets[0].checkedAt : ''
+      return h('div', { className: 'dsh-autofit-detail-backdrop', onMouseDown: (e) => { if (e.target === e.currentTarget && !busy) onClose() } },
+        h('aside', { className: 'dsh-autofit-detail', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('sourcesTitle') },
+          h('div', { className: 'dsh-autofit-detail-head' },
+            h('div', { style: { flex: 1, minWidth: 0 } }, h('div', { className: 'dsh-autofit-detail-title' }, t('sourcesTitle'))),
+            busy ? h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }) : null,
+            h('button', { type: 'button', className: 'dsh-autofit-icon-btn', 'aria-label': t('detailClose'), title: t('detailClose'), onClick: onClose }, '×')),
+          h('div', { className: 'dsh-autofit-detail-body' },
+            h('p', { className: 'dsh-autofit-section-desc' }, t('sourcesHint')),
+            error ? h(ErrorBox, { t, message: error }) : null,
+            sources
+              ? h('div', { className: 'dsh-autofit-src-list' }, sources.map(sourceRow))
+              : !error ? h('div', { className: 'dsh-autofit-progress' }, h('span', { className: 'dsh-autofit-spinner', 'aria-hidden': 'true' }), h('div', { className: 'dsh-autofit-progress-text' }, t('sourcesLoading'))) : null,
+            presets && presets.length
+              ? h('div', { className: 'dsh-autofit-src-list' },
+                  h('h3', { className: 'dsh-autofit-section-title' }, t('presetsTitle')),
+                  h('p', { className: 'dsh-autofit-section-desc' }, fmt(t, 'presetsHint', { at: checkedAt || '—' })),
+                  presets.map(presetRow))
+              : null)))
     }
 
     /* ------------------------------------------------------------------ background check (badge + section) */

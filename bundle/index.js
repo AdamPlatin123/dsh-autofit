@@ -9,7 +9,9 @@
  *   POST /api/autofit/status   { name? }                last background check of an installed bundle
  *   POST /api/autofit/sources/list     {}               configured catalog sources and their load state
  *   POST /api/autofit/sources/probe    { url }          preview an index URL before adding it
- *   POST /api/autofit/sources/set      { …change }      enable/disable, trust, priority, add or remove a source
+ *   POST /api/autofit/sources/presets  {}               curated community markets, each with alreadyAdded/sourceId
+ *   POST /api/autofit/sources/set      { …change }      enable/disable, trust, priority, add or remove a source;
+ *        `{ add: { presetId, trust? } }` adds a preset (URL and title from the preset, trust 'browse' by default)
  *   POST /api/autofit/sources/refresh  { id? }          reload one source (or all) now
  *   POST /api/autofit/job/start        { spec, allowBuilds?, key?, sourceId? }   "Install with autofix" job;
  *        a job naming a browse-only source is refused (409 autofit/untrusted-source)
@@ -33,6 +35,7 @@ import { probe } from '../lib/probe/index.js'
 import { sweepStale } from '../lib/probe/cleanup.js'
 import { catalogRequest, catalogUnavailable, chipPredicate, hostMarketList, isFresh, jobGate, legacyView, offersPlugins, sourceStatus, wireItem } from '../lib/sources/catalog.js'
 import { buildIndex, mergeCatalog, queryCatalog } from '../lib/sources/merge.js'
+import { presetStatus, resolvePresetChange } from '../lib/sources/presets.js'
 import { applySourceChange, loadSource, loadSourceConfig, probeSource, saveSourceConfig } from '../lib/sources/store.js'
 
 /** Connection must exist for a browser-callable route; otherwise this row stays inactive. */
@@ -40,7 +43,8 @@ export const inject = ['connection']
 
 const ROUTES = { check: '/api/autofit/check', fix: '/api/autofit/fix', catalog: '/api/autofit/catalog', status: '/api/autofit/status',
   jobStart: '/api/autofit/job/start', jobPoll: '/api/autofit/job/poll', jobCancel: '/api/autofit/job/cancel', jobList: '/api/autofit/job/list', jobInstalled: '/api/autofit/job/installed',
-  sourcesList: '/api/autofit/sources/list', sourcesProbe: '/api/autofit/sources/probe', sourcesSet: '/api/autofit/sources/set', sourcesRefresh: '/api/autofit/sources/refresh' }
+  sourcesList: '/api/autofit/sources/list', sourcesProbe: '/api/autofit/sources/probe', sourcesSet: '/api/autofit/sources/set', sourcesRefresh: '/api/autofit/sources/refresh',
+  sourcesPresets: '/api/autofit/sources/presets' }
 const WATCH_INTERVAL_MS = 60 * 1000
 
 /**
@@ -573,13 +577,25 @@ export function apply(ctx) {
   })
 
   reg({
+    path: ROUTES.sourcesPresets, methods: ['POST'], requestBody: 'buffered',
+    fetch: async () => {
+      try {
+        return json({ ok: true, value: { presets: presetStatus(await sourceConfig()) } })
+      } catch (error) {
+        return json(failure('autofit/sources-unavailable', text(error?.message ?? error, 800)), 500)
+      }
+    },
+  })
+
+  reg({
     path: ROUTES.sourcesSet, methods: ['POST'], requestBody: 'buffered',
     fetch: async (request) => {
       const change = await body(request)
       return serializedSourceChange(async () => {
         let next
         try {
-          next = applySourceChange(await readSourceConfig(), change).sources
+          // A preset becomes an ordinary user index (kind 'user-index': fetched with redirect:'error').
+          next = applySourceChange(await readSourceConfig(), resolvePresetChange(change)).sources
         } catch (error) {
           const code = error?.code ?? 'invalid'
           const status = code === 'duplicate' ? 409 : code === 'not-found' ? 404 : 400
